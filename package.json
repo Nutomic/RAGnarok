@@ -11,9 +11,12 @@
     "format": "biome format --write .",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "build:ingest": "esbuild src/ingest/run.ts --bundle --platform=node --format=cjs --outfile=dist/ingest.js --external:onnxruntime-node --external:@huggingface/transformers",
+    "ingest": "node dist/ingest.js"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.0",
     "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.3",
     "next": "16.3.7",
@@ -32,6 +35,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.1",
     "drizzle-kit": "^0.31.11",
+    "esbuild": "^0.28.2",
     "jsdom": "^30.1.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",

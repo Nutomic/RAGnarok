@@ -15,7 +15,7 @@ CREATE TABLE "chunks" (
 	"document_id" uuid NOT NULL,
 	"content" text NOT NULL,
 	"position" integer NOT NULL,
-	"embedding" vector(1024),
+	"embedding" vector(384),
 	"tsvector" "tsvector",
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );

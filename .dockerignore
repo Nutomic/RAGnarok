@@ -18,3 +18,4 @@ docker-compose.yml
 biome.json
 tsconfig.json
 next-env.d.ts
+dist

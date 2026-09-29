@@ -10,9 +10,9 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
-// bge-m3 embeddings are 1024-dim; multilingual-e5-small is 384. Set once,
+// multilingual-e5-small embeddings are 384-dim; bge-m3 is 1024. Set once,
 // the vector column is fixed at migration time.
-export const VECTOR_DIM = 1024;
+export const VECTOR_DIM = 384;
 
 const vector = customType<{ data: number[]; driverData: string }>({
   dataType() {

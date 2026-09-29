@@ -4,6 +4,9 @@
 # next.js
 /.next/
 
+# build artifacts
+/dist/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
