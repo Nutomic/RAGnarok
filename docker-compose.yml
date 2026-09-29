@@ -8,6 +8,7 @@ services:
       POSTGRES_DB: ragnarok
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ragnarok -d ragnarok"]
       interval: 5s
@@ -21,7 +22,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/ragnarok
+      DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/langfuse
       NEXTAUTH_URL: http://127.0.0.1:3001
       NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET}
       SALT: ${LANGFUSE_SALT}

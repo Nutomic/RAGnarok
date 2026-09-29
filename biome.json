@@ -25,5 +25,12 @@
       "quoteStyle": "double",
       "semicolons": "always"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["drizzle/**"],
+      "formatter": { "enabled": false },
+      "linter": { "enabled": false }
+    }
+  ]
 }
