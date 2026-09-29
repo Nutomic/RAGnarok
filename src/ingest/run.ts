@@ -51,9 +51,11 @@ async function main() {
       .returning({ id: documents.id });
 
     let position = 0;
+    let tokens = 0;
     for (const c of chunked) {
       for (const chunk of c.chunks) {
-        const embedding = await embedder.embed(chunk.content);
+        const { embedding, tokens: chunkTokens } = await embedder.embed(chunk.content);
+        tokens += chunkTokens;
         await db.insert(chunks).values({
           documentId: doc.id,
           content: chunk.content,
@@ -63,7 +65,9 @@ async function main() {
         });
       }
     }
-    console.log(`ingested ${reg.title}: ${chunked.length} sections, ${position} chunks`);
+    console.log(
+      `ingested ${reg.title}: ${chunked.length} sections, ${position} chunks, ${tokens} embedding tokens (local, 0 EUR)`,
+    );
   }
 }
 

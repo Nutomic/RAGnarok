@@ -1,13 +1,23 @@
 import { pipeline } from "@huggingface/transformers";
 
-export interface Embedder {
-  embed(text: string): Promise<number[]>;
+export interface EmbedResult {
+  embedding: number[];
+  tokens: number;
 }
 
-type Extractor = (
+export interface Embedder {
+  embed(text: string): Promise<EmbedResult>;
+}
+
+type Extractor = {
+  tokenizer: (
+    text: string,
+    options?: unknown,
+  ) => Promise<{ input_ids: { data: ArrayLike<number> } }>;
+} & ((
   text: string,
   options: { pooling: string; normalize: boolean },
-) => Promise<{ data: Float32Array }>;
+) => Promise<{ data: Float32Array }>);
 
 // In-process embeddings via transformers.js (ONNX). No separate service.
 // multilingual-e5-small: 384-dim, ~470 MB, runs on CPU. e5 models require a
@@ -25,9 +35,10 @@ export class TransformersEmbedder implements Embedder {
     return this.extractor;
   }
 
-  async embed(text: string): Promise<number[]> {
+  async embed(text: string): Promise<EmbedResult> {
     const ex = await this.getExtractor();
+    const tokens = (await ex.tokenizer(text)).input_ids.data.length;
     const output = await ex(`passage: ${text}`, { pooling: "mean", normalize: true });
-    return Array.from(output.data);
+    return { embedding: Array.from(output.data), tokens };
   }
 }
