@@ -23,11 +23,11 @@ function splitText(text: string, maxChars: number): string[] {
   const parts: string[] = [];
   let buf = "";
   for (const p of paragraphs) {
-    if ((buf + " " + p).trim().length > maxChars && buf) {
+    if (`${buf} ${p}`.trim().length > maxChars && buf) {
       parts.push(buf.trim());
       buf = p;
     } else {
-      buf = (buf + " " + p).trim();
+      buf = `${buf} ${p}`.trim();
     }
   }
   if (buf) parts.push(buf.trim());

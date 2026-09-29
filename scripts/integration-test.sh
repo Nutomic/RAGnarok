@@ -40,6 +40,6 @@ docs=$(docker compose exec -T db psql -U ragnarok -d ragnarok -tAc "SELECT count
 chunks=$(docker compose exec -T db psql -U ragnarok -d ragnarok -tAc "SELECT count(*) FROM chunks")
 echo "documents=$docs chunks=$chunks"
 [ "$docs" = "2" ] || { echo "expected 2 documents, got $docs"; exit 1; }
-[ "$chunks" -gt 0 ] || { echo "expected >0 chunks, got $chunks"; exit 1; }
+[ "$chunks" = "827" ] || { echo "expected 827 chunks, got $chunks"; exit 1; }
 
 echo "==> integration test passed"
