@@ -1,0 +1,98 @@
+import { sql } from "drizzle-orm";
+import { db } from "../db";
+
+export interface RetrievedChunk {
+  id: string;
+  documentId: string;
+  content: string;
+  position: number;
+  score: number;
+  vecRank: number | null;
+  ftsRank: number | null;
+}
+
+export interface RetrieveOptions {
+  // number of intermediate results
+  candidates?: number;
+  // number of final results
+  k?: number;
+}
+
+// Hybrid search: pgvector cosine distance + tsvector german FTS, fused with
+// Reciprocal Rank Fusion (k=60, the standard from the RRF paper). Both branches
+// are limited to `candidates` rows before fusion; final top-k returned.
+// `queryEmbedding` is expected to be embedded with the "query: " prefix.
+export async function retrieveHybrid(
+  queryText: string,
+  queryEmbedding: number[],
+  options: RetrieveOptions = {},
+): Promise<RetrievedChunk[]> {
+  const k = options.k ?? 5;
+  const candidates = options.candidates ?? 50;
+
+  const vecLiteral = `[${queryEmbedding.join(",")}]`;
+
+  // Split on everything that is not a letter or number,
+  // filter short words that would match half the chunks,
+  // remove to_tsquery syntax characters which woul throw syntax error,
+  // join with " | " for OR.
+  const terms = queryText
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter((w) => w.length > 2)
+    .map((w) => w.replace(/['():&|!*]/g, ""))
+    .join(" | ");
+
+  // to_tsquery parses the terms into a tsquery value which are used for
+  // ts_rank ordering below. On empty query return nothing.
+  const ftsMatch = terms
+    ? sql`CROSS JOIN to_tsquery('german', ${terms}) AS query WHERE tsvector @@ query`
+    : sql`WHERE false`;
+
+  const result = await db.execute<{
+    id: string;
+    document_id: string;
+    content: string;
+    position: number;
+    score: number;
+    vec_rank: number | null;
+    fts_rank: number | null;
+  }>(sql`
+    WITH vec AS (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> ${vecLiteral}::vector) AS rank
+      FROM chunks
+      WHERE embedding IS NOT NULL
+      ORDER BY embedding <=> ${vecLiteral}::vector
+      LIMIT ${candidates}
+    ),
+    fts AS (
+      SELECT id, ROW_NUMBER() OVER (ORDER BY ts_rank(tsvector, query) DESC) AS rank
+      FROM chunks
+      ${ftsMatch}
+      LIMIT ${candidates}
+    )
+    SELECT
+      c.id,
+      c.document_id,
+      c.content,
+      c.position,
+      COALESCE(1.0 / (60 + vec.rank), 0) + COALESCE(1.0 / (60 + fts.rank), 0) AS score,
+      vec.rank AS vec_rank,
+      fts.rank AS fts_rank
+    FROM chunks c
+    LEFT JOIN vec ON vec.id = c.id
+    LEFT JOIN fts ON fts.id = c.id
+    WHERE vec.id IS NOT NULL OR fts.id IS NOT NULL
+    ORDER BY score DESC
+    LIMIT ${k}
+  `);
+
+  return result.rows.map((r) => ({
+    id: r.id,
+    documentId: r.document_id,
+    content: r.content,
+    position: r.position,
+    score: Number(r.score),
+    vecRank: r.vec_rank === null ? null : Number(r.vec_rank),
+    ftsRank: r.fts_rank === null ? null : Number(r.fts_rank),
+  }));
+}

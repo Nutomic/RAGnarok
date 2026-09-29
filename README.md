@@ -21,7 +21,7 @@ App on http://localhost:3000. Langfuse dashboard on http://localhost:3001.
 Ingest the EUR-Lex corpus (DS-GVO + AI Act) into Postgres:
 
 ```bash
-docker compose run --rm app npm run ingest
+docker compose run --rm app npm run cli -- ingest
 ```
 
 Idempotent: re-running skips already-ingested documents.

@@ -13,7 +13,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build && npm run build:ingest
+RUN npm run build && npm run build:cli
 RUN npm prune --omit=dev
 EXPOSE 3000
 CMD ["npm", "run", "start"]

@@ -1,0 +1,2 @@
+CREATE INDEX "audit_logs_profile_idx" ON "audit_logs" USING btree ("profile_id");--> statement-breakpoint
+CREATE INDEX "chunks_embedding_hnsw_idx" ON "chunks" USING hnsw ("embedding" vector_cosine_ops);

@@ -71,14 +71,21 @@ export const chunks = pgTable(
     tsvector: tsvector("tsvector"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [index("chunks_document_idx").on(t.documentId)],
+  (t) => [
+    index("chunks_document_idx").on(t.documentId),
+    index("chunks_embedding_hnsw_idx").using("hnsw", t.embedding.op("vector_cosine_ops")),
+  ],
 );
 
-export const auditLogs = pgTable("audit_logs", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  profileId: uuid("profile_id").references(() => demoProfiles.id, { onDelete: "set null" }),
-  prompt: text("prompt").notNull(),
-  model: varchar("model", { length: 255 }),
-  chunkIds: uuid("chunk_ids").array(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-});
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    profileId: uuid("profile_id").references(() => demoProfiles.id, { onDelete: "set null" }),
+    prompt: text("prompt").notNull(),
+    model: varchar("model", { length: 255 }),
+    chunkIds: uuid("chunk_ids").array(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index("audit_logs_profile_idx").on(t.profileId)],
+);

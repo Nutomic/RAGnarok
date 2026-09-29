@@ -33,7 +33,10 @@ for _ in $(seq 1 30); do
 done
 
 echo "==> running ingest"
-docker compose run --rm app npm run ingest
+docker compose run --rm app npm run cli -- ingest
+
+echo "==> running retrieval check"
+docker compose run --rm app npm run cli -- check-retrieve
 
 echo "==> verifying db content"
 docs=$(docker compose exec -T db psql -U ragnarok -d ragnarok -tAc "SELECT count(*) FROM documents")

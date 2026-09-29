@@ -6,7 +6,7 @@ export interface EmbedResult {
 }
 
 export interface Embedder {
-  embed(text: string): Promise<EmbedResult>;
+  embed(text: string, mode?: "passage" | "query"): Promise<EmbedResult>;
 }
 
 type Extractor = {
@@ -35,10 +35,11 @@ export class TransformersEmbedder implements Embedder {
     return this.extractor;
   }
 
-  async embed(text: string): Promise<EmbedResult> {
+  async embed(text: string, mode: "passage" | "query" = "passage"): Promise<EmbedResult> {
     const ex = await this.getExtractor();
-    const tokens = (await ex.tokenizer(text)).input_ids.data.length;
-    const output = await ex(`passage: ${text}`, { pooling: "mean", normalize: true });
+    const prefixed = `${mode}: ${text}`;
+    const tokens = (await ex.tokenizer(prefixed)).input_ids.data.length;
+    const output = await ex(prefixed, { pooling: "mean", normalize: true });
     return { embedding: Array.from(output.data), tokens };
   }
 }

@@ -12,8 +12,8 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "build:ingest": "esbuild src/ingest/run.ts --bundle --platform=node --format=cjs --outfile=dist/ingest.js --external:onnxruntime-node --external:@huggingface/transformers",
-    "ingest": "node dist/ingest.js"
+    "build:cli": "esbuild src/cli.ts --bundle --platform=node --format=cjs --outfile=dist/cli.js --external:onnxruntime-node --external:@huggingface/transformers",
+    "cli": "node dist/cli.js"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.3.0",

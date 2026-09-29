@@ -22,7 +22,7 @@ const REGULATIONS = [
   },
 ];
 
-async function main() {
+export async function ingest() {
   const embedder = new TransformersEmbedder();
 
   for (const reg of REGULATIONS) {
@@ -36,8 +36,19 @@ async function main() {
       where: (d, { eq }) => eq(d.contentHash, contentHash),
     });
     if (existing) {
-      console.log(`skip ${reg.title} (already ingested)`);
-      continue;
+      const [{ count }] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(chunks)
+        .where(sql`${chunks.documentId} = ${existing.id}`);
+      const expected = chunked.reduce((n, c) => n + c.chunks.length, 0);
+      if (count === expected) {
+        console.log(`skip ${reg.title} (already ingested, ${count} chunks)`);
+        continue;
+      }
+      // Partial ingest (e.g. interrupted run): document row committed, chunks
+      // missing. Chunked content differs from what's stored, so drop and redo.
+      console.log(`redo ${reg.title} (found ${count}/${expected} chunks)`);
+      await db.delete(documents).where(sql`${documents.id} = ${existing.id}`);
     }
 
     const [doc] = await db
@@ -70,8 +81,3 @@ async function main() {
     );
   }
 }
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
