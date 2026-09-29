@@ -28,7 +28,7 @@
   },
   "overrides": [
     {
-      "includes": ["drizzle/**"],
+      "includes": ["drizzle/**", "data/**"],
       "formatter": { "enabled": false },
       "linter": { "enabled": false }
     }

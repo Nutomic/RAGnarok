@@ -14,6 +14,7 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.3",
     "next": "16.3.7",
     "pg": "^8.23.0",
@@ -33,6 +34,7 @@
     "drizzle-kit": "^0.31.11",
     "jsdom": "^30.1.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.2"
   }
