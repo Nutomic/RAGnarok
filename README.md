@@ -8,3 +8,12 @@ npm dev
 ```
 
 Open http://localhost:3000.
+
+Full stack (app + Postgres 17 pgvector + Langfuse):
+
+```bash
+cp .env.example .env   # fill in secrets
+docker compose up -d
+```
+
+App on http://localhost:3000. Langfuse dashboard on http://localhost:3001.

@@ -1,0 +1,20 @@
+# deps
+node_modules
+.next
+.git
+
+# docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# env
+.env
+.env.local
+
+# misc
+*.md
+.gitignore
+biome.json
+tsconfig.json
+next-env.d.ts
