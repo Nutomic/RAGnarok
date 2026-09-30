@@ -41,7 +41,10 @@ echo "==> running ingest"
 docker compose run --rm app npm run cli -- ingest
 
 echo "==> running retrieval check"
-docker compose run --rm app npm run cli -- check-retrieve
+docker compose run --rm app npm run cli -- check-retrieval
+
+echo "==> running retrieval eval (tier 1 gate)"
+docker compose run --rm app npm run cli -- evaluate-retrieval
 
 echo "==> verifying db content"
 docs=$(docker compose exec -T db psql -U ragnarok -d ragnarok -tAc "SELECT count(*) FROM documents")

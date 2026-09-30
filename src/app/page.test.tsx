@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { MAX_PROMPT_CHARS } from "../lib/limits";
+import { MAX_PROMPT_CHARS } from "./api/chat/route";
 import Home from "./page";
 
 // useChat needs a fetch transport; the UI test only asserts static structure.

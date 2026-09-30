@@ -5,8 +5,11 @@ import type { UIMessage } from "ai";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { MAX_PROMPT_CHARS } from "../lib/limits";
 import type { Citation } from "../retrieve/citations";
+
+// Must match MAX_PROMPT_CHARS in api/chat/route.ts; importing the route from
+// the client would pull the Mistral provider into the browser bundle.
+const MAX_PROMPT_CHARS = 200;
 
 const EXAMPLE_QUESTIONS = [
   "Wie lange darf ein Unternehmen personenbezogene Daten speichern?",

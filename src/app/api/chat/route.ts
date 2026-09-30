@@ -10,9 +10,11 @@ import {
 import { db } from "../../../db";
 import { auditLogs, demoProfiles } from "../../../db/schema";
 import { TransformersEmbedder } from "../../../ingest/embed";
-import { MAX_PROMPT_CHARS } from "../../../lib/limits";
 import { chunkCitation } from "../../../retrieve/citations";
 import { retrieveHybrid } from "../../../retrieve/retrieve";
+
+// Reject oversized prompts before LLM call
+export const MAX_PROMPT_CHARS = 200;
 
 const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY || undefined,

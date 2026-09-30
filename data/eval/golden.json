@@ -1,0 +1,296 @@
+[
+  {
+    "q": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 5
+    }
+  },
+  {
+    "q": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 6
+    }
+  },
+  {
+    "q": "Wie schnell muss ein Datenschutzvorfall gemeldet werden?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 33
+    }
+  },
+  {
+    "q": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 37
+    }
+  },
+  {
+    "q": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 44
+    }
+  },
+  {
+    "q": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 17
+    }
+  },
+  {
+    "q": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 32
+    }
+  },
+  {
+    "q": "Welche Geldbußen drohen bei Verstößen gegen die DSGVO?",
+    "type": "factual",
+    "doc": "32016R0679",
+    "section": {
+      "type": "article",
+      "number": 83
+    }
+  },
+  {
+    "q": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 6
+    }
+  },
+  {
+    "q": "Welche KI-Praktiken sind nach der KI-Verordnung verboten?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 5
+    }
+  },
+  {
+    "q": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 26
+    }
+  },
+  {
+    "q": "Was verlangt die KI-Verordnung zur menschlichen Aufsicht von Hochrisiko-KI-Systemen?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 14
+    }
+  },
+  {
+    "q": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 50
+    }
+  },
+  {
+    "q": "Welche Anforderungen stellt die KI-Verordnung an die Datenqualität von Hochrisiko-KI-Systemen?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 10
+    }
+  },
+  {
+    "q": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+    "type": "factual",
+    "doc": "32024R1689",
+    "section": {
+      "type": "article",
+      "number": 4
+    }
+  },
+  {
+    "q": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+    "type": "cross-article",
+    "doc": "32016R0679",
+    "sections": [
+      {
+        "type": "article",
+        "number": 8
+      },
+      {
+        "type": "recital",
+        "number": 38
+      }
+    ]
+  },
+  {
+    "q": "Wann ist eine Datenschutzfolgeabschätzung durchzuführen?",
+    "type": "cross-article",
+    "doc": "32016R0679",
+    "sections": [
+      {
+        "type": "article",
+        "number": 35
+      },
+      {
+        "type": "recital",
+        "number": 84
+      }
+    ]
+  },
+  {
+    "q": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+    "type": "cross-article",
+    "doc": "32016R0679",
+    "sections": [
+      {
+        "type": "article",
+        "number": 28
+      },
+      {
+        "type": "article",
+        "number": 29
+      }
+    ]
+  },
+  {
+    "q": "Was muss bei einem Verstoß gegen den Datenschutz passieren?",
+    "type": "cross-article",
+    "doc": "32016R0679",
+    "sections": [
+      {
+        "type": "article",
+        "number": 33
+      },
+      {
+        "type": "article",
+        "number": 34
+      }
+    ]
+  },
+  {
+    "q": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+    "type": "cross-article",
+    "doc": "32024R1689",
+    "sections": [
+      {
+        "type": "article",
+        "number": 9
+      },
+      {
+        "type": "article",
+        "number": 10
+      },
+      {
+        "type": "article",
+        "number": 15
+      }
+    ]
+  },
+  {
+    "q": "Welche Pflichten haben Anbieter von Hochrisiko-KI-Systemen über den gesamten Lebenszyklus?",
+    "type": "cross-article",
+    "doc": "32024R1689",
+    "sections": [
+      {
+        "type": "article",
+        "number": 16
+      },
+      {
+        "type": "article",
+        "number": 17
+      }
+    ]
+  },
+  {
+    "q": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+    "type": "cross-article",
+    "doc": "32024R1689",
+    "sections": [
+      {
+        "type": "article",
+        "number": 13
+      },
+      {
+        "type": "article",
+        "number": 50
+      }
+    ]
+  },
+  {
+    "q": "Welche Pflichten gelten für Anbieter von General-Purpose-KI-Modellen?",
+    "type": "cross-article",
+    "doc": "32024R1689",
+    "sections": [
+      {
+        "type": "article",
+        "number": 53
+      },
+      {
+        "type": "article",
+        "number": 55
+      }
+    ]
+  },
+  {
+    "q": "Wie beantrage ich einen Reisepass beim Bürgeramt?",
+    "type": "abstention",
+    "kind": "Reisepass"
+  },
+  {
+    "q": "Bis wann muss ich meine Steuererklärung abgeben?",
+    "type": "abstention",
+    "kind": "Steuererklärung"
+  },
+  {
+    "q": "Wie viel Urlaub steht mir gesetzlich zu?",
+    "type": "abstention",
+    "kind": "Urlaubsanspruch"
+  },
+  {
+    "q": "Wer hat gestern die Bundesliga Spiele gewonnen?",
+    "type": "abstention",
+    "kind": "Bundesliga"
+  },
+  {
+    "q": "Muss ich meinen Hund beim Amt anmelden?",
+    "type": "abstention",
+    "kind": "Hundesteuer"
+  },
+  {
+    "q": "Gibt es noch eine Förderung für Elektroautos?",
+    "type": "abstention",
+    "kind": "Elektroauto"
+  },
+  {
+    "q": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
+    "type": "abstention",
+    "kind": "Kinderbetreuung"
+  }
+]
