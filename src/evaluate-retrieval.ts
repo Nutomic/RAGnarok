@@ -116,6 +116,8 @@ export async function evaluateRetrieval() {
   // Abstention questions: the corpus must not surface their subject matter.
   // Generation-side refusal is measured in tier 2.
   for (const q of abstentions) {
+    const { kind } = q;
+    if (!kind) continue;
     const { embedding } = await embedder.embed(q.q, "query");
     const retrieved = await retrieveHybrid(q.q, embedding, {
       k: 5,
@@ -123,13 +125,11 @@ export async function evaluateRetrieval() {
     });
     // chunks whose text mentions the question's subject: retrieval pulled
     // off-topic material instead of the corpus staying silent
-    const polluted = retrieved.filter((c) =>
-      c.content.toLowerCase().includes(q.kind!.toLowerCase()),
-    );
+    const polluted = retrieved.filter((c) => c.content.toLowerCase().includes(kind.toLowerCase()));
     if (polluted.length > 0) {
       failed = true;
       console.log(
-        `abstention FAIL: "${q.q}" retrieved ${polluted.length} chunks containing "${q.kind}"`,
+        `abstention FAIL: "${q.q}" retrieved ${polluted.length} chunks containing "${kind}"`,
       );
     }
   }

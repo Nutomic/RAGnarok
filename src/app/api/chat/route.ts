@@ -8,7 +8,7 @@ import {
   type UIMessage,
 } from "ai";
 import { db } from "../../../db";
-import { auditLogs, demoProfiles } from "../../../db/schema";
+import { auditLogs } from "../../../db/schema";
 import { TransformersEmbedder } from "../../../ingest/embed";
 import { chunkCitation } from "../../../retrieve/citations";
 import { retrieveHybrid } from "../../../retrieve/retrieve";

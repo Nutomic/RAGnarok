@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# Runs before every commit via core.hooksPath (set by npm run prepare).
+npx biome format . 2>&1 | grep -q "Formatter would have printed" && {
+  npx biome format --write . >/dev/null
+  echo "commit rejected: formatter fixed files, restage and recommit"
+  exit 1
+}
+npx biome check . --error-on-warnings || {
+  echo "commit rejected: biome check failed (npx biome check --write to fix)"
+  exit 1
+}

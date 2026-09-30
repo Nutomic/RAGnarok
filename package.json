@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check . --error-on-warnings",
     "format": "biome format --write .",
+    "prepare": "git config core.hooksPath scripts/hooks",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

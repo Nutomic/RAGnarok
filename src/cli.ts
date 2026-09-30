@@ -1,5 +1,5 @@
-import { ingest } from "./ingest/run";
 import { evaluateRetrieval } from "./evaluate-retrieval";
+import { ingest } from "./ingest/run";
 import { checkRetrieve } from "./retrieve/check";
 
 function usage(): never {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
 
 const sans = Instrument_Sans({
