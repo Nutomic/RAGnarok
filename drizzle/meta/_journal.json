@@ -15,6 +15,13 @@
       "when": 1790714695675,
       "tag": "0001_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790755643534,
+      "tag": "0002_section-citations",
+      "breakpoints": true
     }
   ]
 }

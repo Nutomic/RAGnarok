@@ -50,6 +50,7 @@ export const documents = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     title: varchar("title", { length: 500 }).notNull(),
     sourceUrl: text("source_url"),
+    celex: varchar("celex", { length: 32 }),
     contentHash: varchar("content_hash", { length: 64 }).notNull(),
     visibility: visibilityEnum("visibility").notNull().default("public"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
@@ -67,6 +68,12 @@ export const chunks = pgTable(
       .references(() => documents.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
     position: integer("position").notNull(),
+    // Citation metadata: article/recital identifier and the EUR-Lex HTML anchor
+    // ("art_32", "rct_5") for the deep link.
+    sectionType: varchar("section_type", { length: 16 }).notNull(),
+    sectionNumber: integer("section_number").notNull(),
+    sectionTitle: varchar("section_title", { length: 500 }).notNull(),
+    anchor: varchar("anchor", { length: 64 }),
     embedding: vector("embedding"),
     tsvector: tsvector("tsvector"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

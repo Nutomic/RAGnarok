@@ -9,6 +9,12 @@ export interface RetrievedChunk {
   score: number;
   vecRank: number | null;
   ftsRank: number | null;
+  sectionType: string;
+  sectionNumber: number;
+  sectionTitle: string;
+  anchor: string | null;
+  // EUR-Lex document id ("32016R0679"), joined from documents; builds citation URLs.
+  celex: string | null;
 }
 
 export interface RetrieveOptions {
@@ -56,6 +62,11 @@ export async function retrieveHybrid(
     score: number;
     vec_rank: number | null;
     fts_rank: number | null;
+    section_type: string;
+    section_number: number;
+    section_title: string;
+    anchor: string | null;
+    celex: string | null;
   }>(sql`
     WITH vec AS (
       SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> ${vecLiteral}::vector) AS rank
@@ -77,10 +88,16 @@ export async function retrieveHybrid(
       c.position,
       COALESCE(1.0 / (60 + vec.rank), 0) + COALESCE(1.0 / (60 + fts.rank), 0) AS score,
       vec.rank AS vec_rank,
-      fts.rank AS fts_rank
+      fts.rank AS fts_rank,
+      c.section_type,
+      c.section_number,
+      c.section_title,
+      c.anchor,
+      d.celex
     FROM chunks c
     LEFT JOIN vec ON vec.id = c.id
     LEFT JOIN fts ON fts.id = c.id
+    JOIN documents d ON d.id = c.document_id
     WHERE vec.id IS NOT NULL OR fts.id IS NOT NULL
     ORDER BY score DESC
     LIMIT ${k}
@@ -94,5 +111,10 @@ export async function retrieveHybrid(
     score: Number(r.score),
     vecRank: r.vec_rank === null ? null : Number(r.vec_rank),
     ftsRank: r.fts_rank === null ? null : Number(r.fts_rank),
+    sectionType: r.section_type,
+    sectionNumber: Number(r.section_number),
+    sectionTitle: r.section_title,
+    anchor: r.anchor,
+    celex: r.celex,
   }));
 }

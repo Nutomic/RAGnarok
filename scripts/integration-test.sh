@@ -45,4 +45,13 @@ echo "documents=$docs chunks=$chunks"
 [ "$docs" = "2" ] || { echo "expected 2 documents, got $docs"; exit 1; }
 [ "$chunks" = "827" ] || { echo "expected 827 chunks, got $chunks"; exit 1; }
 
+echo "==> checking chat api"
+chat=$(curl -sS -N -X POST http://127.0.0.1:3000/api/chat \
+  -H 'content-type: application/json' \
+  -d '{"messages":[{"id":"q1","role":"user","parts":[{"type":"text","text":"Wie lange darf ein Unternehmen personenbezogene Daten speichern?"}]}]}')
+echo "$chat" | grep -q '"type":"data-sources"' || { echo "chat api: no data-sources part"; exit 1; }
+echo "$chat" | grep -q '#art_5' || { echo "chat api: no EUR-Lex anchor for Artikel 5"; exit 1; }
+echo "$chat" | grep -q '"type":"text-delta"' || { echo "chat api: no streamed text"; exit 1; }
+echo "$chat" | grep -q '"type":"finish"' || { echo "chat api: stream did not finish"; exit 1; }
+
 echo "==> integration test passed"

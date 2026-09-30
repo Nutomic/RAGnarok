@@ -13,12 +13,14 @@ const REGULATIONS = [
     title: "DS-GVO (Verordnung (EU) 2016/679)",
     visibility: "compliance" as const,
     sourceUrl: "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+    celex: "32016R0679",
   },
   {
     file: "data/eurlex/ai-act.html",
     title: "KI-Verordnung (Verordnung (EU) 2024/1689)",
     visibility: "public" as const,
     sourceUrl: "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+    celex: "32024R1689",
   },
 ];
 
@@ -56,6 +58,7 @@ export async function ingest() {
       .values({
         title: reg.title,
         sourceUrl: reg.sourceUrl,
+        celex: reg.celex,
         contentHash,
         visibility: reg.visibility,
       })
@@ -71,6 +74,10 @@ export async function ingest() {
           documentId: doc.id,
           content: chunk.content,
           position: position++,
+          sectionType: c.section.type,
+          sectionNumber: c.section.number,
+          sectionTitle: c.section.title,
+          anchor: c.section.anchor,
           embedding,
           tsvector: sql`to_tsvector('german', ${chunk.content})`,
         });

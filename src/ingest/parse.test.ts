@@ -45,4 +45,17 @@ describe("parseEurlex", () => {
     expect(recitals.map((r) => r.number)).toEqual(Array.from({ length: 173 }, (_, i) => i + 1));
     expect(articles.map((a) => a.number)).toEqual(Array.from({ length: 99 }, (_, i) => i + 1));
   });
+
+  it("captures the EUR-Lex anchor for every section", () => {
+    const sections = parseEurlex(dsgvo);
+    expect(sections.find((s) => s.type === "article" && s.number === 32)).toMatchObject({
+      anchor: "art_32",
+    });
+    expect(sections.find((s) => s.type === "recital" && s.number === 5)).toMatchObject({
+      anchor: "rct_5",
+    });
+    for (const s of sections) {
+      expect(s.anchor).toMatch(/^(art|rct)_\d+$/);
+    }
+  });
 });
