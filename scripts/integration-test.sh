@@ -13,10 +13,7 @@ fi
 
 # CI provides the generation key via env var
 if [ -n "${MISTRAL_API_KEY:-}" ]; then
-  echo "mistral key: present in script env (${#MISTRAL_API_KEY} chars)"
   sed -i "s|^MISTRAL_API_KEY=.*|MISTRAL_API_KEY=${MISTRAL_API_KEY}|" .env
-else
-  echo "mistral key: MISSING in script env"
 fi
 
 echo "==> building app image"
@@ -54,21 +51,12 @@ echo "documents=$docs chunks=$chunks"
 [ "$chunks" = "827" ] || { echo "expected 827 chunks, got $chunks"; exit 1; }
 
 echo "==> checking chat api"
-echo "mistral key in .env: $(grep -c '^MISTRAL_API_KEY=..' .env) lines filled"
-echo "mistral key in app container: $(docker compose exec -T app sh -c 'printenv MISTRAL_API_KEY | wc -c') bytes"
 chat=$(curl -sS -N -X POST http://127.0.0.1:3000/api/chat \
   -H 'content-type: application/json' \
   -d '{"messages":[{"id":"q1","role":"user","parts":[{"type":"text","text":"Wie lange darf ein Unternehmen personenbezogene Daten speichern?"}]}]}')
 echo "$chat" | grep -q '"type":"data-sources"' || { echo "chat api: no data-sources part"; exit 1; }
 echo "$chat" | grep -q '#art_5' || { echo "chat api: no EUR-Lex anchor for Artikel 5"; exit 1; }
-echo "$chat" | grep -q '"type":"text-delta"' || {
-  echo "chat api: no streamed text; stream head:"
-  echo "$chat" | head -c 500
-  echo
-  echo "app logs:"
-  docker compose logs app --tail 20
-  exit 1
-}
+echo "$chat" | grep -q '"type":"text-delta"' || { echo "chat api: no streamed text"; exit 1; }
 echo "$chat" | grep -q '"type":"finish"' || { echo "chat api: stream did not finish"; exit 1; }
 
 echo "==> integration test passed"

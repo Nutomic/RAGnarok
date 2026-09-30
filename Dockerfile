@@ -3,9 +3,8 @@
 FROM node:22-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
+# onnxruntime-web is the browser backend, we only need onnxruntime-node
 RUN npm ci && rm -rf node_modules/onnxruntime-web
-# onnxruntime-web is the browser/WebGPU backend; Node uses onnxruntime-node.
-# Dropping it saves ~140MB.
 
 FROM node:22-slim AS runner
 WORKDIR /app
