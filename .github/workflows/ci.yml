@@ -23,6 +23,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: check mistral secret
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+        run: |
+          if [ -n "$MISTRAL_API_KEY" ]; then
+            echo "secret present (${#MISTRAL_API_KEY} chars)"
+          else
+            echo "secret MISSING from secrets context"
+          fi
       - run: chmod +x scripts/integration-test.sh
       - run: ./scripts/integration-test.sh
         env:
