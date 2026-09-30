@@ -11,6 +11,11 @@ if [ ! -f .env ]; then
   sed -i "s|^LANGFUSE_ENCRYPTION_KEY=.*|LANGFUSE_ENCRYPTION_KEY=$(openssl rand -hex 32)|" .env
 fi
 
+# CI provides the generation key via env var
+if [ -n "${MISTRAL_API_KEY:-}" ]; then
+  sed -i "s|^MISTRAL_API_KEY=.*|MISTRAL_API_KEY=${MISTRAL_API_KEY}|" .env
+fi
+
 echo "==> building app image"
 docker compose build app
 
