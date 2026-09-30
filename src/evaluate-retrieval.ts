@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { TransformersEmbedder } from "./ingest/embed";
 import { retrieveHybrid } from "./retrieve/retrieve";
@@ -134,4 +134,16 @@ export async function evaluateRetrieval() {
     }
   }
   if (failed) process.exit(1);
+
+  // Merge into the shared results file; tier 2 adds its own section.
+  const path = join(process.cwd(), "data/eval/results.json");
+  let results: Record<string, unknown> = {};
+  try {
+    results = JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    // first eval run has no results yet
+  }
+  results.timestamp = new Date().toISOString();
+  results.retrieval = metrics;
+  writeFileSync(path, `${JSON.stringify(results, null, 2)}\n`);
 }

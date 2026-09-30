@@ -39,6 +39,9 @@ docker compose run --rm app npm run cli -- ingest
 echo "==> running generation eval (tier 2)"
 # Bind mount: the run container is ephemeral, results land directly in the repo.
 docker compose run --rm -v "$(pwd)/data/eval:/app/data/eval" app npm run cli -- evaluate-generation | tee /tmp/eval-output.log
+# refresh the README table + graph from results.json (retrieval metrics merge
+# in when evaluate-retrieval runs)
+docker compose run --rm -v "$(pwd)/data/eval:/app/data/eval" app npm run cli -- eval-report
 
 echo "==> generation eval done"
 # Judge metrics are noisy; a LOW result annotates but never fails.

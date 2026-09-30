@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-30T13:36:06.941Z",
+  "timestamp": "2026-09-30T13:41:46.805Z",
   "sha": "unknown",
   "model": "ministral-14b-latest",
   "judge": "zai-org/GLM-5.3-Flash",
@@ -211,5 +211,10 @@
       "question": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
       "refused": true
     }
-  ]
+  ],
+  "retrieval": {
+    "hit_at_5": 0.6956521739130435,
+    "mrr_at_5": 0.46376811594202894,
+    "context_recall": 0.8695652173913043
+  }
 }
