@@ -8,7 +8,7 @@ interface ExpectedSection {
   number: number;
 }
 
-interface GoldenQuestion {
+export interface GoldenQuestion {
   q: string;
   type: "factual" | "cross-article" | "abstention";
   // CELEX id; absent for abstention questions

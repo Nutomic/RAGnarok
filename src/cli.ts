@@ -1,10 +1,11 @@
+import { evaluateGeneration } from "./evaluate-generation";
 import { evaluateRetrieval } from "./evaluate-retrieval";
 import { ingest } from "./ingest/run";
 import { checkRetrieve } from "./retrieve/check";
 
 function usage(): never {
   console.error(`usage: node cli.js <command>
-commands: ingest, check-retrieval, evaluate-retrieval, evaluate-generation`);
+commands: ingest, check-retrieval, evaluate-retrieval`);
   process.exit(1);
 }
 
@@ -17,8 +18,7 @@ async function main() {
   } else if (command === "evaluate-retrieval") {
     await evaluateRetrieval();
   } else if (command === "evaluate-generation") {
-    console.error("not implemented yet (tier 2)");
-    process.exit(1);
+    await evaluateGeneration();
   } else {
     usage();
   }
