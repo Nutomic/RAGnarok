@@ -4,6 +4,10 @@ export interface Citation {
   chunkId: string;
   label: string;
   url: string;
+  // Rank within the vector and FTS branches before RRF fusion; null = not hit.
+  vecRank: number | null;
+  ftsRank: number | null;
+  excerpt: string;
 }
 
 // Deep links use the EUR-Lex HTML view; its `art_N`/`rct_N` anchors match the
@@ -22,5 +26,8 @@ export function chunkCitation(chunk: RetrievedChunk): Citation {
     chunkId: chunk.id,
     label,
     url: chunk.celex ? citationUrl(chunk.celex, chunk.anchor) : "",
+    vecRank: chunk.vecRank,
+    ftsRank: chunk.ftsRank,
+    excerpt: chunk.content.slice(0, 160),
   };
 }

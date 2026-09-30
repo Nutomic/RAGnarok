@@ -10,6 +10,7 @@ import {
 import { db } from "../../../db";
 import { auditLogs } from "../../../db/schema";
 import { TransformersEmbedder } from "../../../ingest/embed";
+import { MAX_PROMPT_CHARS } from "../../../lib/limits";
 import { chunkCitation } from "../../../retrieve/citations";
 import { retrieveHybrid } from "../../../retrieve/retrieve";
 
@@ -31,6 +32,16 @@ export async function POST(req: Request) {
   const { messages } = (await req.json()) as { messages: UIMessage[] };
   const prompt = userPrompt(messages);
 
+  if (!prompt.trim()) {
+    return Response.json({ error: "Leere Anfrage." }, { status: 400 });
+  }
+  if (prompt.length > MAX_PROMPT_CHARS) {
+    return Response.json(
+      { error: `Anfrage zu lang (max. ${MAX_PROMPT_CHARS} Zeichen).` },
+      { status: 400 },
+    );
+  }
+
   const embedder = new TransformersEmbedder();
   const { embedding } = await embedder.embed(prompt, "query");
   const retrieved = await retrieveHybrid(prompt, embedding, { k: 5 });
@@ -40,15 +51,19 @@ export async function POST(req: Request) {
     .map((c, i) => `[${i + 1}] ${c.sectionTitle}: ${c.content}`)
     .join("\n\n");
 
+  // Only the last few exchanges go to the model: each question retrieves its own
+  // chunks, history is only needed to resolve follow-ups.
+  const HISTORY_MESSAGES = 6;
+
   const result = streamText({
     model: mistral.languageModel(process.env.MISTRAL_MODEL ?? "mistral-small-latest"),
-    system: `Du bist ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworte auf Deutsch.
-Beantworte die Frage nur mit den unten angegebenen Quelltexten und zitiere jede Aussage mit [n], wobei n die Nummer der Quelle ist.
-Wenn die Quellen die Frage nicht beantworten können, sag das ohne jede Erfindung.
+    system: `Sie sind ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworten Sie auf Deutsch, mit förmlicher Anrede (Sie/Ihre).
+Beantworten Sie die Frage nur mit den unten angegebenen Quelltexten und zitieren Sie jede Aussage mit [n], wobei n die Nummer der Quelle ist.
+Wenn die Quellen die Frage nicht beantworten können, sagen Sie das ohne jede Erfindung.
 
 Quellen:
 ${context}`,
-    messages: await convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages.slice(-HISTORY_MESSAGES)),
     onError: ({ error }) => {
       console.error(error);
       return "Generierung fehlgeschlagen.";

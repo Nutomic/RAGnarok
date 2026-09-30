@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+
+const sans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const serif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-serif",
+});
 
 export const metadata: Metadata = {
   title: "RAGnarok",
@@ -10,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="de" className="h-full antialiased">
+    <html lang="de" className={`h-full antialiased ${sans.variable} ${serif.variable}`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
