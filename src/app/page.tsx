@@ -10,9 +10,28 @@ import type { Citation } from "../retrieve/citations";
 
 const EXAMPLE_QUESTIONS = [
   "Wie lange darf ein Unternehmen personenbezogene Daten speichern?",
-  "Wer muss einen Datenschutzbeauftragten benennen?",
+  "Wann gilt ein KI-System als Hochrisiko-KI-System?",
   "Wie beantrage ich einen Reisepass beim Bürgeramt?",
 ];
+
+// Seeded in drizzle/0003; the UI switch only changes what retrieval may see.
+// Toggle and submit button share the profile accent.
+const PROFILES = [
+  {
+    id: "00000000-0000-0000-0000-000000000001",
+    name: "Standard",
+    hint: "Sieht nur die KI-Verordnung",
+    accent: "bg-emerald-700 text-white hover:bg-emerald-800",
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000002",
+    name: "Compliance",
+    hint: "Sieht DS-GVO und KI-Verordnung",
+    accent: "bg-yellow-500 text-stone-900 hover:bg-yellow-600",
+  },
+] as const;
+
+const profileAccent = (id: string) => PROFILES.find((p) => p.id === id)?.accent ?? "";
 
 function sourcesOf(message: UIMessage): Citation[] {
   const part = message.parts.find((p) => p.type === "data-sources");
@@ -62,6 +81,7 @@ function Loading() {
 export default function Home() {
   const { messages, sendMessage, status, error, stop } = useChat();
   const [input, setInput] = useState("");
+  const [profileId, setProfileId] = useState<string>(PROFILES[0].id);
   // Sources of the shown answer, held in state so a new question clears the
   // panel immediately and it fills again when the new answer's parts arrive.
   const [sources, setSources] = useState<Citation[]>([]);
@@ -83,16 +103,46 @@ export default function Home() {
     if (!text.trim() || text.length > MAX_PROMPT_CHARS || busy) return;
     setInput("");
     setSources([]);
-    sendMessage({ text });
+    sendMessage({ text }, { body: { profileId } });
   }
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="border-b border-stone-200 px-6 py-3 dark:border-stone-800">
-        <h1 className="font-serif text-xl tracking-tight">RAGnarok</h1>
-        <p className="text-xs text-stone-500 dark:text-stone-400">
-          Frag DS-GVO und KI-Verordnung. Jede Antwort mit Quelle.
-        </p>
+      <header className="flex flex-col gap-3 border-b border-stone-200 px-4 py-3 sm:px-6 md:flex-row md:items-center md:justify-between dark:border-stone-800">
+        <div>
+          <h1 className="font-serif text-xl tracking-tight">RAGnarok</h1>
+          <p className="text-sm text-stone-600 dark:text-stone-300">
+            Frag DS-GVO und KI-Verordnung. Jede Antwort mit Quelle.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-1 md:items-end">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-stone-500 dark:text-stone-400">Profil</span>
+            <div
+              title="Demo-Profile statt Login: schaltet, welche Dokumente die Suche sieht."
+              className="flex items-center gap-1 rounded-lg border border-stone-200 p-1 text-sm dark:border-stone-800"
+            >
+              {PROFILES.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  title={p.hint}
+                  onClick={() => setProfileId(p.id)}
+                  className={
+                    profileId === p.id
+                      ? `rounded-md px-2.5 py-1 ${p.accent}`
+                      : "rounded-md px-2.5 py-1 text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
+                  }
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <span className="text-[13px] text-stone-600 dark:text-stone-300">
+            {PROFILES.find((p) => p.id === profileId)?.hint}
+          </span>
+        </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 p-4">
@@ -159,7 +209,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={tooLong || !input.trim()}
-                  className="rounded-lg bg-emerald-700 px-3 py-1.5 text-sm text-white hover:bg-emerald-800 disabled:opacity-40"
+                  className={`rounded-lg px-3 py-1.5 text-sm disabled:opacity-40 ${profileAccent(profileId)}`}
                 >
                   Fragen stellen
                 </button>

@@ -21,7 +21,7 @@ describe("Home", () => {
     render(<Home />);
     expect(screen.getByPlaceholderText("Frage stellen")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Fragen stellen" })).toBeTruthy();
-    expect(screen.getAllByRole("button")).toHaveLength(4); // 3 chips + submit
+    expect(screen.getAllByRole("button")).toHaveLength(6); // 3 chips + 2 profile buttons + submit
     expect(screen.getByText(/Quellen/)).toBeTruthy();
   });
 

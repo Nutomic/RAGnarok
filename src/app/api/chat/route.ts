@@ -8,7 +8,7 @@ import {
   type UIMessage,
 } from "ai";
 import { db } from "../../../db";
-import { auditLogs } from "../../../db/schema";
+import { auditLogs, demoProfiles } from "../../../db/schema";
 import { TransformersEmbedder } from "../../../ingest/embed";
 import { MAX_PROMPT_CHARS } from "../../../lib/limits";
 import { chunkCitation } from "../../../retrieve/citations";
@@ -29,7 +29,10 @@ function userPrompt(messages: UIMessage[]): string {
 }
 
 export async function POST(req: Request) {
-  const { messages } = (await req.json()) as { messages: UIMessage[] };
+  const { messages, profileId } = (await req.json()) as {
+    messages: UIMessage[];
+    profileId?: string;
+  };
   const prompt = userPrompt(messages);
 
   if (!prompt.trim()) {
@@ -42,9 +45,24 @@ export async function POST(req: Request) {
     );
   }
 
+  // Demo profiles replace auth: visibility is enforced in the retrieval SQL.
+  // Without a profile id the default (Standard, public-only) profile applies.
+  const profile = profileId
+    ? await db.query.demoProfiles.findFirst({
+        where: (p, { eq }) => eq(p.id, profileId),
+      })
+    : undefined;
+  if (profileId && !profile) {
+    return Response.json({ error: "Unbekanntes Profil." }, { status: 400 });
+  }
+  const profileVisibility = profile?.visibility ?? "public";
+
   const embedder = new TransformersEmbedder();
   const { embedding } = await embedder.embed(prompt, "query");
-  const retrieved = await retrieveHybrid(prompt, embedding, { k: 5 });
+  const retrieved = await retrieveHybrid(prompt, embedding, {
+    k: 5,
+    profileVisibility,
+  });
   const citations = retrieved.map(chunkCitation);
 
   const context = retrieved
@@ -55,11 +73,19 @@ export async function POST(req: Request) {
   // chunks, history is only needed to resolve follow-ups.
   const HISTORY_MESSAGES = 6;
 
+  // Standard profile: make the missing DS-GVO permission visible in the answer
+  // instead of silently answering from the remaining corpus.
+  const permissionNote =
+    profileVisibility === "public"
+      ? "Das aktive Profil sieht nur die KI-Verordnung. Bezieht sich eine Frage eindeutig auf die DS-GVO, weise darauf hin, dass diese Dokumente für das Profil nicht freigegeben sind, und nenne, dass sich das Profil über den Schalter oben rechts auf Compliance umstellen lässt."
+      : "";
+
   const result = streamText({
     model: mistral.languageModel(process.env.MISTRAL_MODEL ?? "mistral-small-latest"),
     system: `Sie sind ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworten Sie auf Deutsch, mit förmlicher Anrede (Sie/Ihre).
 Beantworten Sie die Frage nur mit den unten angegebenen Quelltexten und zitieren Sie jede Aussage mit [n], wobei n die Nummer der Quelle ist.
 Wenn die Quellen die Frage nicht beantworten können, sagen Sie das ohne jede Erfindung.
+${permissionNote}
 
 Quellen:
 ${context}`,
@@ -79,6 +105,7 @@ ${context}`,
     },
     onEnd: async () => {
       await db.insert(auditLogs).values({
+        profileId: profile?.id ?? null,
         prompt,
         model: process.env.MISTRAL_MODEL ?? "ministral-14b-latest",
         chunkIds: retrieved.map((c) => c.id),

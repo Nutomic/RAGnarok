@@ -53,10 +53,17 @@ echo "documents=$docs chunks=$chunks"
 echo "==> checking chat api"
 chat=$(curl -sS -N -X POST http://127.0.0.1:3000/api/chat \
   -H 'content-type: application/json' \
-  -d '{"messages":[{"id":"q1","role":"user","parts":[{"type":"text","text":"Wie lange darf ein Unternehmen personenbezogene Daten speichern?"}]}]}')
+  -d '{"messages":[{"id":"q1","role":"user","parts":[{"type":"text","text":"Wie lange darf ein Unternehmen personenbezogene Daten speichern?"}]}],"profileId":"00000000-0000-0000-0000-000000000002"}')
 echo "$chat" | grep -q '"type":"data-sources"' || { echo "chat api: no data-sources part"; exit 1; }
 echo "$chat" | grep -q '#art_5' || { echo "chat api: no EUR-Lex anchor for Artikel 5"; exit 1; }
 echo "$chat" | grep -q '"type":"text-delta"' || { echo "chat api: no streamed text"; exit 1; }
 echo "$chat" | grep -q '"type":"finish"' || { echo "chat api: stream did not finish"; exit 1; }
+
+# Permission demo: the default profile (no profileId) must not see DS-GVO.
+chat_default=$(curl -sS -N -X POST http://127.0.0.1:3000/api/chat \
+  -H 'content-type: application/json' \
+  -d '{"messages":[{"id":"q2","role":"user","parts":[{"type":"text","text":"Wie lange darf ein Unternehmen personenbezogene Daten speichern?"}]}]}')
+echo "$chat_default" | grep -q '32016R0679' && { echo "permissions: default profile saw DS-GVO"; exit 1; }
+echo "permissions: default profile sees AI Act only"
 
 echo "==> integration test passed"

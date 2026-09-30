@@ -46,7 +46,11 @@ export async function checkRetrieve() {
   let failures = 0;
   for (const { q, kind, present } of QUERIES) {
     const { embedding } = await embedder.embed(q, "query");
-    const results = await retrieveHybrid(q, embedding, { k: 5 });
+    const results = await retrieveHybrid(q, embedding, {
+      k: 5,
+      // checks target DS-GVO chunks, only visible to the Compliance profile
+      profileVisibility: "compliance",
+    });
 
     console.log(`\nquery: "${q}"`);
     for (const r of results) {

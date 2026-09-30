@@ -22,6 +22,9 @@ export interface RetrieveOptions {
   candidates?: number;
   // number of final results
   k?: number;
+  // visibility of the querying profile; chunks of documents with other
+  // visibility (except "public") are filtered out in the SQL, never in the UI.
+  profileVisibility: "public" | "compliance";
 }
 
 // Hybrid search: pgvector cosine distance + tsvector german FTS, fused with
@@ -31,10 +34,11 @@ export interface RetrieveOptions {
 export async function retrieveHybrid(
   queryText: string,
   queryEmbedding: number[],
-  options: RetrieveOptions = {},
+  options: RetrieveOptions,
 ): Promise<RetrievedChunk[]> {
   const k = options.k ?? 5;
   const candidates = options.candidates ?? 50;
+  const profileVisibility = options.profileVisibility;
 
   const vecLiteral = `[${queryEmbedding.join(",")}]`;
 
@@ -98,7 +102,8 @@ export async function retrieveHybrid(
     LEFT JOIN vec ON vec.id = c.id
     LEFT JOIN fts ON fts.id = c.id
     JOIN documents d ON d.id = c.document_id
-    WHERE vec.id IS NOT NULL OR fts.id IS NOT NULL
+    WHERE (vec.id IS NOT NULL OR fts.id IS NOT NULL)
+      AND (d.visibility = 'public' OR d.visibility = ${profileVisibility})
     ORDER BY score DESC
     LIMIT ${k}
   `);
