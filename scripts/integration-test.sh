@@ -9,6 +9,10 @@ if [ ! -f .env ]; then
   sed -i "s|^LANGFUSE_NEXTAUTH_SECRET=.*|LANGFUSE_NEXTAUTH_SECRET=$(openssl rand -base64 32)|" .env
   sed -i "s|^LANGFUSE_SALT=.*|LANGFUSE_SALT=$(openssl rand -base64 32)|" .env
   sed -i "s|^LANGFUSE_ENCRYPTION_KEY=.*|LANGFUSE_ENCRYPTION_KEY=$(openssl rand -hex 32)|" .env
+  pk="pk-lf-$(cat /proc/sys/kernel/random/uuid)"
+  sk="sk-lf-$(cat /proc/sys/kernel/random/uuid)"
+  sed -i "s|^LANGFUSE_PUBLIC_KEY=.*|LANGFUSE_PUBLIC_KEY=$pk|" .env
+  sed -i "s|^LANGFUSE_SECRET_KEY=.*|LANGFUSE_SECRET_KEY=$sk|" .env
 fi
 
 # CI provides the generation key via env var
@@ -19,19 +23,12 @@ fi
 echo "==> building app image"
 docker compose build app
 
-echo "==> starting db"
-docker compose up -d db
-for _ in $(seq 1 30); do
-  if docker compose exec -T db pg_isready -U ragnarok -d ragnarok >/dev/null 2>&1; then
-    break
-  fi
-  sleep 2
-done
+echo "==> starting full stack"
+docker compose up -d
 
-echo "==> starting app (runs migrations on startup)"
-docker compose up -d app
-for _ in $(seq 1 30); do
-  if docker compose logs app 2>&1 | grep -q "migrations applied"; then
+echo "==> waiting for app (runs migrations and langfuse bootstrap on startup)"
+for _ in $(seq 1 60); do
+  if [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/stats)" = "200" ]; then
     break
   fi
   sleep 2
@@ -68,5 +65,17 @@ chat_default=$(curl -sS -N -X POST http://127.0.0.1:3000/api/chat \
   -d '{"messages":[{"id":"q2","role":"user","parts":[{"type":"text","text":"Wie lange darf ein Unternehmen personenbezogene Daten speichern?"}]}]}')
 echo "$chat_default" | grep -q '32016R0679' && { echo "permissions: default profile saw DS-GVO"; exit 1; }
 echo "permissions: default profile sees AI Act only"
+
+echo "==> checking stats api"
+sleep 5
+stats=$(curl -sS http://127.0.0.1:3000/api/stats)
+echo "$stats"
+echo "$stats" | grep -q '"available":true' || { echo "stats api: unavailable"; exit 1; }
+for field in answers retrievalSpans generations; do
+  count=$(echo "$stats" | sed "s/.*\"$field\":\([0-9]*\).*/\1/")
+  [ "$count" -ge 2 ] || { echo "stats api: expected >=2 $field, got $count"; exit 1; }
+done
+cost=$(echo "$stats" | sed 's/.*"avgCostEur":\([0-9.e-]*\).*/\1/')
+awk "BEGIN{exit !($cost > 0)}" || { echo "stats api: expected non-zero avgCostEur, got $cost"; exit 1; }
 
 echo "==> integration test passed"

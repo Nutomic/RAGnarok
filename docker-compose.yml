@@ -28,6 +28,17 @@ services:
       SALT: ${LANGFUSE_SALT}
       ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY}
       TELEMETRY_ENABLED: "false"
+      # Provision org, project and API key on startup; the app uses the same key.
+      LANGFUSE_INIT_ORG_ID: ragnarok
+      LANGFUSE_INIT_ORG_NAME: ragnarok
+      LANGFUSE_INIT_PROJECT_ID: ragnarok
+      LANGFUSE_INIT_PROJECT_NAME: RAGnarok
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+      # Optional UI login (owner of the provisioned org).
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:-}
+      LANGFUSE_INIT_USER_NAME: ${LANGFUSE_INIT_USER_EMAIL:-}
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-}
     ports:
       - "127.0.0.1:3001:3000"
 
@@ -38,8 +49,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      langfuse:
+        condition: service_started
     environment:
       DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/ragnarok
+      LANGFUSE_DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/langfuse
+      LANGFUSE_SALT: ${LANGFUSE_SALT}
+      LANGFUSE_HOST: http://langfuse:3000
+      # Keys shared with the Langfuse INIT_* provisioning above; generate like the
+      # other secrets, see .env.example.
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
     ports:
       - "127.0.0.1:3000:3000"
 
