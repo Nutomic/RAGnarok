@@ -8,10 +8,12 @@ import {
   type UIMessage,
 } from "ai";
 import { db } from "../../../db";
+import { hasChunks } from "../../../db/has-chunks";
+import { retrieveHybrid } from "../../../db/retrieve";
 import { auditLogs } from "../../../db/schema";
 import { TransformersEmbedder } from "../../../ingest/embed";
-import { chunkCitation } from "../../../retrieve/citations";
-import { retrieveHybrid } from "../../../retrieve/retrieve";
+import { costFor, getLangfuse } from "../../../langfuse";
+import { chunkCitation } from "../../citations";
 
 // Reject oversized prompts before LLM call
 export const MAX_PROMPT_CHARS = 200;
@@ -59,11 +61,44 @@ export async function POST(req: Request) {
   }
   const profileVisibility = profile?.visibility ?? "public";
 
+  // If no documents were ingested, fail loudly instead of silently hallucinating.
+  if (!(await hasChunks())) {
+    return Response.json(
+      {
+        error:
+          "Kein Dokument im Index. Ingest ausführen: docker compose run --rm app npm run cli -- ingest",
+      },
+      { status: 503 },
+    );
+  }
+
+  const langfuse = await getLangfuse();
+  const trace = langfuse?.trace({
+    name: "chat",
+    metadata: { profileId: profile?.id ?? null, profileVisibility, promptChars: prompt.length },
+  });
+
+  const retrievalStart = Date.now();
   const embedder = new TransformersEmbedder();
   const { embedding } = await embedder.embed(prompt, "query");
   const retrieved = await retrieveHybrid(prompt, embedding, {
     k: 5,
     profileVisibility,
+  });
+  const retrievalMs = Date.now() - retrievalStart;
+  trace?.span({
+    name: "retrieval",
+    startTime: new Date(retrievalStart),
+    endTime: new Date(),
+    input: prompt,
+    output: retrieved.map((c) => ({
+      id: c.id,
+      section: `${c.sectionType} ${c.sectionNumber}`,
+      vecRank: c.vecRank,
+      ftsRank: c.ftsRank,
+      score: Number(c.score.toFixed(6)),
+    })),
+    metadata: { k: 5, profileVisibility, retrievedCount: retrieved.length },
   });
   const citations = retrieved.map(chunkCitation);
 
@@ -82,16 +117,20 @@ export async function POST(req: Request) {
       ? "Das aktive Profil sieht nur die KI-Verordnung. Bezieht sich eine Frage eindeutig auf die DS-GVO, weise darauf hin, dass diese Dokumente für das Profil nicht freigegeben sind, und nenne, dass sich das Profil über den Schalter oben rechts auf Compliance umstellen lässt."
       : "";
 
-  const result = streamText({
-    model: mistral.languageModel(process.env.MISTRAL_MODEL ?? "mistral-small-latest"),
-    system: `Sie sind ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworten Sie auf Deutsch, mit förmlicher Anrede (Sie/Ihre).
+  const modelName = process.env.MISTRAL_MODEL ?? "mistral-small-latest";
+  const generationStart = Date.now();
+  const systemPrompt = `Sie sind ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworten Sie auf Deutsch, mit förmlicher Anrede (Sie/Ihre).
 Beantworten Sie die Frage nur mit den unten angegebenen Quelltexten und zitieren Sie jede Aussage mit [n], wobei n die Nummer der Quelle ist.
 Wenn die Quellen die Frage nicht beantworten können, sagen Sie das ohne jede Erfindung.
 ${permissionNote}
 
 Quellen:
-${context}`,
-    messages: await convertToModelMessages(messages.slice(-HISTORY_MESSAGES)),
+${context}`;
+  const historyMessages = await convertToModelMessages(messages.slice(-HISTORY_MESSAGES));
+  const result = streamText({
+    model: mistral.languageModel(modelName),
+    system: systemPrompt,
+    messages: historyMessages,
     onError: ({ error }) => {
       console.error(error);
       return "Generierung fehlgeschlagen.";
@@ -104,14 +143,49 @@ ${context}`,
     execute: async ({ writer }) => {
       writer.write({ type: "data-sources", data: citations });
       writer.merge(toUIMessageStream({ stream: result.stream }));
+      // usage/text resolve when the model stream finishes; then the answer's
+      // stats are appended as a data part for the UI.
+      const usage = await result.usage;
+      const text = await result.text;
+      const generationMs = Date.now() - generationStart;
+      const inputTokens = usage.inputTokens ?? 0;
+      const outputTokens = usage.outputTokens ?? 0;
+      const cost = costFor(modelName, inputTokens, outputTokens);
+      writer.write({
+        type: "data-stats",
+        data: {
+          retrievalMs,
+          generationMs,
+          inputTokens,
+          outputTokens,
+          costEur: cost,
+          model: modelName,
+        },
+      });
+      trace?.generation({
+        name: "answer",
+        model: modelName,
+        startTime: new Date(generationStart),
+        endTime: new Date(),
+        input: { system: systemPrompt, messages: historyMessages },
+        output: text,
+        usage: {
+          input: inputTokens,
+          output: outputTokens,
+          total: usage.totalTokens ?? inputTokens + outputTokens,
+          unit: "TOKENS",
+        },
+        metadata: { promptChars: prompt.length, profileVisibility },
+      });
     },
     onEnd: async () => {
       await db.insert(auditLogs).values({
         profileId: profile?.id ?? null,
         prompt,
-        model: process.env.MISTRAL_MODEL ?? "ministral-14b-latest",
+        model: modelName,
         chunkIds: retrieved.map((c) => c.id),
       });
+      await langfuse?.flushAsync();
     },
   });
 

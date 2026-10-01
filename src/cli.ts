@@ -1,8 +1,8 @@
-import { evalReport } from "./eval-report";
-import { evaluateGeneration } from "./evaluate-generation";
-import { evaluateRetrieval } from "./evaluate-retrieval";
+import { evalReport } from "./eval/eval-report";
+import { evaluateGeneration } from "./eval/evaluate-generation";
+import { evaluateRetrieval } from "./eval/evaluate-retrieval";
+import { checkRetrieve } from "./eval/retrieval-check";
 import { ingest } from "./ingest/run";
-import { checkRetrieve } from "./retrieve/check";
 
 function usage(): never {
   console.error(`usage: node cli.js <command>

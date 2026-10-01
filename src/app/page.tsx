@@ -5,7 +5,23 @@ import type { UIMessage } from "ai";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { Citation } from "../retrieve/citations";
+import type { Citation } from "./citations";
+
+interface AnswerStats {
+  retrievalMs: number;
+  generationMs: number;
+  inputTokens: number;
+  outputTokens: number;
+  costEur: number | null;
+  model: string;
+}
+
+interface ChatStats {
+  available: boolean;
+  answers?: number;
+  p95LatencyS?: number;
+  avgCostEur?: number;
+}
 
 // Must match MAX_PROMPT_CHARS in api/chat/route.ts; importing the route from
 // the client would pull the Mistral provider into the browser bundle.
@@ -39,6 +55,26 @@ const profileAccent = (id: string) => PROFILES.find((p) => p.id === id)?.accent 
 function sourcesOf(message: UIMessage): Citation[] {
   const part = message.parts.find((p) => p.type === "data-sources");
   return part && "data" in part ? (part.data as Citation[]) : [];
+}
+
+function statsOf(message: UIMessage): AnswerStats | null {
+  const part = message.parts.find((p) => p.type === "data-stats");
+  return part && "data" in part ? (part.data as AnswerStats) : null;
+}
+
+// Cost in EUR is tiny for this model class; show it in thousandths of a cent
+// so the number does not round to 0,00 €. Same value is visible in Langfuse.
+const fmtCost = (eur: number) =>
+  eur < 0.0001 ? `${(eur * 100000).toFixed(1)} m¢` : `${eur.toFixed(4)} €`;
+
+function StatsLine({ stats }: { stats: AnswerStats }) {
+  return (
+    <p className="mt-2 border-t border-stone-100 pt-2 font-mono text-xs text-stone-400 dark:border-stone-800">
+      {(stats.retrievalMs / 1000).toFixed(1)} s Suche · {(stats.generationMs / 1000).toFixed(1)} s
+      Antwort · Input {stats.inputTokens} / Output {stats.outputTokens} Tokens ·{" "}
+      {stats.costEur !== null ? fmtCost(stats.costEur) : stats.model}
+    </p>
+  );
 }
 
 // Markdown answer. Badges of the latest answer link to the sources panel;
@@ -89,6 +125,7 @@ export default function Home() {
   // panel immediately and it fills again when the new answer's parts arrive.
   const [sources, setSources] = useState<Citation[]>([]);
   const [answeredId, setAnsweredId] = useState<string | null>(null);
+  const [chatStats, setChatStats] = useState<ChatStats | null>(null);
   const busy = status === "submitted" || status === "streaming";
   const tooLong = input.length > MAX_PROMPT_CHARS;
   const lastAnswer = [...messages].reverse().find((m) => m.role === "assistant");
@@ -99,6 +136,11 @@ export default function Home() {
     if (s.length > 0) {
       setSources(s);
       setAnsweredId(lastAnswer.id);
+      // aggregate stats refresh after each answer; the route caches 30 s
+      fetch("/api/stats")
+        .then((r) => r.json())
+        .then((v: ChatStats) => setChatStats(v))
+        .catch(() => {});
     }
   }, [lastAnswer, answeredId]);
 
@@ -145,6 +187,17 @@ export default function Home() {
           <span className="text-[13px] text-stone-600 dark:text-stone-300">
             {PROFILES.find((p) => p.id === profileId)?.hint}
           </span>
+          {chatStats?.available && (
+            <span
+              title="Aus Langfuse: p95-Latenz und durchschnittliche Kosten pro Antwort der letzten 100 Anfragen."
+              className="font-mono text-xs text-stone-400"
+            >
+              {chatStats.p95LatencyS !== undefined && `p95 ${(chatStats.p95LatencyS).toFixed(1)} s`}
+              {chatStats.avgCostEur !== undefined &&
+                ` · ø ${fmtCost(chatStats.avgCostEur)}/Antwort`}
+              {chatStats.answers !== undefined && ` · ${chatStats.answers} Anfragen`}
+            </span>
+          )}
         </div>
       </header>
 
@@ -164,14 +217,20 @@ export default function Home() {
                 }
               >
                 {m.role === "assistant" ? (
-                  <Answer
-                    text={m.parts
-                      .filter((p) => p.type === "text")
-                      .map((p) => p.text)
-                      .join("")}
-                    sources={sourcesOf(m)}
-                    latest={m.id === lastAnswer?.id}
-                  />
+                  <div>
+                    <Answer
+                      text={m.parts
+                        .filter((p) => p.type === "text")
+                        .map((p) => p.text)
+                        .join("")}
+                      sources={sourcesOf(m)}
+                      latest={m.id === lastAnswer?.id}
+                    />
+                    {(() => {
+                      const s = statsOf(m);
+                      return s ? <StatsLine stats={s} /> : null;
+                    })()}
+                  </div>
                 ) : (
                   m.parts
                     .filter((p) => p.type === "text")

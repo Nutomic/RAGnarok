@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { TransformersEmbedder } from "./ingest/embed";
-import { retrieveHybrid } from "./retrieve/retrieve";
+import { retrieveHybrid } from "../db/retrieve";
+import { TransformersEmbedder } from "../ingest/embed";
 
 interface ExpectedSection {
   type: "article" | "recital";

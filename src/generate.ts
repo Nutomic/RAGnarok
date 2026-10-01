@@ -1,6 +1,6 @@
 import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import type { RetrievedChunk } from "./retrieve/retrieve";
+import type { RetrievedChunk } from "./db/retrieve";
 
 export const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY || undefined,

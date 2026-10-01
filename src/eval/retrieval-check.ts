@@ -1,5 +1,5 @@
+import { retrieveHybrid } from "../db/retrieve";
 import { TransformersEmbedder } from "../ingest/embed";
-import { retrieveHybrid } from "./retrieve";
 
 interface Query {
   // Question in user language, as a real user would ask it.

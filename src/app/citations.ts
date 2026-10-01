@@ -1,4 +1,4 @@
-import type { RetrievedChunk } from "./retrieve";
+import type { RetrievedChunk } from "../db/retrieve";
 
 export interface Citation {
   chunkId: string;

@@ -3,10 +3,10 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateText } from "ai";
 import { z } from "zod";
+import { retrieveHybrid } from "../db/retrieve";
+import { chatModel, judgeModel, systemPrompt } from "../generate";
+import { TransformersEmbedder } from "../ingest/embed";
 import type { GoldenQuestion } from "./evaluate-retrieval";
-import { chatModel, judgeModel, systemPrompt } from "./generate";
-import { TransformersEmbedder } from "./ingest/embed";
-import { retrieveHybrid } from "./retrieve/retrieve";
 
 // Same threshold mechanic as tier 1, but with generous noise margins: LLM-judge
 // scores fluctuate between runs, so failures only annotate, never fail CI.
