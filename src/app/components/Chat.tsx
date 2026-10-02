@@ -12,10 +12,14 @@ import {
 } from "./types";
 
 function StatsLine({ stats }: { stats: AnswerStats }) {
+  const retrieval =
+    stats.retrievalMs < 1000
+      ? `${stats.retrievalMs} ms`
+      : `${(stats.retrievalMs / 1000).toFixed(1)} s`;
   return (
     <p className="mt-2 border-t border-stone-100 pt-2 font-mono text-xs text-stone-400 dark:border-stone-800">
-      {(stats.retrievalMs / 1000).toFixed(1)} s Suche · {(stats.generationMs / 1000).toFixed(1)} s
-      Antwort · Input {stats.inputTokens} / Output {stats.outputTokens} Tokens ·{" "}
+      {retrieval} Suche · {(stats.generationMs / 1000).toFixed(1)} s Antwort · Input{" "}
+      {stats.inputTokens} / Output {stats.outputTokens} Tokens ·{" "}
       {stats.costEur !== null ? fmtCost(stats.costEur) : stats.model}
     </p>
   );

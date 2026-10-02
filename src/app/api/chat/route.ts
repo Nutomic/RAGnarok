@@ -11,7 +11,7 @@ import { db } from "../../../db";
 import { hasChunks } from "../../../db/has-chunks";
 import { retrieveHybrid } from "../../../db/retrieve";
 import { auditLogs } from "../../../db/schema";
-import { TransformersEmbedder } from "../../../ingest/embed";
+import { embedder } from "../../../ingest/embed";
 import { costFor, getLangfuse } from "../../../langfuse";
 import { chunkCitation } from "../../citations";
 
@@ -79,7 +79,6 @@ export async function POST(req: Request) {
   });
 
   const retrievalStart = Date.now();
-  const embedder = new TransformersEmbedder();
   const { embedding } = await embedder.embed(prompt, "query");
   const retrieved = await retrieveHybrid(prompt, embedding, {
     k: 5,

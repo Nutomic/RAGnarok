@@ -23,23 +23,24 @@ type Extractor = {
 // multilingual-e5-small: 384-dim, ~470 MB, runs on CPU. e5 models require a
 // "passage: " prefix for documents (queries use "query: ").
 export class TransformersEmbedder implements Embedder {
-  private extractor: Extractor | null = null;
+  private extractor: Promise<Extractor>;
 
-  private async getExtractor() {
-    if (!this.extractor) {
-      this.extractor = (await pipeline(
-        "feature-extraction",
-        "Xenova/multilingual-e5-small",
-      )) as unknown as Extractor;
-    }
-    return this.extractor;
+  constructor() {
+    this.extractor = pipeline(
+      "feature-extraction",
+      "Xenova/multilingual-e5-small",
+    ) as unknown as Promise<Extractor>;
   }
 
   async embed(text: string, mode: "passage" | "query" = "passage"): Promise<EmbedResult> {
-    const ex = await this.getExtractor();
+    const ex = await this.extractor;
     const prefixed = `${mode}: ${text}`;
     const tokens = (await ex.tokenizer(prefixed)).input_ids.data.length;
     const output = await ex(prefixed, { pooling: "mean", normalize: true });
     return { embedding: Array.from(output.data), tokens };
   }
 }
+
+// Shared instance; warmed up via instrumentation register() so the first
+// request does not pay the model load.
+export const embedder = new TransformersEmbedder();
