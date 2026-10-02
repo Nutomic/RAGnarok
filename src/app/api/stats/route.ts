@@ -1,4 +1,4 @@
-import { getLangfuseCredentials } from "../../../langfuse";
+import { getLangfuseCredentials, LANGFUSE_HOST } from "../../../langfuse";
 
 interface LangfuseTrace {
   latency: number | null;
@@ -27,21 +27,19 @@ let cache: { at: number; stats: ChatStats } | null = null;
 // Aggregates over the last TRACE_LIMIT traces via the Langfuse public API,
 // cached briefly so the demo UI does not hammer Langfuse on every load.
 export async function GET() {
-  const creds = await getLangfuseCredentials();
-  if (!creds) return Response.json({ available: false } satisfies ChatStats);
+  const headers = await getLangfuseCredentials();
+  if (!headers) return Response.json({ available: false } satisfies ChatStats);
 
   if (cache && Date.now() - cache.at < CACHE_MS) {
     return Response.json(cache.stats);
   }
 
-  const auth = Buffer.from(`${creds.publicKey}:${creds.secretKey}`).toString("base64");
-  const headers = { Authorization: `Basic ${auth}` };
   let traces: LangfuseTrace[];
   let observations: LangfuseObservation[];
   try {
     const [traceRes, obsRes] = await Promise.all([
-      fetch(`${creds.host}/api/public/traces?limit=${TRACE_LIMIT}`, { headers }),
-      fetch(`${creds.host}/api/public/observations?limit=${TRACE_LIMIT}`, { headers }),
+      fetch(`${LANGFUSE_HOST}/api/public/traces?limit=${TRACE_LIMIT}`, { headers }),
+      fetch(`${LANGFUSE_HOST}/api/public/observations?limit=${TRACE_LIMIT}`, { headers }),
     ]);
     if (!traceRes.ok) throw new Error(`langfuse traces api ${traceRes.status}`);
     if (!obsRes.ok) throw new Error(`langfuse observations api ${obsRes.status}`);

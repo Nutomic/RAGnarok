@@ -9,19 +9,11 @@ const MISTRAL_PRICES_PER_M: Record<string, { input: number; output: number }> = 
   "mistral-small-latest": { input: 0.12, output: 0.5 },
 };
 
-export function costFor(
-  model: string | null | undefined,
-  inputTokens: number,
-  outputTokens: number,
-): number | null {
+export function costFor(model: string, inputTokens: number, outputTokens: number): number | null {
   const p = model ? MISTRAL_PRICES_PER_M[model] : undefined;
   return p ? (p.input * inputTokens + p.output * outputTokens) / 1e6 : null;
 }
 
-// Keys are provided via LANGFUSE_PUBLIC_KEY/LANGFUSE_SECRET_KEY; the compose
-// file feeds the same values to Langfuse's LANGFUSE_INIT_* variables, which
-// provision org, project and API key on startup. This module only waits for
-// Langfuse to be ready and seeds model prices so the dashboard computes cost.
 interface LangfuseKeys {
   publicKey: string;
   secretKey: string;
@@ -37,21 +29,7 @@ async function bootstrap(): Promise<LangfuseKeys> {
 
   const pool = new Pool({ connectionString: langfuseDbUrl, max: 2 });
   try {
-    // Langfuse runs migrations and its init provisioning on container start;
-    // wait for the schema, then for the provisioned key to appear.
-    for (let i = 0; ; i++) {
-      try {
-        const check = await pool.query<{ name: string }>(
-          "SELECT tablename AS name FROM pg_tables WHERE schemaname='public' AND tablename IN ('projects','api_keys','models')",
-        );
-        if (check.rows.length === 3) break;
-      } catch {
-        // database may not exist yet on a fresh volume
-      }
-      if (i >= 45) throw new Error("Langfuse schema not ready after 90s");
-      await new Promise((r) => setTimeout(r, 2000));
-    }
-
+    // Wait for langfuse init
     let projectId: string | null = null;
     for (let i = 0; ; i++) {
       const found = await pool.query<{ project_id: string }>(
@@ -66,6 +44,7 @@ async function bootstrap(): Promise<LangfuseKeys> {
       await new Promise((r) => setTimeout(r, 2000));
     }
 
+    // Then write pricing data to langfuse db
     for (const name of Object.keys(MISTRAL_PRICES_PER_M)) {
       const p = MISTRAL_PRICES_PER_M[name];
       await pool.query(
@@ -95,25 +74,21 @@ async function isReady(): Promise<boolean> {
   return keys !== null;
 }
 
+// compose-internal service
+export const LANGFUSE_HOST = "http://langfuse:3000";
+
 export async function getLangfuse(): Promise<Langfuse | null> {
   if (!(await isReady()) || !keys) return null;
   return new Langfuse({
     publicKey: keys.publicKey,
     secretKey: keys.secretKey,
-    baseUrl: process.env.LANGFUSE_HOST || "http://langfuse:3000",
+    baseUrl: LANGFUSE_HOST,
   });
 }
 
-// Credentials for the Langfuse public API (stats route).
-export async function getLangfuseCredentials(): Promise<{
-  publicKey: string;
-  secretKey: string;
-  host: string;
-} | null> {
+// Auth headers for API
+export async function getLangfuseCredentials(): Promise<Record<string, string> | null> {
   if (!(await isReady()) || !keys) return null;
-  return {
-    publicKey: keys.publicKey,
-    secretKey: keys.secretKey,
-    host: process.env.LANGFUSE_HOST || "http://langfuse:3000",
-  };
+  const auth = Buffer.from(`${keys.publicKey}:${keys.secretKey}`).toString("base64");
+  return { Authorization: `Basic ${auth}` };
 }

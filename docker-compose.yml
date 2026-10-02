@@ -55,7 +55,6 @@ services:
       DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/ragnarok
       LANGFUSE_DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/langfuse
       LANGFUSE_SALT: ${LANGFUSE_SALT}
-      LANGFUSE_HOST: http://langfuse:3000
       # Keys shared with the Langfuse INIT_* provisioning above; generate like the
       # other secrets, see .env.example.
       LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
