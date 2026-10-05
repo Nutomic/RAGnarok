@@ -1,4 +1,5 @@
 import {
+  boolean,
   customType,
   index,
   integer,
@@ -94,7 +95,28 @@ export const auditLogs = pgTable(
     chunkIds: uuid("chunk_ids").array(),
     inputTokens: integer("input_tokens").notNull(),
     outputTokens: integer("output_tokens").notNull(),
+    cacheHit: boolean("cache_hit").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("audit_logs_profile_idx").on(t.profileId)],
 );
+
+// Exact-match cache for query embeddings. Keyed on the full prompt text; no
+// similarity search, a hit requires a byte-identical prompt.
+export const queryCache = pgTable("query_cache", {
+  textHash: varchar("text_hash", { length: 64 }).primaryKey(),
+  embedding: vector("embedding").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Replays the generated answer for an identical generation input. The key pins
+// model, system prompt (which contains the retrieved chunk content), history
+// and profile visibility, so a corpus change produces a new key.
+export const answerCache = pgTable("answer_cache", {
+  keyHash: varchar("key_hash", { length: 64 }).primaryKey(),
+  answerText: text("answer_text").notNull(),
+  model: varchar("model", { length: 255 }).notNull(),
+  inputTokens: integer("input_tokens").notNull(),
+  outputTokens: integer("output_tokens").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});

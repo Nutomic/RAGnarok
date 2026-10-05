@@ -73,14 +73,14 @@ export async function retrieveHybrid(
     celex: string | null;
   }>(sql`
     WITH vec AS (
-      SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> ${vecLiteral}::vector) AS rank
+      SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> ${vecLiteral}::vector, id) AS rank
       FROM chunks
       WHERE embedding IS NOT NULL
-      ORDER BY embedding <=> ${vecLiteral}::vector
+      ORDER BY embedding <=> ${vecLiteral}::vector, id
       LIMIT ${candidates}
     ),
     fts AS (
-      SELECT id, ROW_NUMBER() OVER (ORDER BY ts_rank(tsvector, query) DESC) AS rank
+      SELECT id, ROW_NUMBER() OVER (ORDER BY ts_rank(tsvector, query) DESC, id) AS rank
       FROM chunks
       ${ftsMatch}
       LIMIT ${candidates}
@@ -104,7 +104,7 @@ export async function retrieveHybrid(
     JOIN documents d ON d.id = c.document_id
     WHERE (vec.id IS NOT NULL OR fts.id IS NOT NULL)
       AND (d.visibility = 'public' OR d.visibility = ${profileVisibility})
-    ORDER BY score DESC
+    ORDER BY score DESC, c.position, c.id
     LIMIT ${k}
   `);
 

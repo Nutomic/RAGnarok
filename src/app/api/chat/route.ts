@@ -8,6 +8,13 @@ import {
   type UIMessage,
 } from "ai";
 import { db } from "../../../db";
+import {
+  getCachedAnswer,
+  getCachedEmbedding,
+  putCachedAnswer,
+  putCachedEmbedding,
+  sha256,
+} from "../../../db/cache";
 import { hasChunks } from "../../../db/has-chunks";
 import { retrieveHybrid } from "../../../db/retrieve";
 import { auditLogs } from "../../../db/schema";
@@ -80,7 +87,14 @@ export async function POST(req: Request) {
   });
 
   const retrievalStart = Date.now();
-  const { embedding } = await embedder.embed(prompt, "query");
+  const cachedEmbedding = await getCachedEmbedding(prompt);
+  let embedding: number[];
+  if (cachedEmbedding) {
+    embedding = cachedEmbedding;
+  } else {
+    ({ embedding } = await embedder.embed(prompt, "query"));
+    await putCachedEmbedding(prompt, embedding);
+  }
   const retrieved = await retrieveHybrid(prompt, embedding, {
     k: 5,
     profileVisibility,
@@ -118,7 +132,6 @@ export async function POST(req: Request) {
       : "";
 
   const modelName = process.env.MISTRAL_MODEL ?? "mistral-small-latest";
-  const generationStart = Date.now();
   const systemPrompt = `Sie sind ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworten Sie auf Deutsch, mit förmlicher Anrede (Sie/Ihre).
 Beantworten Sie die Frage nur mit den unten angegebenen Quelltexten und zitieren Sie jede Aussage mit [n], wobei n die Nummer der Quelle ist.
 Wenn die Quellen die Frage nicht beantworten können, sagen Sie das ohne jede Erfindung.
@@ -127,35 +140,60 @@ ${permissionNote}
 Quellen:
 ${context}`;
   const historyMessages = await convertToModelMessages(messages.slice(-HISTORY_MESSAGES));
-  const result = streamText({
-    model: mistral.languageModel(modelName),
-    system: systemPrompt,
-    messages: historyMessages,
-    onError: ({ error }) => {
-      console.error(error);
-      return "Generierung fehlgeschlagen.";
-    },
-  });
+
+  // The system prompt carries the full retrieved chunk content and the
+  // permission note, so keying on it means any corpus or profile change misses.
+  const answerKey = sha256(
+    JSON.stringify([modelName, systemPrompt, historyMessages, profileVisibility]),
+  );
+  const cachedAnswer = await getCachedAnswer(answerKey);
+  const generationStart = Date.now();
+  const result = cachedAnswer
+    ? null
+    : streamText({
+        model: mistral.languageModel(modelName),
+        system: systemPrompt,
+        messages: historyMessages,
+        onError: ({ error }) => {
+          console.error(error);
+          return "Generierung fehlgeschlagen.";
+        },
+      });
 
   // usage/text resolve when the model stream finishes; assigned in execute and
   // read again in onEnd for the audit insert.
   let inputTokens = 0;
   let outputTokens = 0;
+  let answerText = "";
 
   const stream = createUIMessageStream({
     originalMessages: messages,
     onError: () => "Generierung fehlgeschlagen.",
     execute: async ({ writer }) => {
       writer.write({ type: "data-sources", data: citations });
-      writer.merge(toUIMessageStream({ stream: result.stream }));
-      // usage/text resolve when the model stream finishes; then the answer's
-      // stats are appended as a data part for the UI.
-      const usage = await result.usage;
-      const text = await result.text;
+      if (cachedAnswer) {
+        inputTokens = cachedAnswer.inputTokens;
+        outputTokens = cachedAnswer.outputTokens;
+        answerText = cachedAnswer.answerText;
+        writer.write({ type: "text-start", id: "cached" });
+        writer.write({ type: "text-delta", id: "cached", delta: cachedAnswer.answerText });
+        writer.write({ type: "text-end", id: "cached" });
+      } else if (result) {
+        writer.merge(toUIMessageStream({ stream: result.stream }));
+        const usage = await result.usage;
+        answerText = await result.text;
+        inputTokens = usage.inputTokens ?? 0;
+        outputTokens = usage.outputTokens ?? 0;
+        await putCachedAnswer(answerKey, {
+          answerText,
+          model: modelName,
+          inputTokens,
+          outputTokens,
+        });
+      }
       const generationMs = Date.now() - generationStart;
-      inputTokens = usage.inputTokens ?? 0;
-      outputTokens = usage.outputTokens ?? 0;
-      const cost = costFor(modelName, inputTokens, outputTokens);
+      // A cached answer cost nothing: no model call happened.
+      const cost = cachedAnswer ? 0 : costFor(modelName, inputTokens, outputTokens);
       writer.write({
         type: "data-stats",
         data: {
@@ -165,6 +203,7 @@ ${context}`;
           outputTokens,
           costEur: cost,
           model: modelName,
+          cacheHit: cachedAnswer !== null,
         },
       });
       trace?.generation({
@@ -173,11 +212,11 @@ ${context}`;
         startTime: new Date(generationStart),
         endTime: new Date(),
         input: { system: systemPrompt, messages: historyMessages },
-        output: text,
+        output: answerText,
         usage: {
           input: inputTokens,
           output: outputTokens,
-          total: usage.totalTokens ?? inputTokens + outputTokens,
+          total: inputTokens + outputTokens,
           unit: "TOKENS",
         },
         metadata: { promptChars: prompt.length, profileVisibility },
@@ -191,6 +230,7 @@ ${context}`;
         chunkIds: retrieved.map((c) => c.id),
         inputTokens,
         outputTokens,
+        cacheHit: cachedAnswer !== null,
       });
       await langfuse?.flushAsync();
     },

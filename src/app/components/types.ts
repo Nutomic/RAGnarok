@@ -6,8 +6,9 @@ export interface AnswerStats {
   generationMs: number;
   inputTokens: number;
   outputTokens: number;
-  costEur: number | null;
+  costEur: number;
   model: string;
+  cacheHit?: boolean;
 }
 
 export interface ChatStats {
@@ -15,6 +16,7 @@ export interface ChatStats {
   answers?: number;
   p95LatencyS?: number;
   avgCostEur?: number;
+  cacheHits?: number;
 }
 
 // Must match MAX_PROMPT_CHARS in api/chat/route.ts; importing the route from

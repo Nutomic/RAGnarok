@@ -13,6 +13,7 @@ interface AuditRow extends Record<string, unknown> {
   profileName: string | null;
   inputTokens: number;
   outputTokens: number;
+  cacheHit: boolean;
   chunkIds: string[];
 }
 
@@ -37,7 +38,7 @@ export default async function AuditPage() {
   const rows = await db.execute<AuditRow>(sql`
     SELECT a.id, to_char(a.created_at, 'DD.MM.YYYY HH24:MI') AS "createdAt", a.prompt, a.model,
            p.name AS "profileName", a.input_tokens AS "inputTokens",
-           a.output_tokens AS "outputTokens", a.chunk_ids AS "chunkIds"
+           a.output_tokens AS "outputTokens", a.cache_hit AS "cacheHit", a.chunk_ids AS "chunkIds"
     FROM audit_logs a
     LEFT JOIN demo_profiles p ON p.id = a.profile_id
     ORDER BY a.created_at DESC
@@ -103,7 +104,6 @@ export default async function AuditPage() {
                   <th className="py-2 pr-4 font-medium">Zeitpunkt</th>
                   <th className="py-2 pr-4 font-medium">Profil</th>
                   <th className="py-2 pr-4 font-medium">Anfrage</th>
-                  <th className="py-2 pr-4 font-medium">Modell</th>
                   <th className="py-2 pr-4 font-medium">Quellen</th>
                   <th className="py-2 pr-4 text-right font-medium">Tokens (Input/Output)</th>
                   <th className="py-2 text-right font-medium">Kosten</th>
@@ -122,9 +122,6 @@ export default async function AuditPage() {
                       </td>
                       <td className="py-2 pr-4">{r.profileName ?? "-"}</td>
                       <td className="max-w-md py-2 pr-4">{r.prompt}</td>
-                      <td className="whitespace-nowrap py-2 pr-4 font-mono text-xs">
-                        {r.model ?? "-"}
-                      </td>
                       <td className="py-2 pr-4">
                         <ul className="space-y-0.5">
                           {(r.chunkIds ?? []).map((id) => {
@@ -150,7 +147,18 @@ export default async function AuditPage() {
                         {r.inputTokens} / {r.outputTokens}
                       </td>
                       <td className="whitespace-nowrap py-2 text-right font-mono text-xs">
-                        {cost !== null ? fmtCost(cost) : "-"}
+                        {r.cacheHit ? (
+                          <span
+                            title="Antwort aus dem Antwortcache, kein Modellaufruf."
+                            className="rounded bg-stone-100 px-1 text-stone-500 dark:bg-stone-800 dark:text-stone-400"
+                          >
+                            Cache
+                          </span>
+                        ) : cost !== null ? (
+                          fmtCost(cost)
+                        ) : (
+                          "-"
+                        )}
                       </td>
                     </tr>
                   );

@@ -53,12 +53,13 @@ export function Header({
         </span>
         {chatStats?.available && (
           <span
-            title="Aus Langfuse: p95-Latenz und durchschnittliche Kosten pro Antwort der letzten 100 Anfragen."
+            title="Aus Langfuse und dem Audit-Protokoll: p95-Latenz und durchschnittliche Kosten pro Antwort der letzten 100 Anfragen, dazu Antworten aus dem Antwortcache."
             className="cursor-help border-b border-dotted pb-px font-mono text-xs text-stone-400"
           >
             {chatStats.p95LatencyS !== undefined && `p95 ${(chatStats.p95LatencyS).toFixed(1)} s`}
             {chatStats.avgCostEur !== undefined && ` · ø ${fmtCost(chatStats.avgCostEur)}/Antwort`}
             {chatStats.answers !== undefined && ` · ${chatStats.answers} Anfragen`}
+            {chatStats.cacheHits !== undefined && ` · ${chatStats.cacheHits} aus Cache`}
           </span>
         )}
       </div>
