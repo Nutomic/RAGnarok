@@ -28,10 +28,12 @@ function StatsLine({ stats }: { stats: AnswerStats }) {
 // Markdown answer. Badges of the latest answer link to the sources panel;
 // older answers link to EUR-Lex directly, since the panel shows the latest.
 function Answer({ text, sources, latest }: { text: string; sources: Citation[]; latest: boolean }) {
-  const md = text.replace(/\[(\d+)\]/g, (marker, n: string) => {
+  // Also handle sub-citations like [1a]/[1b] for several claims from
+  // one source; the letter suffix maps to the same source badge.
+  const md = text.replace(/\[(\d+)([a-z]?)\]/g, (marker, n: string, letter: string) => {
     const c = sources[Number(n) - 1];
     if (!c) return marker;
-    return latest ? `[${n}](#quelle-${c.chunkId})` : `[${n}](${c.url})`;
+    return latest ? `[${n}${letter}](#quelle-${c.chunkId})` : `[${n}${letter}](${c.url})`;
   });
   return (
     <div className="markdown space-y-2 text-[15px] leading-relaxed">
