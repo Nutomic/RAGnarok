@@ -1,6 +1,14 @@
 import type { Citation } from "../citations";
 
-export function Sources({ sources, searching }: { sources: Citation[]; searching: boolean }) {
+export function Sources({
+  sources,
+  highlightedId,
+  searching,
+}: {
+  sources: Citation[];
+  highlightedId: string | null;
+  searching: boolean;
+}) {
   return (
     <aside className="w-full shrink-0 self-start md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:w-80 md:overflow-y-auto">
       <h2 className="mb-2 text-xs font-semibold tracking-wide text-stone-500 uppercase dark:text-stone-400">
@@ -17,7 +25,11 @@ export function Sources({ sources, searching }: { sources: Citation[]; searching
           <li
             key={c.chunkId}
             id={`quelle-${c.chunkId}`}
-            className="scroll-mt-4 rounded-lg border border-stone-200 bg-white p-3 text-sm target:border-emerald-600 target:bg-emerald-50 target:ring-1 target:ring-emerald-600 dark:border-stone-800 dark:bg-stone-900 dark:target:border-emerald-500 dark:target:bg-emerald-950"
+            className={
+              c.chunkId === highlightedId
+                ? "scroll-mt-4 rounded-lg border border-emerald-600 bg-emerald-50 p-3 text-sm ring-1 ring-emerald-600 dark:border-emerald-500 dark:bg-emerald-950"
+                : "scroll-mt-4 rounded-lg border border-stone-200 bg-white p-3 text-sm dark:border-stone-800 dark:bg-stone-900"
+            }
           >
             <a
               href={c.url}

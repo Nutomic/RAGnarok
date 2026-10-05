@@ -27,7 +27,17 @@ function StatsLine({ stats }: { stats: AnswerStats }) {
 
 // Markdown answer. Badges of the latest answer link to the sources panel;
 // older answers link to EUR-Lex directly, since the panel shows the latest.
-function Answer({ text, sources, latest }: { text: string; sources: Citation[]; latest: boolean }) {
+function Answer({
+  text,
+  sources,
+  latest,
+  onCiteClick,
+}: {
+  text: string;
+  sources: Citation[];
+  latest: boolean;
+  onCiteClick: (chunkId: string) => void;
+}) {
   // Also handle sub-citations like [1a]/[1b] for several claims from
   // one source; the letter suffix maps to the same source badge.
   const md = text.replace(/\[(\d+)([a-z]?)\]/g, (marker, n: string, letter: string) => {
@@ -40,16 +50,30 @@ function Answer({ text, sources, latest }: { text: string; sources: Citation[]; 
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          a: ({ children, href }) => (
-            <a
-              href={href}
-              target={href?.startsWith("#") ? undefined : "_blank"}
-              rel={href?.startsWith("#") ? undefined : "noopener noreferrer"}
-              className="mx-0.5 rounded bg-emerald-100 px-1 align-super font-mono text-xs text-emerald-800 no-underline hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
-            >
-              {children}
-            </a>
-          ),
+          a: ({ children, href }) => {
+            // Latest-answer badges highlight the source in panel state; the
+            // href stays for middle-click, the click itself never touches the
+            // URL. Older answers link out to EUR-Lex directly.
+            const chunkId = href?.startsWith("#quelle-") ? href.slice("#quelle-".length) : null;
+            return (
+              <a
+                href={href}
+                target={chunkId ? undefined : "_blank"}
+                rel={chunkId ? undefined : "noopener noreferrer"}
+                onClick={
+                  chunkId
+                    ? (e) => {
+                        e.preventDefault();
+                        onCiteClick(chunkId);
+                      }
+                    : undefined
+                }
+                className="mx-0.5 rounded bg-emerald-100 px-1 align-super font-mono text-xs text-emerald-800 no-underline hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300"
+              >
+                {children}
+              </a>
+            );
+          },
         }}
       >
         {md}
@@ -77,6 +101,7 @@ export function Chat({
   setInput,
   submit,
   accent,
+  onCiteClick,
 }: {
   messages: UIMessage[];
   status: "submitted" | "streaming" | "ready" | "error";
@@ -87,6 +112,7 @@ export function Chat({
   setInput: (v: string) => void;
   submit: (text: string) => void;
   accent: string;
+  onCiteClick: (chunkId: string) => void;
 }) {
   const busy = status === "submitted" || status === "streaming";
   const tooLong = input.length > MAX_PROMPT_CHARS;
@@ -114,6 +140,7 @@ export function Chat({
                   .join("")}
                 sources={sourcesOf(m)}
                 latest={m.id === lastAnswerId}
+                onCiteClick={onCiteClick}
               />
               {(() => {
                 const s = statsOf(m);

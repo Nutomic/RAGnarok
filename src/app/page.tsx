@@ -21,6 +21,7 @@ export default function Home() {
   // Sources of the shown answer, held in state so a new question clears the
   // panel immediately and it fills again when the new answer's parts arrive.
   const [sources, setSources] = useState<Citation[]>([]);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
   const [answeredId, setAnsweredId] = useState<string | null>(null);
   const [chatStats, setChatStats] = useState<ChatStats | null>(null);
   const busy = status === "submitted" || status === "streaming";
@@ -44,6 +45,7 @@ export default function Home() {
     if (!text.trim() || text.length > MAX_PROMPT_CHARS || busy) return;
     setInput("");
     setSources([]);
+    setHighlightedId(null);
     sendMessage({ text }, { body: { profileId } });
   }
 
@@ -62,8 +64,22 @@ export default function Home() {
             setInput={setInput}
             submit={submit}
             accent={profileAccent(profileId)}
+            onCiteClick={(id) => {
+              setHighlightedId(id);
+              const el = document.getElementById(`quelle-${id}`);
+              el?.scrollIntoView({
+                behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+                  ? "instant"
+                  : "smooth",
+                block: "nearest",
+              });
+            }}
           />
-          <Sources sources={sources} searching={status === "submitted"} />
+          <Sources
+            sources={sources}
+            highlightedId={highlightedId}
+            searching={status === "submitted"}
+          />
         </div>
       </main>
     </div>
