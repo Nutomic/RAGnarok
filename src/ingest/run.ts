@@ -16,6 +16,13 @@ const REGULATIONS = [
     celex: "32016R0679",
   },
   {
+    file: "data/eurlex/dsgvo-da.html",
+    title: "DS-GVO (dansk udgave, uddrag)",
+    visibility: "compliance" as const,
+    sourceUrl: "https://eur-lex.europa.eu/legal-content/DA/TXT/?uri=CELEX:32016R0679",
+    celex: "32016R0679",
+  },
+  {
     file: "data/eurlex/ai-act.html",
     title: "KI-Verordnung (Verordnung (EU) 2024/1689)",
     visibility: "public" as const,

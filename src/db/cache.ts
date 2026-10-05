@@ -9,7 +9,7 @@ const TTL = sql`interval '7 days'`;
 
 export async function getCachedEmbedding(prompt: string): Promise<number[] | null> {
   const rows = await db.execute<{ embedding: string }>(sql`
-    SELECT embedding FROM query_cache WHERE text_hash = ${sha256(prompt)}
+    SELECT embedding FROM embedding_cache WHERE text_hash = ${sha256(prompt)}
   `);
   if (rows.rows.length === 0) return null;
   return JSON.parse(rows.rows[0].embedding) as number[];
@@ -20,11 +20,11 @@ const vectorLiteral = (embedding: number[]) => `[${embedding.join(",")}]`;
 
 export async function putCachedEmbedding(prompt: string, embedding: number[]): Promise<void> {
   await db.execute(sql`
-    INSERT INTO query_cache (text_hash, embedding)
+    INSERT INTO embedding_cache (text_hash, embedding)
     VALUES (${sha256(prompt)}, ${vectorLiteral(embedding)}::vector)
     ON CONFLICT (text_hash) DO NOTHING
   `);
-  await db.execute(sql`DELETE FROM query_cache WHERE created_at < now() - ${TTL}`);
+  await db.execute(sql`DELETE FROM embedding_cache WHERE created_at < now() - ${TTL}`);
 }
 
 export interface CachedAnswer {

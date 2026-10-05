@@ -49,12 +49,11 @@ export const documents = pgTable(
   "documents",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    title: varchar("title", { length: 500 }).notNull(),
+    title: varchar("title", { length: 500 }).notNull().unique(),
     sourceUrl: text("source_url"),
     celex: varchar("celex", { length: 32 }),
     contentHash: varchar("content_hash", { length: 64 }).notNull(),
     visibility: visibilityEnum("visibility").notNull().default("public"),
-    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("documents_content_hash_idx").on(t.contentHash)],
@@ -101,9 +100,9 @@ export const auditLogs = pgTable(
   (t) => [index("audit_logs_profile_idx").on(t.profileId)],
 );
 
-// Exact-match cache for query embeddings. Keyed on the full prompt text; no
+// Exact-match cache for prompt embeddings. Keyed on the full prompt text; no
 // similarity search, a hit requires a byte-identical prompt.
-export const queryCache = pgTable("query_cache", {
+export const embeddingCache = pgTable("embedding_cache", {
   textHash: varchar("text_hash", { length: 64 }).primaryKey(),
   embedding: vector("embedding").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
