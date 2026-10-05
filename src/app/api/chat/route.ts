@@ -12,7 +12,8 @@ import { hasChunks } from "../../../db/has-chunks";
 import { retrieveHybrid } from "../../../db/retrieve";
 import { auditLogs } from "../../../db/schema";
 import { embedder } from "../../../ingest/embed";
-import { costFor, getLangfuse } from "../../../langfuse";
+import { getLangfuse } from "../../../langfuse";
+import { costFor } from "../../../prices";
 import { chunkCitation } from "../../citations";
 
 // Reject oversized prompts before LLM call
@@ -136,6 +137,11 @@ ${context}`;
     },
   });
 
+  // usage/text resolve when the model stream finishes; assigned in execute and
+  // read again in onEnd for the audit insert.
+  let inputTokens = 0;
+  let outputTokens = 0;
+
   const stream = createUIMessageStream({
     originalMessages: messages,
     onError: () => "Generierung fehlgeschlagen.",
@@ -147,8 +153,8 @@ ${context}`;
       const usage = await result.usage;
       const text = await result.text;
       const generationMs = Date.now() - generationStart;
-      const inputTokens = usage.inputTokens ?? 0;
-      const outputTokens = usage.outputTokens ?? 0;
+      inputTokens = usage.inputTokens ?? 0;
+      outputTokens = usage.outputTokens ?? 0;
       const cost = costFor(modelName, inputTokens, outputTokens);
       writer.write({
         type: "data-stats",
@@ -183,6 +189,8 @@ ${context}`;
         prompt,
         model: modelName,
         chunkIds: retrieved.map((c) => c.id),
+        inputTokens,
+        outputTokens,
       });
       await langfuse?.flushAsync();
     },

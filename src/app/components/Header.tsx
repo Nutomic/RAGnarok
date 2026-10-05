@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { type ChatStats, fmtCost, PROFILES } from "./types";
 
 export function Header({
@@ -17,6 +18,12 @@ export function Header({
           Frag DS-GVO und KI-Verordnung. Jede Antwort mit Quelle.
         </p>
       </div>
+      <Link
+        href="/audit"
+        className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-stone-700 hover:bg-stone-100 dark:border-stone-800 dark:text-stone-300 dark:hover:bg-stone-800"
+      >
+        Audit-Protokoll
+      </Link>
       <div className="flex flex-col items-start gap-1 md:items-end">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-stone-500 dark:text-stone-400">Profil</span>

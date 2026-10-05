@@ -29,6 +29,13 @@
       "when": 1790761598267,
       "tag": "0003_seed-demo-profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791187525048,
+      "tag": "0004_audit-tokens",
+      "breakpoints": true
     }
   ]
 }

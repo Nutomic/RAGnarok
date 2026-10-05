@@ -92,6 +92,8 @@ export const auditLogs = pgTable(
     prompt: text("prompt").notNull(),
     model: varchar("model", { length: 255 }),
     chunkIds: uuid("chunk_ids").array(),
+    inputTokens: integer("input_tokens").notNull(),
+    outputTokens: integer("output_tokens").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [index("audit_logs_profile_idx").on(t.profileId)],

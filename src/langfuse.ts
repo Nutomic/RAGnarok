@@ -1,18 +1,6 @@
 import { Langfuse } from "langfuse";
 import { Pool } from "pg";
-
-// Mistral API pricing, EUR per 1M tokens (docs.mistral.ai/inference/pricing,
-// checked 2026-10). Stored per token below because Langfuse multiplies price x
-// tokens directly.
-const MISTRAL_PRICES_PER_M: Record<string, { input: number; output: number }> = {
-  "ministral-14b-latest": { input: 0.18, output: 0.18 },
-  "mistral-small-latest": { input: 0.12, output: 0.5 },
-};
-
-export function costFor(model: string, inputTokens: number, outputTokens: number): number | null {
-  const p = model ? MISTRAL_PRICES_PER_M[model] : undefined;
-  return p ? (p.input * inputTokens + p.output * outputTokens) / 1e6 : null;
-}
+import { MISTRAL_PRICES_PER_M } from "./prices";
 
 interface LangfuseKeys {
   publicKey: string;
