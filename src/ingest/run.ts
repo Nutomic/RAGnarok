@@ -1,8 +1,12 @@
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { sql } from "drizzle-orm";
-import { db } from "../db";
-import { chunks, documents } from "../db/schema";
+import {
+  contentHashOf,
+  countDocumentChunks,
+  deleteDocumentById,
+  findDocumentByContentHash,
+  insertChunk,
+  insertDocument,
+} from "../db/documents";
 import { chunkSections } from "./chunk";
 import { TransformersEmbedder } from "./embed";
 import { parseEurlex } from "./parse";
@@ -39,16 +43,11 @@ export async function ingest() {
     const sections = parseEurlex(html);
     const chunked = chunkSections(sections);
     const fullText = sections.map((s) => s.text).join("\n");
-    const contentHash = createHash("sha256").update(fullText).digest("hex");
+    const contentHash = contentHashOf(fullText);
 
-    const existing = await db.query.documents.findFirst({
-      where: (d, { eq }) => eq(d.contentHash, contentHash),
-    });
+    const existing = await findDocumentByContentHash(contentHash);
     if (existing) {
-      const [{ count }] = await db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(chunks)
-        .where(sql`${chunks.documentId} = ${existing.id}`);
+      const count = await countDocumentChunks(existing.id);
       const expected = chunked.reduce((n, c) => n + c.chunks.length, 0);
       if (count === expected) {
         console.log(`skip ${reg.title} (already ingested, ${count} chunks)`);
@@ -57,19 +56,16 @@ export async function ingest() {
       // Partial ingest (e.g. interrupted run): document row committed, chunks
       // missing. Chunked content differs from what's stored, so drop and redo.
       console.log(`redo ${reg.title} (found ${count}/${expected} chunks)`);
-      await db.delete(documents).where(sql`${documents.id} = ${existing.id}`);
+      await deleteDocumentById(existing.id);
     }
 
-    const [doc] = await db
-      .insert(documents)
-      .values({
-        title: reg.title,
-        sourceUrl: reg.sourceUrl,
-        celex: reg.celex,
-        contentHash,
-        visibility: reg.visibility,
-      })
-      .returning({ id: documents.id });
+    const documentId = await insertDocument({
+      title: reg.title,
+      sourceUrl: reg.sourceUrl,
+      celex: reg.celex,
+      contentHash,
+      visibility: reg.visibility,
+    });
 
     let position = 0;
     let tokens = 0;
@@ -77,8 +73,8 @@ export async function ingest() {
       for (const chunk of c.chunks) {
         const { embedding, tokens: chunkTokens } = await embedder.embed(chunk.content);
         tokens += chunkTokens;
-        await db.insert(chunks).values({
-          documentId: doc.id,
+        await insertChunk({
+          documentId,
           content: chunk.content,
           position: position++,
           sectionType: c.section.type,
@@ -86,7 +82,6 @@ export async function ingest() {
           sectionTitle: c.section.title,
           anchor: c.section.anchor,
           embedding,
-          tsvector: sql`to_tsvector('german', ${chunk.content})`,
         });
       }
     }

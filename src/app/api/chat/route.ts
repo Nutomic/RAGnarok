@@ -7,7 +7,7 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from "ai";
-import { db } from "../../../db";
+import { insertAuditLog } from "../../../db/audit";
 import {
   getCachedAnswer,
   getCachedEmbedding,
@@ -16,8 +16,8 @@ import {
   sha256,
 } from "../../../db/cache";
 import { hasChunks } from "../../../db/has-chunks";
+import { findProfileById } from "../../../db/profiles";
 import { retrieveHybrid } from "../../../db/retrieve";
-import { auditLogs } from "../../../db/schema";
 import { embedder } from "../../../ingest/embed";
 import { getLangfuse } from "../../../langfuse";
 import { costFor } from "../../../prices";
@@ -59,11 +59,7 @@ export async function POST(req: Request) {
 
   // Demo profiles replace auth: visibility is enforced in the retrieval SQL.
   // Without a profile id the default (Standard, public-only) profile applies.
-  const profile = profileId
-    ? await db.query.demoProfiles.findFirst({
-        where: (p, { eq }) => eq(p.id, profileId),
-      })
-    : undefined;
+  const profile = profileId ? await findProfileById(profileId) : undefined;
   if (profileId && !profile) {
     return Response.json({ error: "Unbekanntes Profil." }, { status: 400 });
   }
@@ -178,6 +174,9 @@ ${context}`;
         writer.write({ type: "text-start", id: "cached" });
         writer.write({ type: "text-delta", id: "cached", delta: cachedAnswer.answerText });
         writer.write({ type: "text-end", id: "cached" });
+        // The generation path gets this from toUIMessageStream; the replay
+        // must emit it too or the UI never sees the stream as complete.
+        writer.write({ type: "finish" });
       } else if (result) {
         writer.merge(toUIMessageStream({ stream: result.stream }));
         const usage = await result.usage;
@@ -223,7 +222,7 @@ ${context}`;
       });
     },
     onEnd: async () => {
-      await db.insert(auditLogs).values({
+      await insertAuditLog({
         profileId: profile?.id ?? null,
         prompt,
         model: modelName,

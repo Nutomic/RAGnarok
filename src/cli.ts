@@ -1,4 +1,4 @@
-import { deleteDocumentByTitle } from "./db/delete";
+import { deleteDocumentByTitle } from "./db/documents";
 import { evalReport } from "./eval/eval-report";
 import { evaluateGeneration } from "./eval/evaluate-generation";
 import { evaluateRetrieval } from "./eval/evaluate-retrieval";

@@ -1,77 +1,13 @@
-import { sql } from "drizzle-orm";
 import Link from "next/link";
-import { db } from "../../db";
+import { chunkRefsFor, listAuditEntries } from "../../db/audit";
 import { costFor } from "../../prices";
-import { citationUrl } from "../citations";
 import { fmtCost } from "../components/types";
-
-interface AuditRow extends Record<string, unknown> {
-  id: string;
-  createdAt: string;
-  prompt: string;
-  model: string | null;
-  profileName: string | null;
-  inputTokens: number;
-  outputTokens: number;
-  cacheHit: boolean;
-  chunkIds: string[];
-}
-
-// Section metadata for the cited chunks, so a reviewer can check the sources
-// without leaving the table.
-interface ChunkRef {
-  label: string;
-  url: string;
-}
-
-interface ChunkRow extends Record<string, unknown> {
-  id: string;
-  celex: string | null;
-  anchor: string | null;
-  section_type: string;
-  section_number: number;
-}
 
 export const dynamic = "force-dynamic";
 
 export default async function AuditPage() {
-  const rows = await db.execute<AuditRow>(sql`
-    SELECT a.id, to_char(a.created_at, 'DD.MM.YYYY HH24:MI') AS "createdAt", a.prompt, a.model,
-           p.name AS "profileName", a.input_tokens AS "inputTokens",
-           a.output_tokens AS "outputTokens", a.cache_hit AS "cacheHit", a.chunk_ids AS "chunkIds"
-    FROM audit_logs a
-    LEFT JOIN demo_profiles p ON p.id = a.profile_id
-    ORDER BY a.created_at DESC
-    LIMIT 100
-  `);
-
-  const chunkIds = [...new Set(rows.rows.flatMap((r) => r.chunkIds ?? []))];
-  const chunks = chunkIds.length
-    ? await db.execute<{
-        id: string;
-        celex: string | null;
-        anchor: string | null;
-        section_type: string;
-        section_number: number;
-      }>(sql`
-        SELECT c.id, d.celex, c.anchor, c.section_type, c.section_number
-        FROM chunks c
-        JOIN documents d ON d.id = c.document_id
-        WHERE c.id = ANY(${sql.param(chunkIds)}::uuid[])
-      `)
-    : { rows: [] as ChunkRow[] };
-  const chunkRefs = new Map<string, ChunkRef>(
-    chunks.rows.map((c) => [
-      c.id,
-      {
-        label:
-          c.section_type === "article"
-            ? `Artikel ${c.section_number}`
-            : `Erwägungsgrund ${c.section_number}`,
-        url: c.celex ? citationUrl(c.celex, c.anchor) : "",
-      },
-    ]),
-  );
+  const rows = await listAuditEntries();
+  const chunkRefs = await chunkRefsFor([...new Set(rows.flatMap((r) => r.chunkIds ?? []))]);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -92,7 +28,7 @@ export default async function AuditPage() {
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 p-4 sm:px-6">
-        {rows.rows.length === 0 ? (
+        {rows.length === 0 ? (
           <p className="text-sm text-stone-500 dark:text-stone-400">
             Noch keine Einträge. Sobald der Chat benutzt wird, landet jede Anfrage hier.
           </p>
@@ -110,7 +46,7 @@ export default async function AuditPage() {
                 </tr>
               </thead>
               <tbody>
-                {rows.rows.map((r) => {
+                {rows.map((r) => {
                   const cost = r.model ? costFor(r.model, r.inputTokens, r.outputTokens) : null;
                   return (
                     <tr

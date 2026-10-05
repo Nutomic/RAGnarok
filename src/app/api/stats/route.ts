@@ -1,5 +1,4 @@
-import { sql } from "drizzle-orm";
-import { db } from "../../../db";
+import { countCacheHits } from "../../../db/audit";
 import { getLangfuseCredentials, LANGFUSE_HOST } from "../../../langfuse";
 
 interface LangfuseTrace {
@@ -67,11 +66,7 @@ export async function GET() {
     avgCostEur: avgCost,
     retrievalSpans: observations.filter((o) => o.type === "SPAN" && o.name === "retrieval").length,
     generations: observations.filter((o) => o.type === "GENERATION").length,
-    cacheHits: (
-      await db.execute<{ n: number }>(sql`
-      SELECT count(*)::int AS n FROM audit_logs WHERE cache_hit
-    `)
-    ).rows[0].n,
+    cacheHits: await countCacheHits(),
   };
   cache = { at: Date.now(), stats };
   return Response.json(stats);
