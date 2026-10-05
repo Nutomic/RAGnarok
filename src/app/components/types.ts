@@ -3,6 +3,8 @@ import type { Citation } from "../citations";
 
 export interface AnswerStats {
   retrievalMs: number;
+  // Cross-encoder rerank latency; present only when reranking is enabled.
+  rerankMs?: number;
   generationMs: number;
   inputTokens: number;
   outputTokens: number;

@@ -53,6 +53,17 @@ export function Sources({
               >
                 fts {c.ftsRank ?? "-"}
               </span>
+              {c.rerankRank !== undefined && (
+                <>
+                  {" · "}
+                  <span
+                    title={`Platz ${c.rerankRank} nach dem Cross-Encoder-Rerank`}
+                    className="cursor-help border-b border-dotted"
+                  >
+                    rer {c.rerankRank}
+                  </span>
+                </>
+              )}
             </span>
             <p className="mt-1 text-[13px] leading-snug text-stone-600 dark:text-stone-400">
               {c.excerpt}…

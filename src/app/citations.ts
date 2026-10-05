@@ -7,6 +7,8 @@ export interface Citation {
   // Rank within the vector and FTS branches before RRF fusion; null = not hit.
   vecRank: number | null;
   ftsRank: number | null;
+  // Rank after cross-encoder rerank; present only when reranking is enabled.
+  rerankRank?: number;
   excerpt: string;
 }
 
@@ -17,7 +19,7 @@ export function citationUrl(celex: string, anchor: string | null): string {
   return anchor ? `${base}#${anchor}` : base;
 }
 
-export function chunkCitation(chunk: RetrievedChunk): Citation {
+export function chunkCitation(chunk: RetrievedChunk, rerankRank?: number): Citation {
   const label =
     chunk.sectionType === "article"
       ? `Artikel ${chunk.sectionNumber}`
@@ -28,6 +30,7 @@ export function chunkCitation(chunk: RetrievedChunk): Citation {
     url: chunk.celex ? citationUrl(chunk.celex, chunk.anchor) : "",
     vecRank: chunk.vecRank,
     ftsRank: chunk.ftsRank,
+    ...(rerankRank !== undefined ? { rerankRank } : {}),
     excerpt: chunk.content.slice(0, 160),
   };
 }

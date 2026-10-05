@@ -17,14 +17,19 @@ import {
 } from "../../../db/cache";
 import { hasChunks } from "../../../db/has-chunks";
 import { findProfileById } from "../../../db/profiles";
+import type { RetrievedChunk } from "../../../db/retrieve";
 import { retrieveHybrid } from "../../../db/retrieve";
 import { embedder } from "../../../ingest/embed";
 import { getLangfuse } from "../../../langfuse";
 import { costFor } from "../../../prices";
+import { getReranker } from "../../../rerank";
 import { chunkCitation } from "../../citations";
 
 // Reject oversized prompts before LLM call
 export const MAX_PROMPT_CHARS = 200;
+
+// Candidate pool size for the opt-in cross-encoder reranker.
+const RERANK_CANDIDATES = 20;
 
 const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY || undefined,
@@ -91,10 +96,25 @@ export async function POST(req: Request) {
     ({ embedding } = await embedder.embed(prompt, "query"));
     await putCachedEmbedding(prompt, embedding);
   }
-  const retrieved = await retrieveHybrid(prompt, embedding, {
-    k: 5,
-    profileVisibility,
-  });
+  const reranker = getReranker();
+  let rerankMs: number | undefined;
+  let retrieved: RetrievedChunk[];
+  if (reranker) {
+    // Rerank needs a pool larger than the final k to be worth anything.
+    const pool = await retrieveHybrid(prompt, embedding, {
+      k: RERANK_CANDIDATES,
+      candidates: RERANK_CANDIDATES,
+      profileVisibility,
+    });
+    const rerankStart = Date.now();
+    retrieved = await reranker.rerank(prompt, pool);
+    rerankMs = Date.now() - rerankStart;
+  } else {
+    retrieved = await retrieveHybrid(prompt, embedding, {
+      k: 5,
+      profileVisibility,
+    });
+  }
   const retrievalMs = Date.now() - retrievalStart;
   trace?.span({
     name: "retrieval",
@@ -108,9 +128,16 @@ export async function POST(req: Request) {
       ftsRank: c.ftsRank,
       score: Number(c.score.toFixed(6)),
     })),
-    metadata: { k: 5, profileVisibility, retrievedCount: retrieved.length },
+    metadata: {
+      k: 5,
+      profileVisibility,
+      retrievedCount: retrieved.length,
+      ...(rerankMs !== undefined ? { rerankMs } : {}),
+    },
   });
-  const citations = retrieved.map(chunkCitation);
+  const citations = retrieved.map((c, i) =>
+    rerankMs !== undefined ? chunkCitation(c, i + 1) : chunkCitation(c),
+  );
 
   const context = retrieved
     .map((c, i) => `[${i + 1}] ${c.sectionTitle}: ${c.content}`)
@@ -197,6 +224,7 @@ ${context}`;
         type: "data-stats",
         data: {
           retrievalMs,
+          ...(rerankMs !== undefined ? { rerankMs } : {}),
           generationMs,
           inputTokens,
           outputTokens,

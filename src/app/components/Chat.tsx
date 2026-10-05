@@ -20,8 +20,9 @@ function StatsLine({ stats }: { stats: AnswerStats }) {
   const cost = stats.cacheHit ? "aus Cache" : fmtCost(stats.costEur);
   return (
     <p className="mt-2 border-t border-stone-100 pt-2 font-mono text-xs text-stone-400 dark:border-stone-800">
-      {retrieval} Suche · {(stats.generationMs / 1000).toFixed(1)} s Antwort · Input{" "}
-      {stats.inputTokens} / Output {stats.outputTokens} Tokens · {cost}
+      {retrieval} Suche · {(stats.generationMs / 1000).toFixed(1)} s Antwort
+      {stats.rerankMs !== undefined && ` · Rerank ${stats.rerankMs} ms`} · Input {stats.inputTokens}{" "}
+      / Output {stats.outputTokens} Tokens · {cost}
     </p>
   );
 }
