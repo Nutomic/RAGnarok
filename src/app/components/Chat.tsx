@@ -1,4 +1,5 @@
 import type { UIMessage } from "ai";
+import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Citation } from "../citations";
@@ -116,7 +117,31 @@ export function Chat({
 }) {
   const busy = status === "submitted" || status === "streaming";
   const tooLong = input.length > MAX_PROMPT_CHARS;
+  // Follow the stream only while the user is already near the bottom, so
+  // scrolling up to read stays put. The form is the scroll target, not the
+  // document bottom: on mobile the sources list continues below the chat and
+  // scrolling the page would land there.
+  const stickToBottom = useRef(true);
+  const formRef = useRef<HTMLFormElement>(null);
 
+  useEffect(() => {
+    const onScroll = () => {
+      stickToBottom.current =
+        window.innerHeight + window.scrollY >= document.body.scrollHeight - 120;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // messages is only the trigger: the effect runs on every stream update.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger, not value
+  useEffect(() => {
+    if (!stickToBottom.current || !formRef.current) return;
+    const formBottom = formRef.current.getBoundingClientRect().bottom + window.scrollY;
+    window.scrollTo({
+      top: Math.max(formBottom - window.innerHeight, 0),
+      behavior: "instant",
+    });
+  }, [messages]);
   return (
     <section className="flex min-w-0 flex-1 flex-col gap-3">
       {messages.length === 0 && !busy && (
@@ -159,11 +184,12 @@ export function Chat({
       {error && <p className="text-sm text-red-600">{error.message}</p>}
 
       <form
+        ref={formRef}
         onSubmit={(e) => {
           e.preventDefault();
           submit(input);
         }}
-        className="sticky bottom-4 mt-auto flex gap-2 rounded-xl border border-stone-200 bg-white p-2 shadow-sm dark:border-stone-800 dark:bg-stone-900"
+        className="mt-auto flex gap-2 rounded-xl border border-stone-200 bg-white p-2 shadow-sm dark:border-stone-800 dark:bg-stone-900"
       >
         <input
           value={input}
