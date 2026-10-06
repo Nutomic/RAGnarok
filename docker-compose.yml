@@ -43,7 +43,9 @@ services:
       - "127.0.0.1:3001:3000"
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     restart: unless-stopped
     env_file: .env
     depends_on:
