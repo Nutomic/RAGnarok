@@ -72,6 +72,34 @@ Manual steps on a fresh install:
 The stats line under each answer and the p95/cost chip in the header read
 Langfuse via `/api/stats`. Keys stay in `.env`, they grant trace read access.
 
+## MCP
+
+The retrieval stack is exposed over the Model Context Protocol: any MCP client
+(Claude Desktop, etc.) can search the corpus with permission enforcement intact.
+A dependency-free single-file server (`mcp-server.mjs`) speaks
+stdio JSON-RPC and calls the app's HTTP API — retrieval, embeddings and
+visibility enforcement stay server-side.
+
+Download mcp server file:
+`wget https://github.com/Nutomic/RAGnarok/raw/refs/heads/master/mcp-server.mjs`
+
+Update your harness config:
+```json
+{
+  "mcpServers": {
+    "ragnarok": {
+      "command": "node",
+      "args": [
+        "/path/to/mcp-server.mjs"
+      ]
+    }
+  }
+}
+```
+
+Tools: `list_documents()` for a corpus overview., `search_documents(query, k?, profile?)` for hybrid retrieval.
+The API routes behind them are `GET /api/documents` and `GET /api/search`.
+
 ## Judge generation
 
 ```

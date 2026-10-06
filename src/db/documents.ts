@@ -55,6 +55,37 @@ export async function insertChunk(values: {
   });
 }
 
+export interface DocumentInfo {
+  title: string;
+  celex: string;
+  sourceUrl: string;
+  visibility: "public" | "compliance";
+  chunkCount: number;
+}
+
+export async function listDocuments(): Promise<DocumentInfo[]> {
+  const rows = await db.execute<{
+    title: string;
+    celex: string;
+    source_url: string;
+    visibility: "public" | "compliance";
+    chunk_count: number;
+  }>(sql`
+    SELECT d.title, d.celex, d.source_url, d.visibility, count(c.id)::int AS chunk_count
+    FROM documents d
+    LEFT JOIN chunks c ON c.document_id = d.id
+    GROUP BY d.id
+    ORDER BY d.title
+  `);
+  return rows.rows.map((r) => ({
+    title: r.title,
+    celex: r.celex,
+    sourceUrl: r.source_url,
+    visibility: r.visibility,
+    chunkCount: Number(r.chunk_count),
+  }));
+}
+
 export async function deleteDocumentById(documentId: string): Promise<void> {
   await db.delete(documents).where(sql`${documents.id} = ${documentId}`);
 }
