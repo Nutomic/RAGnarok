@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-slim AS deps
+FROM node:26-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 # onnxruntime-web is the browser backend, we only need onnxruntime-node
 RUN npm ci && rm -rf node_modules/onnxruntime-web
 
-FROM node:22-slim AS runner
+FROM node:26-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
