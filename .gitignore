@@ -13,3 +13,6 @@ next-env.d.ts
 
 # env
 .env
+
+# eval run artifacts (generated), report.md is copied into README manually
+data/eval/

@@ -32,6 +32,7 @@ export class TransformersReranker implements Reranker {
   }
 
   async rerank(query: string, chunks: RetrievedChunk[]): Promise<RetrievedChunk[]> {
+    if (chunks.length === 0) return [];
     const { tokenizer, model } = await this.load();
     const inputs = tokenizer(new Array(chunks.length).fill(query), {
       text_pair: chunks.map((c) => c.content),
@@ -49,3 +50,7 @@ export class TransformersReranker implements Reranker {
 export function getReranker(): TransformersReranker | null {
   return process.env.RERANK_ENABLED === "true" ? new TransformersReranker() : null;
 }
+
+// Shared instance for the retrieval benchmark; keeps the model loaded across
+// queries (getReranker() is per-process for the prod opt-in path).
+export const evalReranker = new TransformersReranker();

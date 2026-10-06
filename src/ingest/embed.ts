@@ -20,9 +20,9 @@ type Extractor = {
 ) => Promise<{ data: Float32Array }>);
 
 // In-process embeddings via transformers.js (ONNX). No separate service.
-// multilingual-e5-base: 768-dim, ~1.1 GB, runs on CPU; q8 quantization is
-// ~2x faster with much less RAM. e5 models require a "passage: " prefix for
-// documents (queries use "query: ").
+// multilingual-e5-base: 768-dim, ~1.1 GB, runs on CPU; q8 is ~2x faster with
+// much less RAM and measured equal-or-better than fp32 on the golden set.
+// e5 models require a "passage: " prefix for documents (queries use "query: ").
 export class TransformersEmbedder implements Embedder {
   private extractor: Promise<Extractor>;
 

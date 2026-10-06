@@ -1,9 +1,9 @@
 import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateText } from "ai";
 import { z } from "zod";
-import { retrieveHybrid } from "../db/retrieve";
+import { type RetrieveStrategy, retrieveByStrategy } from "../db/retrieve";
 import { chatModel, judgeModel, systemPrompt } from "../generate";
 import { TransformersEmbedder } from "../ingest/embed";
 import type { GoldenQuestion } from "./evaluate-retrieval";
@@ -58,9 +58,9 @@ async function judgeJSON<T>(prompt: string, schema: z.ZodType<T>, maxAttempts = 
   });
 }
 
-export async function evaluateGeneration() {
+export async function judgeGeneration(strategy: RetrieveStrategy = "hybrid") {
   const golden = JSON.parse(
-    readFileSync(join(process.cwd(), "data/eval/golden.json"), "utf8"),
+    readFileSync(join(process.cwd(), "data/golden.json"), "utf8"),
   ) as GoldenQuestion[];
   const model = chatModel();
   const embedder = new TransformersEmbedder();
@@ -78,9 +78,9 @@ export async function evaluateGeneration() {
   for (const [i, q] of answerable.entries()) {
     console.log(`[${i + 1}/${answerable.length}] generating: ${q.q}`);
     const { embedding } = await embedder.embed(q.q, "query");
-    const retrieved = await retrieveHybrid(q.q, embedding, {
+    const retrieved = await retrieveByStrategy(strategy, q.q, embedding, {
       k: 5,
-      profileVisibility: "compliance",
+      visibility: "compliance",
     });
     const { text } = await generateText({
       model,
@@ -136,9 +136,9 @@ Antworte ausschließlich mit einem JSON-Objekt: {"score": <0 bis 1>}`,
   const refusalJudged: { question: string; refused: boolean }[] = [];
   for (const q of abstentions) {
     const { embedding } = await embedder.embed(q.q, "query");
-    const retrieved = await retrieveHybrid(q.q, embedding, {
+    const retrieved = await retrieveByStrategy(strategy, q.q, embedding, {
       k: 5,
-      profileVisibility: "compliance",
+      visibility: "compliance",
     });
     console.log(`generating abstention: ${q.q}`);
     const { text } = await generateText({
@@ -196,7 +196,7 @@ Antworte ausschließlich mit einem JSON-Objekt: {"refused": <true oder false>}`,
     }
   }
 
-  const path = join(process.cwd(), "data/eval/results.json");
+  const path = join(process.cwd(), "data/eval/generation.json");
   let results: Record<string, unknown> = {};
   try {
     results = JSON.parse(readFileSync(path, "utf8"));
@@ -207,11 +207,18 @@ Antworte ausschließlich mit einem JSON-Objekt: {"refused": <true oder false>}`,
   results.sha = sha;
   results.model = chatModel().modelId;
   results.judge = process.env.JUDGE_MODEL ?? "unknown";
-  results.generation = metrics;
-  results.questions = judged;
-  results.refusals = refusalJudged;
+  results.generation = {
+    ...((results.generation as object | undefined) ?? {}),
+    [strategy]: metrics,
+  };
+  results.questions = { ...((results.questions as object | undefined) ?? {}), [strategy]: judged };
+  results.refusals = {
+    ...((results.refusals as object | undefined) ?? {}),
+    [strategy]: refusalJudged,
+  };
+  mkdirSync(join(process.cwd(), "data/eval"), { recursive: true });
   writeFileSync(path, `${JSON.stringify(results, null, 2)}\n`);
-  console.log("results written to data/eval/results.json");
+  console.log("results written to data/eval/generation.json");
 
   return metrics;
 }

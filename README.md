@@ -38,7 +38,7 @@ docker compose run --rm app npm run cli -- ingest
 ```
 
 Idempotent: re-running skips already-ingested documents. The same CLI runs the
-evals (`evaluate-retrieval`, `evaluate-generation`, `eval-report`).
+evals (`evaluate-retrieval`, `judge-generation`, `eval-report`).
 
 ### Langfuse setup
 

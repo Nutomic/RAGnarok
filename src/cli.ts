@@ -1,13 +1,13 @@
 import { deleteDocumentByTitle } from "./db/documents";
 import { evalReport } from "./eval/eval-report";
-import { evaluateGeneration } from "./eval/evaluate-generation";
 import { evaluateRetrieval } from "./eval/evaluate-retrieval";
+import { judgeGeneration } from "./eval/judge-generation";
 import { checkRetrieve } from "./eval/retrieval-check";
 import { ingest } from "./ingest/run";
 
 function usage(): never {
   console.error(`usage: node cli.js <command>
-commands: ingest, delete <title>, check-retrieval, evaluate-retrieval, evaluate-generation, eval-report`);
+commands: ingest, delete <title>, check-retrieval, evaluate-retrieval, judge-generation, eval-report`);
   process.exit(1);
 }
 
@@ -34,8 +34,13 @@ async function main() {
     await checkRetrieve();
   } else if (command === "evaluate-retrieval") {
     await evaluateRetrieval();
-  } else if (command === "evaluate-generation") {
-    await evaluateGeneration();
+  } else if (command === "judge-generation") {
+    const strategy = process.argv[3] as "fts" | "vector" | "hybrid" | "rerank" | undefined;
+    if (strategy !== undefined && !["fts", "vector", "hybrid", "rerank"].includes(strategy)) {
+      console.error(`judge-generation: unknown strategy "${strategy}"`);
+      process.exit(1);
+    }
+    await judgeGeneration(strategy);
   } else if (command === "eval-report") {
     evalReport();
   } else {

@@ -68,7 +68,7 @@ export async function POST(req: Request) {
   if (profileId && !profile) {
     return Response.json({ error: "Unbekanntes Profil." }, { status: 400 });
   }
-  const profileVisibility = profile?.visibility ?? "public";
+  const visibility = profile?.visibility ?? "public";
 
   // If no documents were ingested, fail loudly instead of silently hallucinating.
   if (!(await hasChunks())) {
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
   const langfuse = await getLangfuse();
   const trace = langfuse?.trace({
     name: "chat",
-    metadata: { profileId: profile?.id ?? null, profileVisibility, promptChars: prompt.length },
+    metadata: { profileId: profile?.id ?? null, visibility, promptChars: prompt.length },
   });
 
   const retrievalStart = Date.now();
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
     const pool = await retrieveHybrid(prompt, embedding, {
       k: RERANK_CANDIDATES,
       candidates: RERANK_CANDIDATES,
-      profileVisibility,
+      visibility,
     });
     const rerankStart = Date.now();
     retrieved = await reranker.rerank(prompt, pool);
@@ -112,7 +112,7 @@ export async function POST(req: Request) {
   } else {
     retrieved = await retrieveHybrid(prompt, embedding, {
       k: 5,
-      profileVisibility,
+      visibility,
     });
   }
   const retrievalMs = Date.now() - retrievalStart;
@@ -130,7 +130,7 @@ export async function POST(req: Request) {
     })),
     metadata: {
       k: 5,
-      profileVisibility,
+      visibility,
       retrievedCount: retrieved.length,
       ...(rerankMs !== undefined ? { rerankMs } : {}),
     },
@@ -150,7 +150,7 @@ export async function POST(req: Request) {
   // Standard profile: make the missing DS-GVO permission visible in the answer
   // instead of silently answering from the remaining corpus.
   const permissionNote =
-    profileVisibility === "public"
+    visibility === "public"
       ? "Das aktive Profil sieht nur die KI-Verordnung. Bezieht sich eine Frage eindeutig auf die DS-GVO, weise darauf hin, dass diese Dokumente für das Profil nicht freigegeben sind, und nenne, dass sich das Profil über den Schalter oben rechts auf Compliance umstellen lässt."
       : "";
 
@@ -166,9 +166,7 @@ ${context}`;
 
   // The system prompt carries the full retrieved chunk content and the
   // permission note, so keying on it means any corpus or profile change misses.
-  const answerKey = sha256(
-    JSON.stringify([modelName, systemPrompt, historyMessages, profileVisibility]),
-  );
+  const answerKey = sha256(JSON.stringify([modelName, systemPrompt, historyMessages, visibility]));
   const cachedAnswer = await getCachedAnswer(answerKey);
   const generationStart = Date.now();
   const result = cachedAnswer
@@ -246,7 +244,7 @@ ${context}`;
           total: inputTokens + outputTokens,
           unit: "TOKENS",
         },
-        metadata: { promptChars: prompt.length, profileVisibility },
+        metadata: { promptChars: prompt.length, visibility },
       });
     },
     onEnd: async () => {
