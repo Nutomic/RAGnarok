@@ -20,16 +20,16 @@ type Extractor = {
 ) => Promise<{ data: Float32Array }>);
 
 // In-process embeddings via transformers.js (ONNX). No separate service.
-// multilingual-e5-small: 384-dim, ~470 MB, runs on CPU. e5 models require a
-// "passage: " prefix for documents (queries use "query: ").
+// multilingual-e5-base: 768-dim, ~1.1 GB, runs on CPU; q8 quantization is
+// ~2x faster with much less RAM. e5 models require a "passage: " prefix for
+// documents (queries use "query: ").
 export class TransformersEmbedder implements Embedder {
   private extractor: Promise<Extractor>;
 
   constructor() {
-    this.extractor = pipeline(
-      "feature-extraction",
-      "Xenova/multilingual-e5-small",
-    ) as unknown as Promise<Extractor>;
+    this.extractor = pipeline("feature-extraction", "Xenova/multilingual-e5-base", {
+      dtype: "q8",
+    }) as unknown as Promise<Extractor>;
   }
 
   async embed(text: string, mode: "passage" | "query" = "passage"): Promise<EmbedResult> {
