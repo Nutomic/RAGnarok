@@ -1,0 +1,1 @@
+CREATE INDEX "chunks_tsvector_gin_idx" ON "chunks" USING gin ("tsvector");
