@@ -1,6 +1,6 @@
 [
   {
-    "q": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+    "q": "Wie lange darf ein Unternehmen Daten über mich aufbewahren?",
     "type": "factual",
     "doc": "32016R0679",
     "section": {
@@ -9,7 +9,7 @@
     }
   },
   {
-    "q": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+    "q": "Unter welchen Voraussetzungen darf eine Firma Daten über mich verarbeiten?",
     "type": "factual",
     "doc": "32016R0679",
     "section": {
@@ -27,7 +27,7 @@
     }
   },
   {
-    "q": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+    "q": "In welchen Situationen braucht ein Unternehmen eine Datenschutzbeauftragte Person?",
     "type": "factual",
     "doc": "32016R0679",
     "section": {
@@ -36,7 +36,7 @@
     }
   },
   {
-    "q": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+    "q": "Darf meine Firma Kundendaten an einen Dienstleister außerhalb der EU weitergeben?",
     "type": "factual",
     "doc": "32016R0679",
     "section": {
@@ -45,7 +45,7 @@
     }
   },
   {
-    "q": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+    "q": "Unter welchen Umständen habe ich Anspruch darauf, dass eine Firma meine Daten tilgt?",
     "type": "factual",
     "doc": "32016R0679",
     "section": {
@@ -54,7 +54,7 @@
     }
   },
   {
-    "q": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+    "q": "Was müssen Unternehmen tun, um Kundendaten vor unbefugtem Zugriff zu schützen?",
     "type": "factual",
     "doc": "32016R0679",
     "section": {
@@ -72,7 +72,7 @@
     }
   },
   {
-    "q": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+    "q": "Nach welchen Kriterien wird ein KI-System als risikoreich eingestuft?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -81,7 +81,7 @@
     }
   },
   {
-    "q": "Welche KI-Praktiken sind nach der KI-Verordnung verboten?",
+    "q": "Welche Anwendungen von künstlicher Intelligenz sind in der EU untersagt?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -90,7 +90,7 @@
     }
   },
   {
-    "q": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+    "q": "Welche Verpflichtungen treffen Firmen, die ein KI-System mit hohem Risiko einsetzen?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -99,7 +99,7 @@
     }
   },
   {
-    "q": "Was verlangt die KI-Verordnung zur menschlichen Aufsicht von Hochrisiko-KI-Systemen?",
+    "q": "Muss ein Mensch eingreifen können, wenn ein risikoreiches KI-System falsch entscheidet?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -108,7 +108,7 @@
     }
   },
   {
-    "q": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+    "q": "Muss mir mitgeteilt werden, dass ich mit künstlicher Intelligenz statt mit einem Menschen spreche?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -117,7 +117,7 @@
     }
   },
   {
-    "q": "Welche Anforderungen stellt die KI-Verordnung an die Datenqualität von Hochrisiko-KI-Systemen?",
+    "q": "Wie gut müssen die Trainingsdaten sein, mit denen ein risikoreiches KI-Modell lernt?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -126,7 +126,7 @@
     }
   },
   {
-    "q": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+    "q": "Müssen Firmen ihre Mitarbeitenden im Umgang mit künstlicher Intelligenz schulen?",
     "type": "factual",
     "doc": "32024R1689",
     "section": {
@@ -135,7 +135,7 @@
     }
   },
   {
-    "q": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+    "q": "Welche Vorgaben gibt es, wenn ein Dienst auch von Minderjährigen genutzt wird?",
     "type": "cross-article",
     "doc": "32016R0679",
     "sections": [
@@ -150,7 +150,7 @@
     ]
   },
   {
-    "q": "Wann ist eine Datenschutzfolgeabschätzung durchzuführen?",
+    "q": "Wann muss vorab geprüft werden, ob ein Vorhaben ein hohes Datenschutzrisiko birgt?",
     "type": "cross-article",
     "doc": "32016R0679",
     "sections": [
@@ -165,7 +165,7 @@
     ]
   },
   {
-    "q": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+    "q": "Was müssen Dienstleister beachten, die im Auftrag anderer Firmen Daten verarbeiten?",
     "type": "cross-article",
     "doc": "32016R0679",
     "sections": [
@@ -180,7 +180,7 @@
     ]
   },
   {
-    "q": "Was muss bei einem Verstoß gegen den Datenschutz passieren?",
+    "q": "Kundendaten sind abhandengekommen – was muss eine Firma jetzt unternehmen?",
     "type": "cross-article",
     "doc": "32016R0679",
     "sections": [
@@ -195,7 +195,7 @@
     ]
   },
   {
-    "q": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+    "q": "Welche Anforderungen gelten während der gesamten Entwicklungs- und Nutzungsphase eines risikoreichen KI-Systems?",
     "type": "cross-article",
     "doc": "32024R1689",
     "sections": [
@@ -214,7 +214,7 @@
     ]
   },
   {
-    "q": "Welche Pflichten haben Anbieter von Hochrisiko-KI-Systemen über den gesamten Lebenszyklus?",
+    "q": "Was muss der Hersteller eines risikoreichen KI-Systems von der Entwicklung bis zur Markteinführung sicherstellen?",
     "type": "cross-article",
     "doc": "32024R1689",
     "sections": [
@@ -229,7 +229,7 @@
     ]
   },
   {
-    "q": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+    "q": "Woran erkenne ich ein risikoreiches KI-System, und welche Erläuterungen bekomme ich dazu?",
     "type": "cross-article",
     "doc": "32024R1689",
     "sections": [
@@ -244,7 +244,7 @@
     ]
   },
   {
-    "q": "Welche Pflichten gelten für Anbieter von General-Purpose-KI-Modellen?",
+    "q": "Was müssen Firmen tun, die ein allgemeines KI-Basismodell herausbringen?",
     "type": "cross-article",
     "doc": "32024R1689",
     "sections": [
