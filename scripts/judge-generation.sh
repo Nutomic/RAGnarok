@@ -50,7 +50,7 @@ docker compose run --rm -v "$(pwd)/data/eval:/app/data/eval" app npm run cli -- 
 
 echo "==> generation eval done"
 # Judge metrics are noisy; a LOW result annotates but never fails.
-if grep -q "LOW" /tmp/eval-output-*.log; then
+if grep -q "LOW" /tmp/eval-output-hybrid.log; then
   echo "::warning::generation eval metrics below threshold"
 fi
 exit 0

@@ -7,6 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
+    "includes": ["**", "!**/*.svg"],
     "maxSize": 2097152
   },
   "formatter": {

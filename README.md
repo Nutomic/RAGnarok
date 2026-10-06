@@ -4,16 +4,17 @@ DSGVO-first, permission-aware RAG assistant over a company's internal documents,
 
 ## Evaluation
 
-![Bar graph visualizing the metrics below](data/eval/eval-results.svg)
+![Bar graph visualizing the metrics below](data/eval/chart.svg)
 
-| Metrik | Wert | Bedeutung |
-|---|---|---|
-| hit_at_5 | 70% | erwarteter Artikel/Erwägungsgrund in Top 5 |
-| mrr_at_5 | 46% | mittlere Position des ersten Treffers |
-| context_recall | 87% | Anteil aller erwarteten Abschnitte gefunden |
-| faithfulness | 92% | Anteil belegter Aussagen (LLM-Judge) |
-| relevancy | 85% | Antwort beantwortet die Frage (LLM-Judge) |
-| refusal_rate | 100% | Abstention-Fragen korrekt abgelehnt |
+## Retrieval strategies (golden set, n=23 answerable)
+| Strategie | hit@5 | mrr@5 | context recall | SQL-Latenz (mean) |
+|---|---|---|---|---|
+| fts | 35% | 16% | 28% | 6.7ms |
+| vector | 78% | 54% | 72% | 5.2ms |
+| hybrid | 83% | 60% | 74% | 7.1ms |
+| rerank | 78% | 63% | 76% | 4692.3ms |
+_Embedding: 24.9ms mean (einmal pro Frage) · 2026-10-06T11:41:48.207Z_
+__
 
 _Modell: `ministral-14b-latest` · Judge: `zai-org/GLM-5.3-Flash` · Commit: `be9f3e97a`_
 
@@ -70,3 +71,12 @@ Manual steps on a fresh install:
 
 The stats line under each answer and the p95/cost chip in the header read
 Langfuse via `/api/stats`. Keys stay in `.env`, they grant trace read access.
+
+## Judge generation
+
+```
+# populate JUDGE_ variables in .env
+./scripts/integration-test.sh # write retrieval report
+./scripts/judge-generation.sh # write generation report
+docker compose run --rm -v "$(pwd)/data/eval:/app/data/eval" app npm run cli -- eval-report # generate report svg
+```

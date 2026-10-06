@@ -1,0 +1,922 @@
+{
+  "timestamp": "2026-10-06T13:52:42.194Z",
+  "sha": "unknown",
+  "model": "ministral-14b-latest",
+  "judge": "zai-org/GLM-5.3-Flash",
+  "generation": {
+    "fts": {
+      "faithfulness": 0.8095652173913043,
+      "relevancy": 0.7043478260869565,
+      "refusal_rate": 1
+    },
+    "vector": {
+      "faithfulness": 0.8891304347826087,
+      "relevancy": 0.7478260869565219,
+      "refusal_rate": 1
+    },
+    "hybrid": {
+      "faithfulness": 0.8913043478260868,
+      "relevancy": 0.8456521739130436,
+      "refusal_rate": 1
+    },
+    "rerank": {
+      "faithfulness": 0.9021739130434783,
+      "relevancy": 0.9239130434782609,
+      "refusal_rate": 1
+    }
+  },
+  "questions": {
+    "fts": [
+      {
+        "question": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+        "faithfulness": 0.8,
+        "unsupportedClaims": [
+          "Nennung von Art. 6 Abs. 1 lit. d DSGVO (lebenswichtige Interessen) als Rechtsgrundlage – wird durch keinen der bereitgestellten Erwägungsgründe belegt (zwar von der Antwort selbst als 'nicht in den Quellen genannt' gekennzeichnet, aber nicht quellengestützt).",
+          "Nennung von Art. 6 Abs. 1 lit. e DSGVO (öffentliche Aufgabe) als Rechtsgrundlage – in den Quelltexten nicht als eigenständige Rechtsgrundlage für die Verarbeitung belegt; EG 50 und EG 68 erwähnen die 'Wahrnehmung einer Aufgabe im öffentlichen Interesse/öffentlicher Gewalt' nur im Kontext der Zweckvereinbarung bzw. des Ausschlusses des Rechts auf Datenübertragbarkeit, zudem ist die Angabe 'nicht in den Quellen genannt' selbst ungenau.",
+          "Einordnung der 'Vereinbarkeit der Zwecke' (Art. 6 Abs. 4) als eigenständige 'mögliche Rechtsgrundlage' – EG 50 sagt ausdrücklich, dass in diesem Fall 'keine andere gesonderte Rechtsgrundlage erforderlich' ist als die für die ursprüngliche Erhebung; die Zweckvereinbarkeit ist kein eigenständiger Rechtsgrundlagen-Tatbestand (die inhaltliche Aussage zur Zulässigkeit bei Zweckvereinbarkeit selbst ist belegt).",
+          "Punkt 2, Ausnahme: 'Wenn die betroffene Person nicht vernünftigerweise mit einer solchen Verarbeitung rechnen musste, überwiegen ihre Interessen' – EG 47 formuliert nur abgeschwächt ('könnten die Interessen und Grundrechte der betroffenen Person das Interesse des Verantwortlichen überwiegen'); die deterministische Formulierung ist in dieser Schärfe nicht belegt."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wie schnell muss ein Datenschutzvorfall gemeldet werden?",
+        "faithfulness": 0.7,
+        "unsupportedClaims": [
+          "Die Bezeichnung 'KI-Verordnung (Verordnung (EU) 2024/1285)' ist nicht belegt: Die Quelltexte nennen keine Verordnungsnummer, und die tatsächliche KI-Verordnung trägt die Nummer (EU) 2024/1689 – die angegebene Nummer 2024/1285 ist falsch.",
+          "Die Aussage, Artikel 33 der DS-GVO sehe eine 72-Stunden-Frist für die Meldung von Datenschutzverstößen vor, ist in den Quelltexten nicht enthalten (faktisch zwar korrekt, aber rein externes Wissen – von der Antwort selbst als nicht quellenbelegt gekennzeichnet)."
+        ],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+        "faithfulness": 0.95,
+        "unsupportedClaims": [],
+        "relevancy": 0.55
+      },
+      {
+        "question": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+        "faithfulness": 0.45,
+        "unsupportedClaims": [
+          "Erwägungsgrund 45 betone, dass die Rechtmäßigkeit der Verarbeitung durch technische und organisatorische Maßnahmen (TOM) sichergestellt werden muss – der Erwägungsgrund erwähnt keine TOM und handelt von gesetzlichen Regelungserfordernissen (Zwecke, Datenarten, Speicherdauer, Empfänger), nicht von Sicherheitsmaßnahmen; die Rahmung als 'Allgemeine Anforderungen an die Sicherheit der Verarbeitung' ist unbelegt",
+          "Die TOM-Anforderungen seien 'indirekt in den ... Grundsätzen der Verarbeitung (Art. 5 DSGVO) angelegt' – Artikel 5 ist nicht in den Quelltexten enthalten",
+          "Die DSGVO enthalte 'Besondere Anforderungen für KI-Reallabore (Artikel 59)' – Artikel 59 stammt aus der KI-Verordnung (AI Act), nicht aus der DSGVO; die Präsentation als DSGVO-Anforderung zur Frage 'Welche Maßnahmen verlangt die DSGVO' ist unbelegt",
+          "Artikel 59 verlange TOM 'z. B. Verschlüsselung, Zugriffsbeschränkungen' – diese Beispiele stehen nicht im Quelltext (dort nur 'geeignete technische und organisatorische Maßnahmen' bzw. 'isolierte und geschützte Datenverarbeitungsumgebung')",
+          "Erwägungsgrund 71 verlange das sichere Speichern 'z. B. durch Verschlüsselung, Zugriffskontrollen' – der Erwägungsgrund nennt keine dieser Beispiele",
+          "Die DSGVO verlange 'keine starren technischen Vorgaben, sondern eine risikobasierte Herangehensweise' – durch die Quellen nicht belegt",
+          "Zusammenfassung: 'Zweckbindung und Datenminimierung' als zentrale Sicherheitsmaßnahme – Datenminimierung ist in den Quellen nicht belegt (Art. 5 fehlt)",
+          "Zusammenfassung: 'Technische Sicherheitsmaßnahmen (z. B. Verschlüsselung, Pseudonymisierung, Zugriffskontrollen)' als von der DSGVO verlangt – in den Quellen nicht als Anforderung belegt",
+          "Zusammenfassung: 'Organisatorische Maßnahmen (z. B. Schulungen, interne Richtlinien, Überwachung)' – Schulungen und interne Richtlinien sind in den Quellen nicht erwähnt",
+          "Zusammenfassung: 'Transparenz und Dokumentation (Nachweis der Einhaltung der Maßnahmen)' – die Rechenschaftspflicht/Nachweispflicht ist in den Quellen nicht belegt",
+          "Die konkreten TOM seien in Artikel 32 DSGVO detailliert geregelt inkl. des wörtlichen Zitats – Artikel 32 ist nicht in den bereitgestellten Quellen enthalten",
+          "Artikel 25 (Datenschutz durch Technikgestaltung) und Artikel 33 (Meldung von Datenschutzverletzungen) enthielten die genannten spezifischen Anforderungen – diese Artikel sind nicht in den Quelltexten enthalten"
+        ],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Welche Geldbußen drohen bei Verstößen gegen die DSGVO?",
+        "faithfulness": 0.67,
+        "unsupportedClaims": [
+          "Für die DSGVO gelten andere Regelungen, insbesondere in Artikel 83 DSGVO, der die Höhe der Geldbußen festlegt."
+        ],
+        "relevancy": 0.3
+      },
+      {
+        "question": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+        "faithfulness": 0.8,
+        "unsupportedClaims": [
+          "Gemäß Artikel 6 Absatz 1 gelten KI-Systeme als Hochrisiko, wenn sie Risiken für die Gesundheit, Sicherheit oder Grundrechte von Personen verursachen können – der Wortlaut des Artikels 6 Absatz 1 ist in den Quelltexten nicht enthalten (Art. 113 nennt nur den Geltungszeitpunkt dieses Absatzes)",
+          "Sie fallen unter die in Anlage III genannten Anwendungsbereiche (als Bedingung des Artikels 6 Absatz 1 – nicht belegt; Anhang III wird in den Quelltexten nur in Zusammenhang mit Artikel 6 Absatz 2 bzw. Anhängen zu Konformität/Registrierung genannt)",
+          "Sie sind biometrische Systeme zur Fernidentifizierung von natürlichen Personen (mit Ausnahme der in Artikel 6 Absatz 2 Buchstabe a genannten Ausnahmen) – nicht belegt; die zitierte Normstruktur 'Artikel 6 Absatz 2 Buchstabe a' existiert in den Quelltexten nicht",
+          "Sie sind KI-Systeme mit einer bestimmten Risikostufe (z. B. durch ihre Auswirkungen auf die Grundrechte oder Sicherheit) – erfundene, nicht belegte Bedingung"
+        ],
+        "relevancy": 0.8
+      },
+      {
+        "question": "Welche Anwendungen von künstlicher Intelligenz sind in der EU untersagt?",
+        "faithfulness": 0.25,
+        "unsupportedClaims": [
+          "'Die Verordnung verbietet biometrische Echtzeit-Fernidentifizierungssysteme in öffentlich zugänglichen Räumen (vgl. [5], Nr. 42 und 44)' – Die Quelltexte enthalten an dieser Stelle nur Begriffsdefinitionen (Art. 3 Nr. 42 und 44), kein Verbot; Artikel 5 Abs. 1 Buchstabe a ist nicht Bestandteil der Quelltexte.",
+          "'Die Verordnung verbietet Emotionserkennungssysteme in Arbeitsumgebungen oder Bildungseinrichtungen (vgl. [5], Nr. 39)' – Nr. 39 ist lediglich die Definition des Begriffs 'Emotionserkennungssystem'; ein Verbot ist in den Quellen nicht enthalten.",
+          "Ausnahme für Emotionserkennung 'für spezifische, begrenzte und rechtlich gerechtfertigte Zwecke (z. B. Sicherheitsüberwachung)' – in den Quelltexten nicht belegt.",
+          "'Systeme, die biometrische Daten zur Identifizierung natürlicher Personen ohne deren aktive Einwilligung verarbeiten (vgl. [5], Nr. 41–43), sind stark eingeschränkt und können als Hochrisiko-KI-Systeme gelten' – Die Quellen enthalten nur Definitionen, keine Einschränkungen oder Risikoklassifizierung; zudem verfälscht die Wiedergabe: Definition Nr. 41 spricht von 'ohne ihre aktive Einbeziehung', nicht von 'ohne deren aktive Einwilligung'.",
+          "Die Ableitung erfolgt 'durch die Regelungen zu Hochrisiko-KI-Systemen' bzw. die 'Risikoklassifizierung' – Die Quelltexte enthalten keine Regelungen zur Einstufung oder zu Verboten von Hochrisiko-KI-Systemen (Erwägungsgrund 161 regelt nur Zuständigkeiten der Marktüberwachung und liefert keine Verbotsableitung).",
+          "'Anbieter müssen sicherstellen, dass solche Systeme [Deepfakes] nicht missbräuchlich eingesetzt werden, insbesondere wenn sie gegen Grundrechte oder die öffentliche Sicherheit verstoßen' – in den Quellen nicht belegt; Nr. 60 ist nur die Deepfake-Definition.",
+          "Zusammenfassung: 'Biometrische Echtzeit-Fernidentifizierung in öffentlich zugänglichen Räumen (Art. 5 Abs. 1 Buchstabe a)' als explizit verbotene Anwendung – Artikel 5 ist nicht in den Quelltexten enthalten, das Verbot ist damit unbelegt.",
+          "Zusammenfassung: 'Emotionserkennung am Arbeitsplatz oder in Bildungseinrichtungen (Art. 5 Abs. 1 Buchstabe b)' als explizit verbotene Anwendung – Artikel 5 ist nicht in den Quelltexten enthalten, das Verbot ist damit unbelegt.",
+          "'Die expliziten Verbote finden sich in anderen Artikeln der KI-Verordnung (z. B. Art. 5)' – Der Inhalt des Artikels 5 ist den Quelltexten nicht entnehmbar; nur die Feststellung, dass Artikel 5 nicht Bestandteil der Quellen ist, ist korrekt."
+        ],
+        "relevancy": 0.3
+      },
+      {
+        "question": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Aussage 1 (teilweise nicht belegt): 'Betreiber müssen Hochrisiko-KI-Systeme so gestalten und verwenden, dass sie deren Funktionsweise verstehen...' – Erwägungsgrund 72 besagt, dass die Hochrisiko-KI-Systeme (durch die Anbieter) 'so gestaltet sein' sollten, dass Betreiber sie verstehen und bewerten können; den Betreibern wird keine eigene Gestaltungspflicht auferlegt. Die Verwendung gemäß Betriebsanleitungen als Betreiberpflicht stützt sich stattdessen auf Erwägungsgrund 91.",
+          "Aussage 2 (leicht übergeneralisiert): 'Betreiber müssen natürliche Personen... über die Verwendung des Systems informieren' – laut Erwägungsgrund 93 gilt diese Unterrichtungspflicht nur für Betreiber 'der in einem Anhang dieser Verordnung aufgeführten Hochrisiko-KI-Systeme' und nur 'gegebenenfalls', wenn sie Entscheidungen treffen oder dabei unterstützen; diese Einschränkung wird in der Antwort nicht erwähnt."
+        ],
+        "relevancy": 0.75
+      },
+      {
+        "question": "Muss ein Mensch eingreifen können, wenn ein risikoreiches KI-System falsch entscheidet?",
+        "faithfulness": 0.7,
+        "unsupportedClaims": [
+          "Die Behauptung, Erwägungsgrund 75 'impliziere, dass menschliche Korrekturmechanismen integriert sein müssen, um falsche Entscheidungen zu korrigieren': Der Erwägungsgrund nennt lediglich technische Lösungen wie Mechanismen zur sicheren Unterbrechung des Systembetriebs (Störungssicherheitspläne) bei Anomalien – menschliche Korrektur- oder Eingriffsmechanismen werden dort nicht erwähnt. 'Falsche Entscheidungen' wird in EG 75 nur als Beispiel für mögliche Schäden bei fehlendem Schutz genannt, nicht als Anknüpfungspunkt für eine Korrekturmaßnahme durch Menschen.",
+          "Die Schlussfolgerung, die 'menschliche Kontrolle und die Möglichkeit des Eingreifens' sei bei risikoreichen KI-Systemen 'zwingend erforderlich': Erwägungsgrund 27 beschreibt 'menschliches Handeln und menschliche Aufsicht' ausdrücklich als einen von sieben UNVERBINDLICHEN ethischen Grundsätzen ('unverbindliche ethische Grundsätze') der Hochrangigen Expertengruppe; eine rechtsverbindliche Pflicht ('muss', 'zwingend') lässt sich aus den zitierten Erwägungsgründen daher nicht ableiten. EG 75 fordert technische und organisatorische Robustheitsmaßnahmen, aber kein explizites menschliches Eingreifen. (Beachte: Auch die Eingangsaussage 'muss ein menschliches Eingreifen ... möglich sein' ist als verbindliche Anforderung nur eingeschränkt belegt.)"
+        ],
+        "relevancy": 0.65
+      },
+      {
+        "question": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wie gut müssen die Trainingsdaten sein, mit denen ein risikoreiches KI-Modell lernt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.3
+      },
+      {
+        "question": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+        "faithfulness": 0.65,
+        "unsupportedClaims": [
+          "Die DS-GVO (Verordnung (EU) 2016/679) regelt den Schutz personenbezogener Daten von Kindern insbesondere in Artikel 8 und Erwägungsgründen 38–58 – Artikel 8 DS-GVO und die DS-GVO-Erwägungsgründe sind in den Quelltexten nicht enthalten. Der in den Quellen enthaltene Erwägungsgrund 50 der DS-GVO behandelt die Weiterverarbeitung personenbezogener Daten allgemein und nicht Kinderdaten, wodurch die Angabe der Spanne 'Erwägungsgründe 38–58' weder belegt noch inhaltlich plausibilisiert wird. Die Quellen enthalten zudem einen Erwägungsgrund 38 der KI-Verordnung (biometrische Echtzeit-Fernidentifizierung), nicht der DS-GVO."
+        ],
+        "relevancy": 0.2
+      },
+      {
+        "question": "Wann muss vorab geprüft werden, ob ein Vorhaben ein hohes Datenschutzrisiko birgt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Hinweis: \"Die Pflichten des Auftragsverarbeiters sind abschließend in Artikel 28 DS-GVO geregelt\" – die Aussage einer 'abschließenden' Regelung wird von den Quelltexten nicht gestützt; Art. 28(3) normiert nur die Mindestinhalte des Auftragsverarbeitungsvertrags.",
+          "Hinweis: \"Ergänzende Anforderungen (z. B. aus der KI-Verordnung) gelten nicht für die Rolle des Auftragsverarbeiters im Sinne der DS-GVO, sondern für Anbieter oder Betreiber von KI-Systemen ([4], Artikel 4 ff.)\" – der bereitgestellte KI-VO-Quelltext enthält nur Artikel 3 (Begriffsbestimmungen); der Verweis \"Artikel 4 ff.\" ist nicht belegt, und die inhaltliche Aussage, dass KI-VO-Anforderungen nicht für Auftragsverarbeiter gelten, findet sich in keiner Quelle.",
+          "Punkt 6 (ungenau/teilweise nicht belegt): \"seine Pflichten aus Artikel 32–36 einzuhalten, insbesondere bei der Wahrnehmung von Betroffenenrechten\" – nach Art. 28(3) lit. e) betrifft die Unterstützungspflicht die Rechte der betroffenen Person nach Kapitel III (nicht Art. 32–36); lit. f) betrifft die Pflichten aus Art. 32–36. Die Zusammenführung beider unter Art. 32–36 ist eine nicht belegte Zuordnung (die Unterstützungspflichten selbst sind belegt).",
+          "Punkt 9 (ungenau): \"können die Mitwirkungs- und Überwachungspflichten der Aufsichtsbehörden eingeschränkt werden\" – Art. 90(1) spricht von den \"Befugnissen der Aufsichtsbehörden\" (Art. 58 Abs. 1 lit. e und f), die von den Mitgliedstaaten \"geregelt\" werden können; die Formulierung \"Mitwirkungs- und Überwachungspflichten\" ist so nicht belegt (Kernaussage der möglichen Einschränkung der Aufsichtsbefugnisse ist belegt)."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Kundendaten sind abhandengekommen – was muss eine Firma jetzt unternehmen?",
+        "faithfulness": 0.6,
+        "unsupportedClaims": [
+          "Für den Fall, dass Kundendaten abhandengekommen sind, gelten die Artikel 33 und 34 der DS-GVO – Artikel 33/34 DS-GVO sind in den Quelltexten nicht enthalten (die Aussage ist korrekt als 'nicht in den Quellen' gekennzeichnet, aber inhaltlich nicht belegt)",
+          "Meldung an die Aufsichtsbehörde innerhalb von 72 Stunden (Art. 33 DS-GVO) – keine der Quellen enthält diese Anforderung",
+          "Benachrichtigung der betroffenen Personen, falls ein hohes Risiko für ihre Rechte besteht (Art. 34 DS-GVO) – keine der Quellen enthält diese Anforderung"
+        ],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+        "faithfulness": 0.6,
+        "unsupportedClaims": [
+          "Artikel 9 (Risikomanagement): Die inhaltliche Ausgestaltung ('Risiken im Zusammenhang mit der Entwicklung, dem Inverkehrbringen und der Inbetriebnahme zu identifizieren, zu bewerten und zu kontrollieren') ist in den Quelltexten nicht enthalten – Artikel 9 wird nur in Anhang IV Nr. 5 und Erwägungsgrund 64 als Verweis/allgemein erwähnt.",
+          "Technische Dokumentation (Artikel 11) 'muss durchgehend aktualisiert werden' – in den Quelltexten nicht belegt (nur die Registrierungsinformationen nach Anhang VIII müssen 'auf dem neuesten Stand gehalten' werden).",
+          "EU-Konformitätserklärung bestätigt 'die Einhaltung aller Anforderungen ... einschließlich der Pflichten während des gesamten Lebenszyklus' – Anhang V Nr. 4 verlangt nur die Versicherung der Konformität mit der Verordnung; die Lebenszyklus-Formulierung ist eine Zutat.",
+          "Meldung schwerwiegender Vorfälle unverzüglich an die zuständige Behörde mit Verweis auf 'Artikel 53 Abs. 1 lit. a' – nicht belegt und irreführend: Laut Quelltext betrifft Artikel 53 Abs. 1 lit. a die technische Dokumentation von KI-Modellen mit allgemeinem Verwendungszweck, nicht die Vorfallmeldung (Artikel 73 der Verordnung ist in den Quellen nicht enthalten).",
+          "Grundrechte-Folgenabschätzung als 'Artikel 26' – falsche Artikelnummer: Anhang VIII Abschnitt C Nr. 4 verweist auf die 'gemäß Artikel 27 durchgeführten Grundrechte-Folgenabschätzung' (Artikel 26 Abs. 8 wird in der Quelle nur im Zusammenhang mit der Datenschutz-Folgenabschätzung genannt).",
+          "Der Betreiber muss die Grundrechte-Folgenabschätzung 'insbesondere bei Änderungen des Systems' aktualisieren – in den Quelltexten nicht belegt.",
+          "Der Betreiber muss den Anbieter über identifizierte Risiken oder Mängel informieren (Art. 13 Abs. 3 lit. d) – die Antwort gibt selbst an, dass dies 'nicht explizit genannt' ist; die Quellen erwähnen Artikel 13 Abs. 3 lit. d nur ohne inhaltliche Ausführung.",
+          "System zur Beobachtung nach dem Inverkehrbringen (Artikel 72): 'Bewertung von Vorfällen' und 'Aktualisierung der technischen Dokumentation bei signifikanten Änderungen oder neuen Risiken' – in den Quelltexten nicht explizit belegt (Art. 3 Nr. 25 nennt nur Sammlung/Überprüfung von Erfahrungen und Korrektur-/Präventivmaßnahmen; Anhang IV Nr. 9 verlangt die Beschreibung des Systems und des Plans).",
+          "'Plan für die Nachverfolgung von Vorfällen' – Anhang IV Nr. 9 nennt nur den 'Plan für die Beobachtung nach dem Inverkehrbringen'; Vorfällen-Nachverfolgung ist keine Quelle.",
+          "Registrierung: 'Änderungen an der Zweckbestimmung oder Leistung des Systems' als Anhang VIII 'Abschnitt 8 lit. 6' – falsch zugeordnet: Abschnitt A Nr. 6 betrifft die Beschreibung der Betriebslogik, Nr. 5 die Zweckbestimmung; 'Änderungen' sind kein eigener Aktualisierungspunkt.",
+          "Bei wesentlichen Veränderungen 'muss eine neue Konformitätsbewertung durchgeführt werden' – nicht belegt; die Quellen enthalten die Definition (Art. 3 Nr. 23) und Anhang VII 3.4 (nur zur Änderung des Qualitätsmanagementsystems), nicht aber die Pflicht zur erneuten Konformitätsbewertung des Systems.",
+          "Der Anbieter 'ist verpflichtet, Rückrufmaßnahmen einzuleiten, wenn das System nicht konform ist oder Risiken aufweist / Sicherheit oder Grundrechte gefährdet sind' – nicht belegt; Art. 3 Nr. 16/17 definieren nur die Begriffe Rückruf/Rücknahme, keine Pflicht.",
+          "'Dies muss in der technischen Dokumentation und der EU-Konformitätserklärung berücksichtigt werden' (Rückruf) – nicht belegt.",
+          "Artikel 13 als 'Pflichten des Betreibers' als zentrale lebenszyklusbezogene Anforderung – die Quelltexte enthalten Artikel 13 nicht; er wird nur einmal als Verweis (Anhang IV Nr. 2 lit. e) ohne Inhalt erwähnt."
+        ],
+        "relevancy": 0.75
+      },
+      {
+        "question": "Was muss der Hersteller eines risikoreichen KI-Systems von der Entwicklung bis zur Markteinführung sicherstellen?",
+        "faithfulness": 0.8,
+        "unsupportedClaims": [
+          "Angabe 'Technische Dokumentation und Konformitätsbewertungsverfahren (z. B. Artikel 26–30)': durch die Quelltexte nicht belegt; Artikel 26–30 der KI-Verordnung decken diese Themen nicht ab (technische Dokumentation: Art. 11; Konformitätsbewertung: Art. 43).",
+          "Angabe 'Transparenzpflichten gegenüber Nutzern (z. B. Artikel 52)': durch die Quelltexte nicht belegt; in der KI-Verordnung (EU) 2024/1689 sind Transparenzpflichten in Art. 50 geregelt, Art. 52 betrifft Pflichten der Anbieter von GPAI-Modellen.",
+          "Angabe 'Überwachung nach der Markteinführung (z. B. Artikel 55–60)': durch die Quelltexte nicht belegt; die Überwachung nach dem Inverkehrbringen ist in Art. 72 ff. geregelt, Art. 55 betrifft GPAI-Modelle mit systemischem Risiko.",
+          "Angabe 'Zertifizierungspflichten (z. B. Artikel 43–49)': durch die Quelltexte nicht belegt (die Quellen enthalten keine Vorgaben zur Konformitätsbewertung/Zertifizierung).",
+          "Angabe 'Risikobewertung und -management gemäß Artikel 8–14': durch die Quelltexte nicht belegt (in den bereitgestellten Quellen nicht enthalten)."
+        ],
+        "relevancy": 0.4
+      },
+      {
+        "question": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Was müssen Firmen tun, die ein allgemeines KI-Basismodell herausbringen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Aussage zur Open-Source-Ausnahme: 'Die Pflichten gelten nicht für KI-Modelle, die unter einer freien und quelloffenen Lizenz bereitgestellt werden' – nur teilweise belegt. Nach Art. 53(2) gilt die Ausnahme ausschließlich für die Pflichten gemäß Absatz 1 Buchstaben a und b (technische Dokumentation sowie Informations-/Dokumentationspflichten gegenüber Systemanbietern); die Pflichten c (Urheberrechtsstrategie) und d (Zusammenfassung der Trainingsinhalte) bleiben auch bei quelloffenen Modellen bestehen. Die Antwort verallgemeinert hier über das tatsächliche Ausmaß der Ausnahme. Der Kern der Aussage (öffentlich zugängliche Parameter bzw. Nutzungsinformationen als Voraussetzung; keine Ausnahme bei systemischen Risiken) ist jedoch durch den Quelltext gedeckt."
+        ],
+        "relevancy": 1
+      }
+    ],
+    "vector": [
+      {
+        "question": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Die Behauptung, eine abschließende Aufzählung der Rechtsgrundlagen (z. B. auch „berechtigtes Interesse“) könne aus den Quellen nicht entnommen werden, ist insoweit nicht belegt, als das „berechtigte Interesse des Verantwortlichen oder eines Dritten“ in Erwägungsgrund 69 ausdrücklich als Grund für eine möglicherweise rechtmäßige Verarbeitung genannt wird – es kann den Quellen also durchaus entnommen werden. (Die Kern Aussagen 1–5 sowie die Aussage zu Unionsrecht/Recht der Mitgliedstaaten sind durch Erwägungsgrund 40, Erwägungsgrund 69 und Artikel 6 Absatz 3 Buchstaben a und b belegt.)"
+        ],
+        "relevancy": 0.8
+      },
+      {
+        "question": "Wie schnell muss ein Datenschutzvorfall gemeldet werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+        "faithfulness": 0.95,
+        "unsupportedClaims": [
+          "Punkt 3 (Art. 46): 'z. B. Standardvertragsklauseln' als Beispiel für geeignete Garantien – im zitierten Quelltext (Art. 46 Abs. 1) werden keine konkreten Garantien genannt; auch Erwägungsgrund 107 führt lediglich 'verbindliche interne Datenschutzvorschriften' an (die Nennung 'verbindliche Unternehmensregelungen' ist darüber indirekt belegt, 'Standardvertragsklauseln' jedoch in keinem der Quelltexte erwähnt)."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+        "faithfulness": 0.95,
+        "unsupportedClaims": [
+          "Das Beispiel „z. B. Suchmaschinen“ für Dienste der Informationsgesellschaft [3f] – Suchmaschinen werden in den Quelltexten (Artikel 17 Absatz 1 lit. f, Erwägungsgrund 66) nicht ausdrücklich erwähnt; nur „Dienste der Informationsgesellschaft“ und das „Recht auf Vergessenwerden im Netz“ sind dort belegt"
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+        "faithfulness": 0.7,
+        "unsupportedClaims": [
+          "Kernbehauptung, Art. 32 Abs. 1 DSGVO verlange technische und organisatorische Maßnahmen: Absatz 1 ist im Quelltext nicht enthalten (von der Antwort selbst als 'nicht explizit zitiert' markiert, im Quelltext aber nicht belegt)",
+          "'Pseudonymisierung' als genannte Maßnahme: Weder Art. 32 Abs. 2 noch Erwägungsgrund 69 erwähnen Pseudonymisierung; EG 69 nennt nur Anonymisierung und Verschlüsselung",
+          "'Zugangskontrollen (z. B. Berechtigungsmanagement), wonach nur berechtigte Personen Daten verarbeiten dürfen ([1] Absatz 4)': Abs. 4 verlangt lediglich, dass Personen mit Datenzugang diese nur auf Anweisung des Verantwortlichen verarbeiten – 'Berechtigungsmanagement' bzw. 'nur berechtigte Personen' steht so nicht im Text",
+          "'Regelmäßige Überprüfung, Bewertung und Evaluierung der Wirksamkeit der Maßnahmen': im Quelltext nicht enthalten (Abs. 1 fehlt, auch Abs. 2–4 erwähnen dies nicht; von der Antwort selbst als 'implizit' gekennzeichnet)"
+        ],
+        "relevancy": 0.8
+      },
+      {
+        "question": "Welche Geldbußen drohen bei Verstößen gegen die DSGVO?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Anwendungen von künstlicher Intelligenz sind in der EU untersagt?",
+        "faithfulness": 0.3,
+        "unsupportedClaims": [
+          "Die Verordnung (EU) 2024/1689 regelt bestimmte Verbote in Artikel 3 – Artikel 3 wird in keinem Quelltext erwähnt; die Zuordnung der Verbote zu Artikel 3 ist unbelegt (die Quellen nennen Verbote nur allgemein als Regelungsgegenstand in Art. 1 lit. b [3]).",
+          "Verbot von 'Verhaltensmanipulation' gemäß Art. 5 Abs. 1 lit. a Verordnung (EU) 2024/1689 – der konkrete Verbotsinhalt ist in keinem der Quelltexte enthalten.",
+          "Verbot von 'Sozialscoring-Systemen' gemäß Art. 5 Abs. 1 lit. b Verordnung (EU) 2024/1689 – der konkrete Verbotsinhalt ist in keinem der Quelltexte enthalten.",
+          "Die Behauptung, Quellen [1] und [3] würden die konkreten Verbote 'implizit relevant' machen bzw. 'als Teil des Regelungsrahmens bestätigen' – [3] bestätigt nur allgemein, dass die Verordnung 'Verbote bestimmter Praktiken im KI-Bereich' vorsieht, nicht deren konkreten Inhalt.",
+          "Für eine vollständige Antwort müssten die Artikel 3–5 herangezogen werden – die Einbeziehung von Artikel 3 ist unbelegt; aus den Quellen ergibt sich keine Angabe zu konkreten Artikelnummern der Verbote."
+        ],
+        "relevancy": 0.4
+      },
+      {
+        "question": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.3
+      },
+      {
+        "question": "Muss ein Mensch eingreifen können, wenn ein risikoreiches KI-System falsch entscheidet?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Wie gut müssen die Trainingsdaten sein, mit denen ein risikoreiches KI-Modell lernt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Aussage, die Qualifikation erfolge 'unter Berücksichtigung der Risikoklasse des Systems', ist so nicht direkt belegt: Artikel 4 unterscheidet keine Risikoklassen (die dortigen Kontextfaktoren betreffen alle KI-Systeme); nur Erwägungsgrund 91 bezieht sich auf Hochrisiko-KI-Systeme.",
+          "Implizit wird die Pflicht nach Artikel 4 allein den 'Anbietern' zugeschrieben, obwohl Artikel 4 ausdrücklich 'Anbieter und Betreiber' als Verpflichtete nennt – die Beschränkung der Betreiberpflichten auf Erwägungsgrund 91 (Hochrisiko) ist eine unvollständige Zuordnung."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Aussage, die Quellen enthielten keine Regelungen zu Löschfristen, technischen Sicherheitsmaßnahmen oder Transparenzpflichten, ist ungenau: Erwägungsgrund 39 enthält allgemeine Vorgaben zu Lösch- und Speicherfristen sowie zum Transparenzgrundsatz, und der als Quelltext vorliegende Artikel 32 behandelt Sicherheitsaspekte (auch wenn diese Regelungen nicht kinderspezifisch sind).",
+          "Die Verweisung auf Artikel 5 und 6 der DS-GVO ist durch die Quelltexte nicht abgedeckt (diese Artikel liegen nicht als Quelltexte vor; Artikel 32 ist zwar im Quelltext enthalten, entspricht inhaltlich aber nicht dem zitierten Text)."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wann muss vorab geprüft werden, ob ein Vorhaben ein hohes Datenschutzrisiko birgt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Kundendaten sind abhandengekommen – was muss eine Firma jetzt unternehmen?",
+        "faithfulness": 0.5,
+        "unsupportedClaims": [
+          "Falls es sich um einen Datenverlust oder eine Sicherheitsverletzung handelt, sind primär die Artikel 33 und 34 DS-GVO (Meldepflicht bei Datenschutzverletzungen) anwendbar – Artikel 33 und 34 kommen in den Quelltexten nicht vor.",
+          "Es sind die Artikel 28 und 32 DS-GVO (Sicherheitsmaßnahmen und Auftragsverarbeitung) anwendbar – Artikel 28 und 32 kommen in den Quelltexten nicht vor; die Quellen enthalten nur Artikel 29 (Verarbeitung auf Weisung) und Artikel 16 (Berichtigung).",
+          "Empfehlung, sich an die spezifischen Regelungen der DS-GVO (insbesondere Artikel 33 und 34) zu wenden – Artikel 33 und 34 sind durch die Quelltexte nicht belegt.",
+          "Empfehlung, sich an die Leitlinien der zuständigen Datenschutzaufsichtsbehörde zu wenden – eine solche Leitlinien-Empfehlung wird von keinem Quelltext getragen; Erwägungsgrund 109 erwähnt Aufsichtsbehörden nur im Kontext von Standard-Datenschutzklauseln."
+        ],
+        "relevancy": 0.35
+      },
+      {
+        "question": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+        "faithfulness": 0.75,
+        "unsupportedClaims": [
+          "Die Aussage, die risikobasierten Pflichten würden sich 'auf den gesamten Lebenszyklus' erstrecken (Erwägungsgrund 26 erwähnt keinen Lebenszyklusbezug)",
+          "Die Charakterisierung von Artikel 8 als 'Konformitätsbewertung und Dokumentationspflichten' sowie die Aussage, Artikel 8 fordere Anforderungen 'über den Lebenszyklus hinweg' und 'im Rahmen der Konformitätsbewertung' (Artikel 8 nennt weder Lebenszyklus noch Konformitätsbewertung)",
+          "Die Aussage, ein Risikomanagementprozess müsse 'durchgehend' sichergestellt werden (die Quelle sagt nur, dass dem in Artikel 9 genannten Risikomanagementsystem Rechnung getragen wird; 'durchgehend' ist nicht belegt)",
+          "Die Angabe 'Artikel 10 (Technische Dokumentation)' – diese Artikelzuordnung ist in den Quelltexten nicht belegt",
+          "Die Angabe 'Artikel 11 (Konformitätsbewertung)' – diese Artikelzuordnung ist in den Quelltexten nicht belegt",
+          "Die Erwähnung von 'Anhang II' in 'Anhang II/III' (Anhang II kommt in den Quelltexten nicht vor; belegt sind nur Anhang I und Anhang III)"
+        ],
+        "relevancy": 0.45
+      },
+      {
+        "question": "Was muss der Hersteller eines risikoreichen KI-Systems von der Entwicklung bis zur Markteinführung sicherstellen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Aussage zu Erwägungsgrund 87: Die Antwort lässt die Bedingung weg, dass der Produkthersteller die Anbieterpflichten nur erfüllt, wenn das KI-System als Sicherheitsbauteil 'nicht unabhängig von dem Produkt in Verkehr gebracht oder in Betrieb genommen wird'. Die bedingungslose Formulierung ('Falls das Hochrisiko-KI-System als Sicherheitsbauteil eines Produkts dient ... obliegt dem Produkthersteller die Erfüllung der Anbieterpflichten') ist dadurch umfassender als der Quelltext.",
+          "Aussage zu Artikel 8 Absatz 2: Das eingefügte Beispiel '(z. B. Konformitätsbewertungsprozesse)' für bereits bestehende Dokumentationen und Verfahren ist im Quelltext nicht enthalten; Artikel 8 Absatz 2 nennt dort nur 'erforderliche Test- und Berichterstattungsverfahren, Informationen und Dokumentationen'.",
+          "Kleinerer Referenzfehler (kein inhaltlicher Belegmangel): Die Zitation '[6 Absatz 1]' verweist als Quellennummer auf einen nicht existierenden Quelltext (es liegen nur fünf Quelltexte vor, Artikel 6 wäre Quelle 5); inhaltlich entspricht die Aussage jedoch korrekt Artikel 6 Absatz 1."
+        ],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Was müssen Firmen tun, die ein allgemeines KI-Basismodell herausbringen?",
+        "faithfulness": 0.75,
+        "unsupportedClaims": [
+          "Verhaltenskodizes würden aufgestellt, 'um zusätzliche Anforderungen an Transparenz, Ethik oder Compliance zu erfüllen' – Artikel 95(3) nennt diese Zwecke nicht; er regelt nur, wer Kodizes aufstellen kann und dass Interessenträger (u. a. Zivilgesellschaft, Hochschulen) einbezogen werden können.",
+          "'Keine Vorgaben zu Modellkarten oder Datenblättern wie in Erwägungsgrund 89 für nicht quelloffene Komponenten' – Erwägungsgrund 89 bezieht sich auf freie und quelloffene Instrumente/Dienste/Komponenten (keine GPAI-Modelle) und enthält lediglich eine Ermutigung ('sollten dazu ermutigt werden'), keine verpflichtenden 'Vorgaben'.",
+          "'Diese Regelungen gelten nur für nicht quelloffene Instrumente/Dienste' – nach Erwägungsgrund 89 gilt die Regelung gerade für Instrumente/Dienste/Komponenten, die im Rahmen einer freien und quelloffenen Lizenz zugänglich gemacht werden; die Aussage ist invertiert."
+        ],
+        "relevancy": 0.3
+      }
+    ],
+    "hybrid": [
+      {
+        "question": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+        "faithfulness": 0.75,
+        "unsupportedClaims": [
+          "Artikel 6 Absatz 1 Buchstabe f erlaubt die Verarbeitung, wenn sie zur Wahrung berechtigter Interessen des Verantwortlichen oder eines Dritten erforderlich ist, sofern nicht die Interessen oder Grundrechte und Grundfreiheiten der betroffenen Person überwiegen – Die Quellen erwähnen Art. 6 Abs. 1 lit. f lediglich in Art. 13 Abs. 1 lit. d (Angabe der verfolgten berechtigten Interessen); die inhaltliche Ausgestaltung (Erforderlichkeit, Abwägungs-/Überwiegen-Klausel) ist den Quelltexten nicht zu entnehmen.",
+          "Artikel 9 Absatz 2 erlaubt die Verarbeitung besonderer Kategorien personenbezogener Daten (z. B. Gesundheitsdaten) unter bestimmten Voraussetzungen, insbesondere bei Einwilligung oder auf Grundlage einer Rechtsvorschrift – Die Quellen nennen nur Art. 9 Abs. 2 Buchstabe a (Einwilligung) im Rahmen von Art. 17 Abs. 1 lit. b; die Charakterisierung als 'besondere Kategorien personenbezogener Daten', das Beispiel 'Gesundheitsdaten' sowie die Alternative 'auf Grundlage einer Rechtsvorschrift' sind nicht belegt."
+        ],
+        "relevancy": 0.75
+      },
+      {
+        "question": "Wie schnell muss ein Datenschutzvorfall gemeldet werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die in Klammern genannten Beispiele für besondere Datenkategorien ('z. B. Gesundheitsdaten, ethnische Herkunft, politische Meinungen') werden von den Quelltexten nicht ausdrücklich belegt – die Quellen nennen lediglich 'besondere Kategorien von Daten gemäß Artikel 9' bzw. 'personenbezogene Daten über strafrechtliche Verurteilungen und Straftaten gemäß Artikel 10', ohne die konkreten Beispiele aufzuführen."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Punkt 5, Überschrift: „Verbot von Übermittlungen ohne internationale Abkommen“ – Der Quelltext (Erwägungsgrund 115) enthält kein ausdrückliches Verbot; er stellt lediglich fest, dass ausländische Gerichts-/Verwaltungsentscheide ohne Rechtshilfeabkommen keine Grundlage bilden und Datenübermittlungen nur zulässig sind, wenn die Bedingungen der Verordnung eingehalten werden. Ein generelles „Verbot“ ist so nicht belegt.",
+          "Schlussabsatz: „Erwägungsgrund 153 [...] enthält keine direkten Regelungen für Drittlandübermittlungen, sondern regelt Abweichungen innerhalb der Union“ – Nicht belegt bzw. dem Quelltext widersprechend: Erwägungsgrund 153 nennt ausdrücklich „die Übermittlung von personenbezogenen Daten an Drittländer oder an internationale Organisationen“ als Bereich, für den die Mitgliedstaaten Abweichungen und Ausnahmen erlassen sollen; die Einschränkung „innerhalb der Union“ ist im Quelltext nicht enthalten.",
+          "Schlussabsatz (Grenzfall): „Die Quellen enthalten keine spezifischen Ausnahmen für journalistische, wissenschaftliche oder künstlerische Zwecke im Zusammenhang mit Drittlandübermittlungen“ – So pauschal nicht haltbar, da Erwägungsgrund 153 vorsieht, dass Mitgliedstaaten gerade auch für den Bereich der Drittlandübermittlung Abweichungen/Ausnahmen (u.a. für journalistische Zwecke) erlassen sollen; zudem erwähnt Erwägungsgrund 113 wissenschaftliche/historische Forschungszwecke bei Übermittlungen. Alle übrigen Zitate der Antwort (Erwägungsgrund 115, Artikel 44, Erwägungsgrund 101, Erwägungsgrund 113) sind wortgetreu und korrekt belegt."
+        ],
+        "relevancy": 0.65
+      },
+      {
+        "question": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+        "faithfulness": 0.95,
+        "unsupportedClaims": [
+          "Das Beispiel '(z. B. Suchmaschinen)' bei Artikel 17 Absatz 1 Buchstabe f: Der Begriff 'Suchmaschinen' kommt in den Quelltexten nicht vor; belegt ist nur die Formulierung 'angebotene Dienste der Informationsgesellschaft gemäß Artikel 8 Absatz 1'."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.95
+      },
+      {
+        "question": "Welche Geldbußen drohen bei Verstößen gegen die DSGVO?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.8
+      },
+      {
+        "question": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Welche Anwendungen von künstlicher Intelligenz sind in der EU untersagt?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Die Zuordnung der Verbote zu 'Artikel 5 (Verbote)' der Verordnung (EU) 2024/1689: Artikel 5 wird in keinem der bereitgestellten Quelltexte erwähnt; dass die verbotenen KI-Anwendungen dort geregelt sind, entstammt externem Wissen und ist nicht quellenbelegt."
+        ],
+        "relevancy": 0.4
+      },
+      {
+        "question": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Punkt 4, Satz 3: 'Sie müssen insbesondere schutzbedürftige Personengruppen berücksichtigen' – Erwägungsgrund 93 beschreibt keine Pflicht zur Berücksichtigung schutzbedürftiger Gruppen, sondern nur, dass Betreiber dank genauerer Kenntnis des Verwendungskontextes und der wahrscheinlich betroffenen Personen/Personengruppen (einschließlich schutzbedürftiger Gruppen) Risiken erkennen können. Die Formulierung als Rechtspflicht ('müssen') ist durch den Quelltext nicht gedeckt.",
+          "Anmerkung (leicht überzeichnend, nicht kritisch): In Punkt 5 fehlt die Einschränkung 'gegebenenfalls' aus Erwägungsgrund 93; die Informationspflicht selbst (Unterrichtung über Einsatz, Zweckbestimmung, Art der Entscheidungen, Recht auf Erklärung) ist jedoch belegt."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Muss ein Mensch eingreifen können, wenn ein risikoreiches KI-System falsch entscheidet?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Die Pflichten gelten nicht für KI-Systeme, die ausschließlich der Strafverfolgung dienen und nicht der Öffentlichkeit zugänglich sind (Art. 50 (1) Satz 2) – nur teilweise gedeckt: Nach Art. 50 (1) Satz 2 gilt die Ausnahme nur für gesetzlich zur Straftataufdeckung/-verhütung/-ermittlung/-verfolgung zugelassene KI-Systeme UND nur, wenn geeignete Schutzvorkehrungen für die Rechte und Freiheiten Dritter bestehen; diese Bedingung wird in der Antwort weggelassen, sodass die Ausnahme unzulässig verabsolutiert wird."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wie gut müssen die Trainingsdaten sein, mit denen ein risikoreiches KI-Modell lernt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Punkt 1: 'Die Einwilligung des Trägers der elterlichen Verantwortung ist in diesen Fällen grundsätzlich erforderlich' (bezogen auf Werbezwecke und Persönlichkeits-/Nutzerprofile) – Erwägungsgrund 38 fordert lediglich einen 'besonderen Schutz' für diese Verwendungen, benennt aber keine generelle Einwilligungspflicht; er regelt nur ausdrücklich die Ausnahme (keine Einwilligung bei Präventions- oder Beratungsdiensten). Eine Eltern-Einwilligungspflicht ergibt sich aus Artikel 8 nur bei Diensten der Informationsgesellschaft, die einem Kind direkt angeboten werden und bei denen die Einwilligung die Rechtsgrundlage ist – nicht pauschal für Werbezwecke und Profilbildung."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wann muss vorab geprüft werden, ob ein Vorhaben ein hohes Datenschutzrisiko birgt?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Formulierung 'bei sensiblen Daten wie Profiling' ist nicht belegt: Erwägungsgrund 91 nennt Profiling nicht als Kategorie sensibler Daten, sondern als eigenständigen Auslöser einer DSFA (systematische und eingehende Bewertung persönlicher Aspekte auf Grundlage von Profiling) neben besonderen Kategorien personenbezogener Daten, biometrischen Daten und Daten über strafrechtliche Verurteilungen. Die eigentliche Aussage, dass in diesen Konstellationen eine DSFA durchzuführen ist, ist jedoch belegt.",
+          "Die zusammenfassende Aussage 'Die Prüfung erfolgt somit vor der Verarbeitung, sobald sich aus einer objektiven Risikobewertung oder einer DSFA ein hohes Risiko ergibt, das nicht durch angemessene Maßnahmen behoben werden kann' vermengt zwei unterschiedliche Mechanismen: Das Kriterium der Nicht-Eindämmbarkeit ('nicht durch angemessene Maßnahmen behoben') ist laut Erwägungsgrund 94 und Artikel 36 nur Auslöser für die Konsultation der Aufsichtsbehörde, nicht für die Risikobewertung bzw. DSFA-Pflicht selbst (dort genügt nach Erwägungsgrund 76/84/91 das bloße Vorliegen eines hohen Risikos)."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Abschnitt 7: 'Falls der Auftragsverarbeiter eine Kerntätigkeit im Sinne von Artikel 38 (insbesondere regelmäßige und systematische Überwachung oder Verarbeitung besonderer Kategorien von Daten) ausübt, gelten die Pflichten nach Artikel 38 (z. B. Benennung eines Datenschutzbeauftragten mit Unabhängigkeit und Fachwissen)' – Die Bedingungen der Kerntätigkeit sind im bereitgestellten Artikel 38 nicht enthalten (Artikel 38 regelt dort nur Stellung, Ressourcen und Unabhängigkeit des bereits bestellten DSB); die Benennungspflicht ist nicht belegt (Artikel 37 fehlt in den Quellen). Erwägungsgrund 97 belegt zwar die umfangreiche Verarbeitung besonderer Kategorien auch für Auftragsverarbeiter, ordnet die 'regelmäßige und systematische Überwachung' jedoch nur dem Verantwortlichen zu – die Antwort ist hier teilweise unzutreffend bzw. der Verweis 'im Sinne von Artikel 38' falsch attribuiert.",
+          "Abschluss-Hinweis: 'Die Pflicht zur Benennung eines Vertreters in der Union nach Artikel 27 gilt nicht für Auftragsverarbeiter, sondern nur für Verantwortliche in bestimmten Fällen' – Das wird direkt durch Artikel 27 Absatz 1 widerlegt, der ausdrücklich sagt: 'benennt der Verantwortliche ODER der Auftragsverarbeiter schriftlich einen Vertreter in der Union'; die Pflicht gilt also gerade auch für Auftragsverarbeiter."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Kundendaten sind abhandengekommen – was muss eine Firma jetzt unternehmen?",
+        "faithfulness": 0.4,
+        "unsupportedClaims": [
+          "Verpflichtung zur Meldung eines Datenschutzvorfalls an die Aufsichtsbehörde innerhalb von 72 Stunden nach Art. 33 DS-GVO – Artikel 33 ist in den Quelltexten nicht enthalten und somit nicht belegt",
+          "Informationspflicht der Betroffenen bei hohem Risiko nach Art. 34 DS-GVO – Artikel 34 ist in den Quelltexten nicht enthalten und somit nicht belegt",
+          "'Dies umfasst technische und organisatorische Maßnahmen' – solche Maßnahmen werden nur in Art. 32 Abs. 1 DS-GVO genannt, der im Quelltext nicht enthalten ist; der zitierte Abs. 2 behandelt lediglich die Berücksichtigung von Risiken bei der Beurteilung des Schutzniveaus",
+          "'Artikel 33 und 34 der DS-GVO ... die detaillierte Pflichten bei Datenschutzverletzungen vorsehen' (Schlussempfehlung) – nicht durch die Quelltexte belegt"
+        ],
+        "relevancy": 0.8
+      },
+      {
+        "question": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+        "faithfulness": 0.6,
+        "unsupportedClaims": [
+          "\"Hochrisiko-KI-Systeme müssen die Anforderungen der Verordnung erfüllen, wobei deren Zweckbestimmung und der Stand der Technik zu berücksichtigt sind\" mit Zitat \"[2 Abs. 1]\" – Artikel 2 ist in den Quelltexten nicht enthalten; der Inhalt entspricht Artikel 8 Abs. 1, die zitierte Artikelnummer ist erfunden.",
+          "\"Anbieter müssen sicherstellen, dass das Produkt alle geltenden Harmonisierungsrechtsvorschriften der Union erfüllt\" mit Zitat \"[2 Abs. 2]\" – Artikel 2 ist in den Quelltexten nicht enthalten; der Inhalt entspricht Artikel 8 Abs. 2, die zitierte Artikelnummer ist erfunden.",
+          "\"Die Anforderungen gelten insbesondere für die Erfüllung von Test- und Berichterstattungsverfahren, Informationen und Dokumentationen\" mit Zitat \"[2 Abs. 2]\" – Artikel 2 ist nicht in den Quelltexten enthalten; Artikel 8 Abs. 2 regelt lediglich die Integrationsmöglichkeit in bestehende Dokumentationen, nicht dass die Anforderungen 'insbesondere' dafür gelten.",
+          "\"Bei erheblichen Änderungen eines bereits in Verkehr gebrachten oder in Betrieb genommenen Hochrisiko-KI-Systems müssen die Anforderungen erneut geprüft werden\" mit Zitat \"[1 Abs. 2]\" – Artikel 1 ist in den Quelltexten nicht enthalten; der Inhalt entspricht Artikel 111 Abs. 2, die zitierte Artikelnummer ist erfunden.",
+          "\"Falls ein bereits in Betrieb genommenes System durch Änderungen zu einem Hochrisiko-KI-System wird, gelten die Pflichten für Anbieter weiterhin\" mit Zitat \"[4]\" – Artikel 4 ist in den Quelltexten nicht enthalten; der Inhalt entspricht Erwägungsgrund 84, die zitierte Artikelnummer ist erfunden.",
+          "\"Hochrisiko-KI-Systeme können Cybersicherheitsanforderungen durch die Erfüllung der Verordnung über horizontale Cybersicherheitsanforderungen nachweisen\" mit Zitat \"[3]\" – Artikel 3 ist in den Quelltexten nicht enthalten; der Inhalt entspricht Erwägungsgrund 77, die zitierte Artikelnummer ist erfunden."
+        ],
+        "relevancy": 0.6
+      },
+      {
+        "question": "Was muss der Hersteller eines risikoreichen KI-Systems von der Entwicklung bis zur Markteinführung sicherstellen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Zuordnung der Erklärungs- und Dokumentationspflichten zu 'Artikel 16 Buchstabe d, j, k' – Buchstabe j (Korrekturmaßnahmen gemäß Artikel 20) wird im Überschriftentitel zitiert, ist aber mit keinem Inhalt der Antwort belegt; die EU-Konformitätserklärung stammt aus Buchstabe g, nicht j.",
+          "Verallgemeinerung der Protokollierungspflichten nach Artikel 12 Absatz 3 (Zeiträume der Verwendung, Referenzdatenbanken, Eingabedaten, Identität der an der Überprüfung beteiligten Personen) auf alle Hochrisiko-KI-Systeme – laut Quelle gelten diese Mindestangaben nur für die in Anhang III Nummer 1 Buchstabe a genannten Hochrisiko-KI-Systeme.",
+          "Nennung von 'Transparenz' als Beispiel für Anforderungen des Abschnitts 2 – in den bereitgestellten Quelltexten nicht direkt belegt (Artikel 13 ist nicht enthalten; belegt sind nur Risikomanagement (Artikel 9) und Robustheit (Artikel 15))."
+        ],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Was müssen Firmen tun, die ein allgemeines KI-Basismodell herausbringen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Verweis auf „Art. 53 Abs. 5 [1]“ (Aussage zu rein intern genutzten Modellen): Der bereitgestellte Quelltext zu Artikel 53 enthält nur die Absätze (2), (3) und (4) – ein Absatz 5 ist dort nicht vorhanden und damit nicht belegt. Die inhaltliche Aussage selbst (keine Pflichten für rein interne Verfahren) ist allerdings durch Erwägungsgrund 97 gedeckt."
+        ],
+        "relevancy": 1
+      }
+    ],
+    "rerank": [
+      {
+        "question": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Die Ergänzung 'z. B. Gesundheitsdaten' als Beispiel besonderer Kategorien personenbezogener Daten wird von Erwägungsgrund 52 nicht ausdrücklich getragen – der Quelltext nennt Gesundheitsdaten nicht explizit als Beispiel besonderer Kategorien, sondern nur gesundheitsbezogene Verarbeitungszwecke (z. B. Gewährleistung der öffentlichen Gesundheit, Verwaltung von Leistungen der Gesundheitsversorgung).",
+          "Die Schlussaussage 'Die DSGVO betont dabei stets die Einhaltung der Grundsätze der Verhältnismäßigkeit und Notwendigkeit sowie den Schutz der Rechte der betroffenen Personen' ist mit Quellenverweis [4] (Erwägungsgrund 52) falsch referenziert: Erwägungsgrund 52 enthält diese Aussage nicht. Inhaltlich findet sich sie (ohne das Wort 'stets', das von keinem Quelltext gedeckt ist) in Erwägungsgrund 156 ('Grundsätze der Verhältnismäßigkeit und der Notwendigkeit', 'Garantien für die Rechte und Freiheiten der betroffenen Person') bzw. dem Verhältnismäßigkeitsprinzip in Erwägungsgrund 4.",
+          "Leichte inhaltliche Verkürzung in Aussage 2: Die Formulierung 'sofern: a) vereinbar, b) Rechtsgrundlage, ODER c) Einwilligung' vereinfacht Erwägungsgrund 50, wonach bei Vorliegen einer Einwilligung oder einer Rechtsgrundlage aus Unions-/Mitgliedstaatenrecht die Weiterverarbeitung 'ungeachtet der Vereinbarkeit der Zwecke' zulässig ist, während bei Vereinbarkeit keine gesonderte Rechtsgrundlage erforderlich ist."
+        ],
+        "relevancy": 0.7
+      },
+      {
+        "question": "Wie schnell muss ein Datenschutzvorfall gemeldet werden?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "„Erwägungsgrund 85 … sieht eine Meldung innerhalb von höchstens 72 Stunden vor, sofern kein Risiko für die Rechte und Freiheiten natürlicher Personen vorliegt“ – Diese Verknüpfung ist so nicht belegt: Der Quelltext formuliert die Risikoklausel als Ausnahme („es sei denn, … dass die Verletzung … voraussichtlich nicht zu einem Risiko … führt“), nicht als Bedingung für die Meldepflicht. Die Formulierung kehrt die Logik um. Die zugrundeliegenden Inhalte (72-Stunden-Frist und Risiko-Ausnahme in Erwägungsgrund 85) sind jedoch belegt und werden in der Zusammenfassung korrekt dargestellt."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die abschließende Bemerkung, die 'Erwägungsgründe' seien nicht in den Quellen enthalten, ist ungenau: Erwägungsgrund 97 ist im Quelltext enthalten und behandelt ausdrücklich das erforderliche Fachwissen des Datenschutzbeauftragten. Alle übrigen Kernaussagen (verpflichtende Benennung bei Behörden, bei überwachungsintensiver Kerntätigkeit, bei umfangreicher Verarbeitung besonderer Datenkategorien gemäß Art. 37 Abs. 1 a)-c), freiwillige Benennung in sonstigen Fällen gemäß Art. 37 Abs. 4 sowie die Unterstützungspflicht nach Erwägungsgrund 97) sind durch die Quelltexte vollständig belegt."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Geldbußen drohen bei Verstößen gegen die DSGVO?",
+        "faithfulness": 0.8,
+        "unsupportedClaims": [
+          "Für KMU (inkl. Start-ups) gelten jeweils die niedrigeren Beträge aus den genannten Prozentsätzen oder Summen: Der als Beleg angeführte Artikel 99 Abs. 6 entstammt erkennbar nicht der DSGVO (Begriffe wie Akteure, notifizierte Stellen, Anbieter, Bevollmächtigte, Einführer, Händler, Betreiber) und bezieht die KMU-Reduzierung ausschließlich auf die in Artikel 99 Abs. 3-5 genannten Geldbußen (z. B. 15.000.000 EUR bzw. 3 % und 7.500.000 EUR bzw. 1 %), nicht auf die DSGVO-Geldbußen nach Artikel 83; eine Herabsetzung der DSGVO-Höchstbeträge (10 Mio. EUR/2 % bzw. 20 Mio. EUR/4 %) für KMU ist durch die Quelltexte nicht belegt."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Formulierung, die 'Einstufung als Hochrisiko-KI-System' gelte für vor dem 2. August 2026 (bzw. 2027 für bestimmte IT-Großsysteme) in Verkehr gebrachte Systeme 'nicht automatisch', wird in dieser Form nicht von den Quelltexten gestützt: Artikel 111 und Erwägungsgrund 177 regeln die Geltung der Verordnung (bzw. ihrer Pflichten) für Bestandssysteme, nicht die Einstufung nach Artikel 6, die zeitpunktunabhängig erfolgt.",
+          "Die 'bestimmungsgemäße Nutzung durch Behörden' ist keine 'Voraussetzung' für die Geltung/Einstufung, sondern begründet nach Artikel 111 Absatz 2 und Erwägungsgrund 177 lediglich eine Übergangsfrist bis zum 2. August 2030 zur Erfüllung der Anforderungen."
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Anwendungen von künstlicher Intelligenz sind in der EU untersagt?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Exemplarische Nennung konkreter Verbotskategorien ('soziale Bewertungssysteme, Manipulationstechniken oder biometrische Echtzeit-Überwachung') – diese sind in den Quelltexten nicht belegt; die Antwort kennzeichnet sie jedoch zutreffend als nicht in den Quellen enthalten"
+        ],
+        "relevancy": 0.8
+      },
+      {
+        "question": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Unterrichtungspflicht wird als strikte Pflicht (\"müssen\") dargestellt; Erwägungsgrund 93 formuliert dies lediglich als Soll-Vorschrift (\"sollten ... unterrichten\") und mit \"gegebenenfalls\" – der inhaltliche Kern (Zweckbestimmung, Art der Entscheidungen, Recht auf Erklärung, Einklang mit Art. 13 der Richtlinie (EU) 2016/680) ist jedoch durch den Quelltext belegt.",
+          "Der abschließende Hinweis, die Quellen enthielten keine Aussagen zu Dokumentations-/Aufzeichnungspflichten, ist ungenau: Erwägungsgrund 91 erwähnt ausdrücklich, dass \"gegebenenfalls auch Aufzeichnungspflichten\" festgelegt werden sollten (wenn auch ohne konkrete Regelung im Quelltext)."
+        ],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Muss ein Mensch eingreifen können, wenn ein risikoreiches KI-System falsch entscheidet?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Wie gut müssen die Trainingsdaten sein, mit denen ein risikoreiches KI-Modell lernt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.95
+      },
+      {
+        "question": "Wann muss vorab geprüft werden, ob ein Vorhaben ein hohes Datenschutzrisiko birgt?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Beispiele 'Gesundheitsdaten, ethnische Herkunft, biometrische Daten' für Art. 9 Abs. 1 sind in den Quelltexten nicht genannt (fachlich zutreffend, aber durch die Quellen nicht belegt).",
+          "Die Quellenreferenz [1c] im zweiten Punkt ist unzutreffend: Die genannte Konstellation (umfangreiche Verarbeitung besonderer Kategorien gemäß Art. 9 Abs. 1 bzw. Daten über strafrechtliche Verurteilungen gemäß Art. 10) entspricht Art. 35 Abs. 3 lit. b, nicht lit. c."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Durchgängige Zitierung '[1], Absatz 1': Der zitierte Text entspricht Artikel 28 Absatz 3, nicht Absatz 1 (die zitierten Inhalte und Buchstaben a–h sind selbst belegt)",
+          "Beispiele zu den Betroffenenrechten 'z. B. Auskunftsrecht, Löschung': konkrete Rechte sind in den Quelltexten nicht genannt (dort nur 'Rechte der betroffenen Person' gemäß Kapitel III)",
+          "Beispiele zu den Pflichten nach Artikeln 32–36 'z. B. Datenschutz-Folgenabschätzung, Meldung von Datenschutzverstößen': konkrete Pflichten sind in den Quelltexten nicht benannt",
+          "'Bei vermuteten Verstößen gegen die DS-GVO ist der Auftragsverarbeiter verpflichtet, den Verantwortlichen unverzüglich zu informieren': Der Quelltext beschränkt diese Pflicht auf den Fall, dass der Auftragsverarbeiter der Auffassung ist, dass eine Weisung des Verantwortlichen gegen die Verordnung verstößt; die verallgemeinerte Formulierung wird so nicht gedeckt",
+          "Beispiele 'z. B. Ärzte, Anwälte' als Berufsgeheimnisträger im Hinweis zu Artikel 90: im Quelltext (Artikel 90, Erwägungsgrund 164) nicht genannt"
+        ],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Kundendaten sind abhandengekommen – was muss eine Firma jetzt unternehmen?",
+        "faithfulness": 0.4,
+        "unsupportedClaims": [
+          "Nach Artikel 33 DS-GVO (Meldung von Datenschutzverletzungen an die Aufsichtsbehörde) und Artikel 34 DS-GVO (Unterrichtung der betroffenen Personen) wären folgende Schritte erforderlich – Artikel 33 und 34 kommen in den Quelltexten nicht vor.",
+          "Interne Prüfung der Verletzung (Art. 33 Abs. 1 DS-GVO) – nicht in den Quellen enthalten; eine 'interne Prüfung' wird dort nicht erwähnt.",
+          "Meldung an die Aufsichtsbehörde innerhalb von 72 Stunden – die 72-Stunden-Frist ist in den Quelltexten nicht belegt.",
+          "Benachrichtigung der betroffenen Personen bei voraussichtlich hohem Risiko für ihre Rechte – nicht in den Quelltexten enthalten.",
+          "Aus der DS-GVO ließen sich diese Pflichten ableiten – bezogen auf die bereitgestellten Quelltexte nicht belegt (die Antwort kennzeichnet dies zwar selbst als nicht zitiert, aber die inhaltlichen Handlungsanweisungen stammen außerhalb der Quellen)."
+        ],
+        "relevancy": 0.7
+      },
+      {
+        "question": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Abschlussstatement: 'Falls weitere spezifische Aspekte (z. B. Cybersicherheit oder Transparenzanforderungen) relevant sind, können diese aus den Quellen nicht abgeleitet werden.' – Der Teil zur Cybersicherheit wird durch die Quellen widerlegt: Erwägungsgrund 77 (in den Quelltexten enthalten) behandelt ausdrücklich Cybersicherheitsanforderungen für Hochrisiko-KI-Systeme (u. a. Nachweis über die horizontale Cybersicherheitsverordnung, KI-spezifische Schwachstellen wie Datenvergiftung und feindliche Angriffe)."
+        ],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Was muss der Hersteller eines risikoreichen KI-Systems von der Entwicklung bis zur Markteinführung sicherstellen?",
+        "faithfulness": 0.8,
+        "unsupportedClaims": [
+          "Die Angabe, die technischen Anforderungen in Abschnitt 2 umfassten 'z. B. Risikomanagement, Transparenz, Robustheit' – die Beispiele sind in keinem der Quelltexte enthalten (die Antwort kennzeichnet dies zwar als externen Inhalt, belegt ist die Aussage dennoch nicht).",
+          "'Einhaltung der Grundsätze vertrauenswürdiger KI (z. B. Menschenwürde, Transparenz, Datenschutz)' als Anforderung an die Entwicklungsphase – in den Quellen werden Ethikleitlinien für vertrauenswürdige KI lediglich im Kontext freiwilliger Verhaltenskodizes für Nicht-Hochrisiko-Systeme erwähnt (Erwägungsgrund 165), nicht als Pflicht für Anbieter von Hochrisiko-Systemen.",
+          "'Risikobewertung und -minimierung' als allgemeine Entwicklungsanforderung – durch keinen Quelltext belegt.",
+          "'ggf. die Nutzung von KI-Reallaboren zur Erprobung unter Aufsicht' als Anforderung an den Hersteller – Erwägungsgrund 138 regelt die Einrichtung von KI-Reallaboren als Aufgabe der Mitgliedstaaten bzw. deren nationaler Behörden; eine Pflicht oder Anforderung an Anbieter wird daraus nicht abgeleitet."
+        ],
+        "relevancy": 0.95
+      },
+      {
+        "question": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die Zuordnung der Transparenz-/Betriebsanleitungsanforderungen zu 'Artikel 16 Buchstabe d': Nach dem Quelltext betrifft Art. 16 Buchstabe d lediglich die Aufbewahrung der in Artikel 18 genannten Dokumentation, nicht die Pflicht, Hochrisiko-KI-Systeme mit Betriebsanleitungen auszustatten. Die inhaltlichen Anforderungen an die Betriebsanleitungen sind zwar durch Erwägungsgrund 72 belegt, die Nennung von Artikel 16 Buchstabe d als Beleg hierfür ist jedoch nicht durch die Quellen gedeckt (die eigentliche Pflicht zur Bereitstellung von Betriebsanleitungen, z. B. in Artikel 13, ist in den vorliegenden Quellen nicht enthalten)."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Was müssen Firmen tun, die ein allgemeines KI-Basismodell herausbringen?",
+        "faithfulness": 0.85,
+        "unsupportedClaims": [
+          "Die Aussage 'Die Dokumentation muss mindestens die in Anhang XI genannten Elemente enthalten und den Anbietern von KI-Systemen die Fähigkeiten und Grenzen des Modells verständlich machen ([53 b) ii)])' ist falsch zugeordnet: Anhang XI betrifft gemäß Artikel 53 a) die technische Dokumentation, während Artikel 53 b) ii) die Elemente nach Anhang XII verlangt; die Pflicht, Fähigkeiten und Grenzen verständlich zu machen, ergibt sich aus Artikel 53 b) i).",
+          "Das Beispiel 'kritische Infrastruktur' für hochriskante Anwendungen ([1]) wird in den Quelltexten (Erwägungsgrund 161) nicht genannt."
+        ],
+        "relevancy": 1
+      }
+    ]
+  },
+  "refusals": {
+    "fts": [
+      {
+        "question": "Wie beantrage ich einen Reisepass beim Bürgeramt?",
+        "refused": true
+      },
+      {
+        "question": "Bis wann muss ich meine Steuererklärung abgeben?",
+        "refused": true
+      },
+      {
+        "question": "Wie viel Urlaub steht mir gesetzlich zu?",
+        "refused": true
+      },
+      {
+        "question": "Wer hat gestern die Bundesliga Spiele gewonnen?",
+        "refused": true
+      },
+      {
+        "question": "Muss ich meinen Hund beim Amt anmelden?",
+        "refused": true
+      },
+      {
+        "question": "Gibt es noch eine Förderung für Elektroautos?",
+        "refused": true
+      },
+      {
+        "question": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
+        "refused": true
+      }
+    ],
+    "vector": [
+      {
+        "question": "Wie beantrage ich einen Reisepass beim Bürgeramt?",
+        "refused": true
+      },
+      {
+        "question": "Bis wann muss ich meine Steuererklärung abgeben?",
+        "refused": true
+      },
+      {
+        "question": "Wie viel Urlaub steht mir gesetzlich zu?",
+        "refused": true
+      },
+      {
+        "question": "Wer hat gestern die Bundesliga Spiele gewonnen?",
+        "refused": true
+      },
+      {
+        "question": "Muss ich meinen Hund beim Amt anmelden?",
+        "refused": true
+      },
+      {
+        "question": "Gibt es noch eine Förderung für Elektroautos?",
+        "refused": true
+      },
+      {
+        "question": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
+        "refused": true
+      }
+    ],
+    "hybrid": [
+      {
+        "question": "Wie beantrage ich einen Reisepass beim Bürgeramt?",
+        "refused": true
+      },
+      {
+        "question": "Bis wann muss ich meine Steuererklärung abgeben?",
+        "refused": true
+      },
+      {
+        "question": "Wie viel Urlaub steht mir gesetzlich zu?",
+        "refused": true
+      },
+      {
+        "question": "Wer hat gestern die Bundesliga Spiele gewonnen?",
+        "refused": true
+      },
+      {
+        "question": "Muss ich meinen Hund beim Amt anmelden?",
+        "refused": true
+      },
+      {
+        "question": "Gibt es noch eine Förderung für Elektroautos?",
+        "refused": true
+      },
+      {
+        "question": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
+        "refused": true
+      }
+    ],
+    "rerank": [
+      {
+        "question": "Wie beantrage ich einen Reisepass beim Bürgeramt?",
+        "refused": true
+      },
+      {
+        "question": "Bis wann muss ich meine Steuererklärung abgeben?",
+        "refused": true
+      },
+      {
+        "question": "Wie viel Urlaub steht mir gesetzlich zu?",
+        "refused": true
+      },
+      {
+        "question": "Wer hat gestern die Bundesliga Spiele gewonnen?",
+        "refused": true
+      },
+      {
+        "question": "Muss ich meinen Hund beim Amt anmelden?",
+        "refused": true
+      },
+      {
+        "question": "Gibt es noch eine Förderung für Elektroautos?",
+        "refused": true
+      },
+      {
+        "question": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
+        "refused": true
+      }
+    ]
+  }
+}
