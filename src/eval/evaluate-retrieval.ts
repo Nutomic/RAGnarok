@@ -69,6 +69,12 @@ export async function evaluateRetrieval() {
   const answerable = golden.filter((q) => q.type !== "abstention");
   const abstentions = golden.filter((q) => q.type === "abstention");
 
+  // Model load + first inference dominate; report separately from steady-state.
+  const t0 = performance.now();
+  await embedder.embed(answerable[0].q, "query");
+  console.log(`embeddings: warmup ${Math.round(performance.now() - t0)}ms`);
+
+  const embedMs: number[] = [];
   let hits = 0;
   let reciprocalRankSum = 0;
   let recallSum = 0;
@@ -76,7 +82,9 @@ export async function evaluateRetrieval() {
 
   // Gather ranks of expected sections per question
   for (const q of answerable) {
+    const start = performance.now();
     const { embedding } = await embedder.embed(q.q, "query");
+    embedMs.push(performance.now() - start);
     const retrieved = await retrieveHybrid(q.q, embedding, {
       k: 5,
       // Ground truth spans both regulations; evaluate against the full corpus.
@@ -98,6 +106,11 @@ export async function evaluateRetrieval() {
   };
 
   console.log(`n=${answerable.length} answerable, ${abstentions.length} abstention`);
+  const mean = embedMs.reduce((a, b) => a + b, 0) / embedMs.length;
+  const p95 = embedMs.sort((a, b) => a - b)[Math.floor(embedMs.length * 0.95)];
+  console.log(
+    `embeddings: mean ${mean.toFixed(1)}ms, p95 ${p95.toFixed(1)}ms, n=${embedMs.length}`,
+  );
   let failed = false;
   // Gate: each metric must clear its threshold
   for (const [name, value] of Object.entries(metrics)) {
