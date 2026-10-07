@@ -6,6 +6,7 @@ import * as echarts from "echarts";
 // - data/eval/retrieval.json (from evaluate-retrieval) -> strategy comparison
 //   table + grouped bar chart (data/eval/chart.svg, echarts SSR, no canvas)
 // - data/eval/generation.json (from judge-generation) -> generation metrics table
+//   + grouped bar chart (data/eval/generation.svg, echarts SSR, no canvas)
 export function evalReport() {
   const cwd = process.cwd();
   let retrieval: {
@@ -28,10 +29,13 @@ export function evalReport() {
     // judge metrics keyed per retrieval strategy: { hybrid: { faithfulness: ... } }
     generation?: Record<string, Record<string, number>>;
   } = {};
-  try {
-    results = JSON.parse(readFileSync(join(cwd, "data/eval/results.json"), "utf8"));
-  } catch {
-    // eval-report also works with retrieval results only
+  for (const file of ["data/eval/generation.json", "data/eval/results.json"]) {
+    try {
+      results = JSON.parse(readFileSync(join(cwd, file), "utf8"));
+      break;
+    } catch {
+      // eval-report also works with retrieval results only
+    }
   }
 
   const pct = (v: number) => `${Math.round(v * 100)}%`;
@@ -43,16 +47,11 @@ export function evalReport() {
     );
   }
 
-  const generationNotes: Record<string, string> = {
-    faithfulness: "Anteil belegter Aussagen (LLM-Judge)",
-    relevancy: "Antwort beantwortet die Frage (LLM-Judge)",
-    refusal_rate: "Abstention-Fragen korrekt abgelehnt",
-  };
   // judge metrics are per retrieval strategy: generation: { hybrid: {...} }
-  const generationRows = Object.entries(results.generation ?? {}).flatMap(([strategy, metrics]) =>
-    Object.entries(metrics).map(
-      ([k, v]) => `| ${k} (${strategy}) | ${pct(v)} | ${generationNotes[k] ?? ""} |`,
-    ),
+  const GENERATION_METRICS = ["faithfulness", "relevancy", "refusal_rate"] as const;
+  const generationRows = Object.entries(results.generation ?? {}).map(
+    ([strategy, metrics]) =>
+      `| ${strategy} | ${GENERATION_METRICS.map((k) => pct(metrics[k] ?? 0)).join(" | ")} |`,
   );
 
   if (strategyRows.length === 0 && generationRows.length === 0) {
@@ -65,7 +64,7 @@ export function evalReport() {
   const meta = [
     results.model ? `Modell: \`${results.model}\`` : null,
     results.judge ? `Judge: \`${results.judge}\`` : null,
-    results.sha ? `Commit: \`${results.sha}\`` : null,
+    results.sha && results.sha !== "unknown" ? `Commit: \`${results.sha}\`` : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -88,10 +87,10 @@ export function evalReport() {
       : []),
     ...(generationRows.length > 0
       ? [
-          `## Generation (LLM-Judge)`,
+          `## Generation (LLM-Judge, n=30)`,
           "",
-          `| Metrik | Wert | Bedeutung |`,
-          `|---|---|---|`,
+          `| Strategie | faithfulness | relevancy | refusal rate |`,
+          `|---|---|---|---|`,
           ...generationRows,
           "",
         ]
@@ -104,27 +103,49 @@ export function evalReport() {
   mkdirSync(join(process.cwd(), "data/eval"), { recursive: true });
   writeFileSync(join(cwd, "data/eval/report.md"), md);
 
-  if (strategyRows.length > 0) writeChart(strategies);
+  if (strategyRows.length > 0)
+    writeChart(
+      "chart.svg",
+      ["hit_at_5", "mrr_at_5", "context_recall"],
+      {
+        hit_at_5: "hit@5",
+        mrr_at_5: "mrr@5",
+        context_recall: "context recall",
+      },
+      strategies,
+    );
+  if (generationRows.length > 0)
+    writeChart(
+      "generation.svg",
+      ["faithfulness", "relevancy", "refusal_rate"],
+      {
+        faithfulness: "faithfulness",
+        relevancy: "relevancy",
+        refusal_rate: "refusal rate",
+      },
+      results.generation ?? {},
+    );
   console.log(
-    `wrote data/eval/report.md${strategyRows.length > 0 ? " and data/eval/chart.svg" : ""}`,
+    `wrote data/eval/report.md${strategyRows.length > 0 ? " and data/eval/chart.svg" : ""}${
+      generationRows.length > 0 ? " and data/eval/generation.svg" : ""
+    }`,
   );
 }
 
 // Grouped bars, one metric per row, one bar per strategy.
-function writeChart(strategies: Record<string, Record<string, number>>) {
-  const METRICS = ["hit_at_5", "mrr_at_5", "context_recall"];
-  const LABELS: Record<string, string> = {
-    hit_at_5: "hit@5",
-    mrr_at_5: "mrr@5",
-    context_recall: "context recall",
-  };
+function writeChart(
+  outFile: string,
+  metrics: readonly string[],
+  labels: Record<string, string>,
+  data: Record<string, Record<string, number>>,
+) {
   const COLORS: Record<string, string> = {
     fts: "#b45309",
     vector: "#0369a1",
     hybrid: "#0f766e",
     rerank: "#7c3aed",
   };
-  const names = Object.keys(strategies);
+  const names = Object.keys(data);
   const chart = echarts.init(null, null, {
     renderer: "svg",
     ssr: true,
@@ -140,7 +161,7 @@ function writeChart(strategies: Record<string, Record<string, number>>) {
     },
     yAxis: {
       type: "category",
-      data: METRICS.map((m) => LABELS[m]).reverse(),
+      data: metrics.map((m) => labels[m]).reverse(),
       axisLabel: { fontSize: 13 },
     },
     legend: { bottom: 0, data: names },
@@ -153,7 +174,7 @@ function writeChart(strategies: Record<string, Record<string, number>>) {
         position: "right",
         formatter: (p: { value: number }) => `${Math.round(p.value * 100)}%`,
       },
-      data: METRICS.map((m) => strategies[name][m]).reverse(),
+      data: metrics.map((m) => data[name][m]).reverse(),
     })),
   });
   // echarts SSR centers legend text via dominant-baseline="central", which
@@ -165,5 +186,5 @@ function writeChart(strategies: Record<string, Record<string, number>>) {
     .replace(/x="30" y="7"/g, 'x="30" y="10.5"');
   chart.dispose();
   mkdirSync(join(process.cwd(), "data/eval"), { recursive: true });
-  writeFileSync(join(process.cwd(), "data/eval/chart.svg"), `${svg}\n`);
+  writeFileSync(join(process.cwd(), "data/eval", outFile), `${svg}\n`);
 }
