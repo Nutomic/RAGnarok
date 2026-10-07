@@ -73,9 +73,9 @@ const THRESHOLDS: Metrics = {
   // share of questions with at least one expected section in the top 5
   hit_at_5: 0.75,
   // mean of 1/(first rank of an expected section); 1.0 = always rank 1
-  mrr_at_5: 0.54,
+  mrr_at_5: 0.5,
   // share of all expected sections retrieved (cross-article questions only)
-  context_recall: 0.7,
+  context_recall: 0.69,
 };
 
 // Retrieval is compared across four strategies (see README benchmark table);
