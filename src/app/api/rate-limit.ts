@@ -8,7 +8,8 @@ export function clientIp(req: Request): string {
   if (!forwarded) throw new Error("rate-limit: missing x-forwarded-for header");
   const entries = forwarded.split(",");
   // nginx appends the real ip to a possibly  user-supplied header, so the
-  // last value is the only trusted one.
+  // last value is the only trusted one. The reverse proxy must append, not
+  // replace: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for`.
   const ip = entries[entries.length - 1]?.trim();
   if (!ip) throw new Error("rate-limit: empty x-forwarded-for header");
   return ip;

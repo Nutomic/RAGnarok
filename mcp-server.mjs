@@ -9,7 +9,7 @@
 // Run:
 //   RAGNAROK_URL=http://localhost:3000 node mcp-server.mjs
 // or, without cloning this repo:
-//   curl -fsSL https://raw.githubusercontent.com/Nutomic/RAGnarok//main/mcp-server.mjs | node
+//   curl -fsSL https://github.com/Nutomic/RAGnarok/raw/refs/heads/master/mcp-server.mjs | node
 //
 // Environment:
 //   RAGNAROK_URL  base URL (default: https://rag.nutomic.com)
@@ -33,8 +33,8 @@ const TOOLS = [
     description:
       "Hybrid search (pgvector + German full-text) over EU law documents " +
       "(DS-GVO, AI Act) from a RAGnarok deployment. Returns excerpts with " +
-      "citation labels and EUR-Lex links. Visibility is enforced server-side " +
-      "per profile.",
+      "citation labels and EUR-Lex links. Demo profile switch, not " +
+      "authentication. Any client can select any profile.",
     inputSchema: {
       type: "object",
       properties: {

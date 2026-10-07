@@ -27,7 +27,7 @@ Deletion propagation: the integration test deletes a Danish DS-GVO extract and p
 
 Metrics over the 23 answerable golden questions, document chunks ranked against EUR-Lex ground truth: hit@5 means a correct chunk appears in the top 5, mrr@5 is how high up it ranks on average, context recall is the share of correct chunks retrieved. fts is Postgres keyword search (`tsvector`, `german` config), vector is pgvector HNSW alone, hybrid fuses both via reciprocal rank fusion, rerank re-scores the hybrid top-k with a cross-encoder.
 
-| strategy | hit@5 | mrr@5 | context recall | SQL-Latenz (mean) |
+| strategy | hit@5 | mrr@5 | context recall | SQL-Latenz (mean, including rerank time) |
 |---|---|---|---|---|
 | fts | 35% | 16% | 28% | 6.7ms |
 | vector | 78% | 54% | 72% | 5.2ms |
@@ -118,6 +118,8 @@ The API routes behind the MCP tools are `GET /api/documents` and `GET /api/searc
 - Chat state is not kept across page reloads.
 - n=30 eval set, single public corpus, single instance deployment. This is a reference implementation and not a final product.
 - Rate limits are stored in memory only and reset after restart
+- Prompts only embed sources for the last user message. Follow-ups ("und Artikel 17?") may retrieve poorly.
+- Demo runs on small server with free Mistral tier which can lead to slow responses.
 
 ## Development
 

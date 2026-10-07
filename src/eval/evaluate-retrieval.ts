@@ -68,7 +68,8 @@ function matched(
 // set (alternating original + paraphrased questions, e5-base q8): hit 0.826,
 // mrr 0.599, recall 0.739, minus a regression margin. Recall counts unique
 // expected sections, not chunk hits. Raise deliberately when retrieval
-// improves.
+// improves. Lowering a threshold requires the commit message to cite the new
+// measured value and the cause of the regression.
 const THRESHOLDS: Metrics = {
   // share of questions with at least one expected section in the top 5
   hit_at_5: 0.75,
