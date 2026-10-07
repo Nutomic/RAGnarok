@@ -184,6 +184,25 @@ export async function POST(req: Request) {
   let outputTokens = 0;
   let answerText = "";
 
+  // Exactly-once audit write + trace flush. onEnd does not fire when the
+  // client aborts mid-stream (execute throws), so the abort path calls this
+  // too; the flag guards against a double write if both paths run.
+  let auditWritten = false;
+  const writeAudit = async () => {
+    if (auditWritten) return;
+    auditWritten = true;
+    await insertAuditLog({
+      profileId: profile?.id ?? null,
+      prompt,
+      model: modelName,
+      chunkIds: retrieved.map((c) => c.id),
+      inputTokens,
+      outputTokens,
+      cacheHit: cachedAnswer !== null,
+    });
+    await langfuse?.flushAsync();
+  };
+
   const stream = createUIMessageStream({
     originalMessages: messages,
     onError: () => "Generierung fehlgeschlagen.",
@@ -227,6 +246,10 @@ export async function POST(req: Request) {
         } catch (error) {
           if (req.signal.aborted) {
             // Client is gone (reload/Stop), nothing to clean up for the UI.
+            // onEnd does not fire after this throw, so the audit row has to
+            // be written here.
+            // TODO: aborted rows land with 0/0 tokens, no explicit aborted flag.
+            await writeAudit();
             throw error;
           }
           // Watchdog fired or upstream broke mid-answer: close the stream so
@@ -293,16 +316,7 @@ export async function POST(req: Request) {
       });
     },
     onEnd: async () => {
-      await insertAuditLog({
-        profileId: profile?.id ?? null,
-        prompt,
-        model: modelName,
-        chunkIds: retrieved.map((c) => c.id),
-        inputTokens,
-        outputTokens,
-        cacheHit: cachedAnswer !== null,
-      });
-      await langfuse?.flushAsync();
+      await writeAudit();
     },
   });
 
