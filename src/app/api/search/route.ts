@@ -2,10 +2,14 @@ import { getCachedEmbedding, putCachedEmbedding } from "../../../db/cache";
 import { retrieveHybrid } from "../../../db/retrieve";
 import { embedder } from "../../../ingest/embed";
 import { chunkCitation } from "../../citations";
+import { limitReads } from "../rate-limit";
 
 // HTTP facade for MCP clients: permission-aware hybrid retrieval without
 // generation. Visibility enforcement handled in retrieval SQL, never in the client.
 export async function GET(req: Request) {
+  const limited = await limitReads(req);
+  if (limited) return limited;
+
   const url = new URL(req.url);
   const q = url.searchParams.get("q")?.trim() ?? "";
   if (!q) return Response.json({ error: "Missing query parameter q." }, { status: 400 });

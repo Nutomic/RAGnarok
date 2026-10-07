@@ -118,6 +118,7 @@ The API routes behind the MCP tools are `GET /api/documents` and `GET /api/searc
 - Mobile chat auto-scroll doesn't work reliably.
 - Chat state is not kept across page reloads.
 - n=30 eval set, single public corpus, single instance deployment. This is a reference implementation and not a final product.
+- Rate limits are stored in memory only and reset after restart
 
 ## Development
 

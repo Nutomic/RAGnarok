@@ -1,5 +1,6 @@
 import { countCacheHits } from "../../../db/audit";
 import { getLangfuseCredentials, LANGFUSE_HOST } from "../../../langfuse";
+import { limitReads } from "../rate-limit";
 
 interface LangfuseTrace {
   latency: number | null;
@@ -29,7 +30,10 @@ let cache: { at: number; stats: ChatStats } | null = null;
 
 // Aggregates over the last TRACE_LIMIT traces via the Langfuse public API,
 // cached briefly so the demo UI does not hammer Langfuse on every load.
-export async function GET() {
+export async function GET(req: Request) {
+  const limited = await limitReads(req);
+  if (limited) return limited;
+
   const headers = await getLangfuseCredentials();
   if (!headers) return Response.json({ available: false } satisfies ChatStats);
 

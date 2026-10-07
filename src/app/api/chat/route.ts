@@ -25,6 +25,7 @@ import { getLangfuse } from "../../../langfuse";
 import { costFor } from "../../../prices";
 import { getReranker } from "../../../rerank";
 import { chunkCitation } from "../../citations";
+import { limitChat } from "../rate-limit";
 
 // Reject oversized prompts before LLM call
 export const MAX_PROMPT_CHARS = 200;
@@ -47,6 +48,9 @@ function userPrompt(messages: UIMessage[]): string {
 }
 
 export async function POST(req: Request) {
+  const limited = await limitChat(req);
+  if (limited) return limited;
+
   const { messages, profileId } = (await req.json()) as {
     messages: UIMessage[];
     profileId?: string;
