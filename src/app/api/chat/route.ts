@@ -7,6 +7,7 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from "ai";
+import type { Langfuse } from "langfuse";
 import { insertAuditLog } from "../../../db/audit";
 import {
   getCachedAnswer,
@@ -33,6 +34,16 @@ export const MAX_PROMPT_CHARS = 200;
 // Candidate pool size for the opt-in cross-encoder reranker.
 const RERANK_CANDIDATES = 20;
 
+// The trace created by POST below. Derived from the Langfuse class so the
+// helper signatures stay correct without importing package internals.
+type ChatTrace = ReturnType<Langfuse["trace"]>;
+
+interface ParsedChatRequest {
+  messages: UIMessage[];
+  profileId?: string;
+  prompt: string;
+}
+
 function userPrompt(messages: UIMessage[]): string {
   const last = messages.findLast((m) => m.role === "user");
   return last
@@ -43,7 +54,9 @@ function userPrompt(messages: UIMessage[]): string {
     : "";
 }
 
-export async function POST(req: Request) {
+// Rate limit + parse + validate: all 4xx guards before any expensive work
+// live here. Returns an error Response or the parsed request.
+async function parseChatRequest(req: Request): Promise<ParsedChatRequest | Response> {
   const limited = await limitChat(req);
   if (limited) return limited;
 
@@ -62,6 +75,101 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
+  return { messages, profileId, prompt };
+}
+
+// Exact-match embedding cache around the local CPU embedder.
+async function getQueryEmbedding(prompt: string): Promise<number[]> {
+  const cached = await getCachedEmbedding(prompt);
+  if (cached) return cached;
+  const { embedding } = await embedder.embed(prompt, "query");
+  await putCachedEmbedding(prompt, embedding);
+  return embedding;
+}
+
+// Hybrid retrieval, optionally re-scored by the cross-encoder (opt-in env).
+// Returns the chunks and the rerank duration for the stats line.
+async function retrieveForChat(
+  prompt: string,
+  embedding: number[],
+  visibility: "public" | "compliance",
+): Promise<{ retrieved: RetrievedChunk[]; rerankMs?: number }> {
+  if (process.env.RERANK_ENABLED === "true") {
+    const reranker = getReranker();
+    // Rerank needs a pool larger than the final k to be worth anything.
+    const pool = await retrieveHybrid(prompt, embedding, {
+      k: RERANK_CANDIDATES,
+      candidates: RERANK_CANDIDATES,
+      visibility,
+    });
+    const rerankStart = Date.now();
+    const retrieved = await reranker.rerank(prompt, pool);
+    return { retrieved, rerankMs: Date.now() - rerankStart };
+  }
+  return { retrieved: await retrieveHybrid(prompt, embedding, { k: 5, visibility }) };
+}
+
+// One Langfuse span with timing, chunks and ranks. Observability only.
+function logRetrievalSpan(
+  trace: ChatTrace | undefined,
+  prompt: string,
+  retrievalStart: number,
+  retrieved: RetrievedChunk[],
+  rerankMs: number | undefined,
+  visibility: string,
+): void {
+  trace?.span({
+    name: "retrieval",
+    startTime: new Date(retrievalStart),
+    endTime: new Date(),
+    input: prompt,
+    output: retrieved.map((c) => ({
+      id: c.id,
+      section: `${c.sectionType} ${c.sectionNumber}`,
+      vecRank: c.vecRank,
+      ftsRank: c.ftsRank,
+      score: Number(c.score.toFixed(6)),
+    })),
+    metadata: {
+      k: 5,
+      visibility,
+      retrievedCount: retrieved.length,
+      ...(rerankMs !== undefined ? { rerankMs } : {}),
+    },
+  });
+}
+
+// The data-stats part rendered under each answer. A cached answer cost
+// nothing: no model call happened.
+function buildStats(input: {
+  retrievalMs: number;
+  rerankMs?: number;
+  generationMs: number;
+  inputTokens: number;
+  outputTokens: number;
+  modelName: string;
+  cacheHit: boolean;
+}) {
+  const cost = input.cacheHit ? 0 : costFor(input.modelName, input.inputTokens, input.outputTokens);
+  return {
+    type: "data-stats" as const,
+    data: {
+      retrievalMs: input.retrievalMs,
+      ...(input.rerankMs !== undefined ? { rerankMs: input.rerankMs } : {}),
+      generationMs: input.generationMs,
+      inputTokens: input.inputTokens,
+      outputTokens: input.outputTokens,
+      costEur: cost,
+      model: input.modelName,
+      cacheHit: input.cacheHit,
+    },
+  };
+}
+
+export async function POST(req: Request) {
+  const parsed = await parseChatRequest(req);
+  if (parsed instanceof Response) return parsed;
+  const { messages, profileId, prompt } = parsed;
 
   // Demo profiles replace auth: visibility is enforced in the retrieval SQL.
   // Without a profile id the default (Standard, public-only) profile applies.
@@ -88,58 +196,17 @@ export async function POST(req: Request) {
     metadata: { profileId: profile?.id ?? null, visibility, promptChars: prompt.length },
   });
 
+  // --- retrieval ---
   const retrievalStart = Date.now();
-  const cachedEmbedding = await getCachedEmbedding(prompt);
-  let embedding: number[];
-  if (cachedEmbedding) {
-    embedding = cachedEmbedding;
-  } else {
-    ({ embedding } = await embedder.embed(prompt, "query"));
-    await putCachedEmbedding(prompt, embedding);
-  }
-  let rerankMs: number | undefined;
-  let retrieved: RetrievedChunk[];
-  if (process.env.RERANK_ENABLED === "true") {
-    const reranker = getReranker();
-    // Rerank needs a pool larger than the final k to be worth anything.
-    const pool = await retrieveHybrid(prompt, embedding, {
-      k: RERANK_CANDIDATES,
-      candidates: RERANK_CANDIDATES,
-      visibility,
-    });
-    const rerankStart = Date.now();
-    retrieved = await reranker.rerank(prompt, pool);
-    rerankMs = Date.now() - rerankStart;
-  } else {
-    retrieved = await retrieveHybrid(prompt, embedding, {
-      k: 5,
-      visibility,
-    });
-  }
+  const embedding = await getQueryEmbedding(prompt);
+  const { retrieved, rerankMs } = await retrieveForChat(prompt, embedding, visibility);
   const retrievalMs = Date.now() - retrievalStart;
-  trace?.span({
-    name: "retrieval",
-    startTime: new Date(retrievalStart),
-    endTime: new Date(),
-    input: prompt,
-    output: retrieved.map((c) => ({
-      id: c.id,
-      section: `${c.sectionType} ${c.sectionNumber}`,
-      vecRank: c.vecRank,
-      ftsRank: c.ftsRank,
-      score: Number(c.score.toFixed(6)),
-    })),
-    metadata: {
-      k: 5,
-      visibility,
-      retrievedCount: retrieved.length,
-      ...(rerankMs !== undefined ? { rerankMs } : {}),
-    },
-  });
+  logRetrievalSpan(trace, prompt, retrievalStart, retrieved, rerankMs, visibility);
   const citations = retrieved.map((c, i) =>
     rerankMs !== undefined ? chunkCitation(c, i + 1) : chunkCitation(c),
   );
 
+  // --- generation setup ---
   // Only the last few exchanges go to the model: each question retrieves its own
   // chunks, history is only needed to resolve follow-ups.
   const HISTORY_MESSAGES = 6;
@@ -208,6 +275,8 @@ export async function POST(req: Request) {
     onError: () => "Generierung fehlgeschlagen.",
     execute: async ({ writer }) => {
       writer.write({ type: "data-sources", data: citations });
+
+      // --- cached replay ---
       if (cachedAnswer) {
         inputTokens = cachedAnswer.inputTokens;
         outputTokens = cachedAnswer.outputTokens;
@@ -219,6 +288,7 @@ export async function POST(req: Request) {
         // must emit it too or the UI never sees the stream as complete.
         writer.write({ type: "finish" });
       } else if (result) {
+        // --- live stream: watchdog against a stalled upstream ---
         // Consume the UI stream part by part instead of writer.merge: merge
         // hides the parts from us, and gating the stats line on result.usage
         // (which resolves only when the provider stream formally ends) can
@@ -261,6 +331,8 @@ export async function POST(req: Request) {
           clearTimeout(watchdog);
         }
         answerText = text;
+
+        // --- usage resolution + answer cache ---
         // usage resolves after the provider stream terminates; race it so a
         // lingering upstream cannot delay the stats line indefinitely.
         const usage = await Promise.race([
@@ -283,22 +355,20 @@ export async function POST(req: Request) {
           );
         }
       }
+
+      // --- stats + trace ---
       const generationMs = Date.now() - generationStart;
-      // A cached answer cost nothing: no model call happened.
-      const cost = cachedAnswer ? 0 : costFor(modelName, inputTokens, outputTokens);
-      writer.write({
-        type: "data-stats",
-        data: {
+      writer.write(
+        buildStats({
           retrievalMs,
-          ...(rerankMs !== undefined ? { rerankMs } : {}),
+          rerankMs,
           generationMs,
           inputTokens,
           outputTokens,
-          costEur: cost,
-          model: modelName,
+          modelName,
           cacheHit: cachedAnswer !== null,
-        },
-      });
+        }),
+      );
       trace?.generation({
         name: "answer",
         model: modelName,
