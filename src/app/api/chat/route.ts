@@ -3,6 +3,7 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  type LanguageModelUsage,
   streamText,
   toUIMessageStream,
   type UIMessage,
@@ -169,17 +170,28 @@ ${context}`;
   const answerKey = sha256(JSON.stringify([modelName, systemPrompt, historyMessages, visibility]));
   const cachedAnswer = await getCachedAnswer(answerKey);
   const generationStart = Date.now();
+  const upstreamAbort = new AbortController();
+  // Client disconnect (reload, Stop button) must abort the upstream call,
+  // otherwise the generation runs on for minutes and holds the answer cache
+  // open.
+  req.signal.addEventListener("abort", () => upstreamAbort.abort(), { once: true });
   const result = cachedAnswer
     ? null
     : streamText({
         model: mistral.languageModel(modelName),
         system: systemPrompt,
         messages: historyMessages,
+        abortSignal: upstreamAbort.signal,
         onError: ({ error }) => {
-          console.error(error);
+          console.error("chat: generation error", error);
           return "Generierung fehlgeschlagen.";
         },
       });
+  // .usage rejects when the stream is aborted; attach the handler early so the
+  // rejection is never unhandled.
+  const usagePromise =
+    (Promise.resolve(result?.usage).catch(() => null) as Promise<LanguageModelUsage | null>) ??
+    null;
 
   // usage/text resolve when the model stream finishes; assigned in execute and
   // read again in onEnd for the audit insert.
@@ -203,17 +215,64 @@ ${context}`;
         // must emit it too or the UI never sees the stream as complete.
         writer.write({ type: "finish" });
       } else if (result) {
-        writer.merge(toUIMessageStream({ stream: result.stream }));
-        const usage = await result.usage;
-        answerText = await result.text;
-        inputTokens = usage.inputTokens ?? 0;
-        outputTokens = usage.outputTokens ?? 0;
-        await putCachedAnswer(answerKey, {
-          answerText,
-          model: modelName,
-          inputTokens,
-          outputTokens,
-        });
+        // Consume the UI stream part by part instead of writer.merge: merge
+        // hides the parts from us, and gating the stats line on result.usage
+        // (which resolves only when the provider stream formally ends) can
+        // hang the whole answer if the upstream lingers.
+        let text = "";
+        let textStartId: string | undefined;
+        let watchdog: ReturnType<typeof setTimeout> | undefined;
+        const armWatchdog = () => {
+          clearTimeout(watchdog);
+          watchdog = setTimeout(() => {
+            console.error(
+              `chat: no stream part for 30s, aborting upstream (prompt: ${prompt.slice(0, 60)})`,
+            );
+            upstreamAbort.abort();
+          }, 30_000);
+        };
+        armWatchdog();
+        try {
+          for await (const part of toUIMessageStream({ stream: result.stream })) {
+            armWatchdog();
+            writer.write(part);
+            if (part.type === "text-delta") text += part.delta;
+            if (part.type === "text-start") textStartId = part.id;
+          }
+        } catch (error) {
+          if (req.signal.aborted) {
+            // Client is gone (reload/Stop), nothing to clean up for the UI.
+            throw error;
+          }
+          // Watchdog fired or upstream broke mid-answer: close the stream so
+          // the UI shows the partial answer with stats instead of hanging.
+          console.error("chat: ui stream failed", error);
+          if (textStartId !== undefined) writer.write({ type: "text-end", id: textStartId });
+          writer.write({ type: "finish" });
+        } finally {
+          clearTimeout(watchdog);
+        }
+        answerText = text;
+        // usage resolves after the provider stream terminates; race it so a
+        // lingering upstream cannot delay the stats line indefinitely.
+        const usage = await Promise.race([
+          usagePromise,
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 5_000)),
+        ]);
+        if (usage) {
+          inputTokens = usage.inputTokens ?? 0;
+          outputTokens = usage.outputTokens ?? 0;
+          await putCachedAnswer(answerKey, {
+            answerText,
+            model: modelName,
+            inputTokens,
+            outputTokens,
+          });
+        } else {
+          console.error(
+            "chat: usage did not resolve within 5s of stream end, answer not cached, tokens unknown",
+          );
+        }
       }
       const generationMs = Date.now() - generationStart;
       // A cached answer cost nothing: no model call happened.
