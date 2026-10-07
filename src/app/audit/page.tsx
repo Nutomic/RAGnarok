@@ -29,9 +29,9 @@ export default async function AuditPage() {
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 p-4 sm:px-6">
         <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200">
-          Öffentliche Demo: Einträge erscheinen hier ohne Anmeldung und sind für jeden sichtbar.
-          Keine personenbezogenen Daten eingeben. In einem produktiven Einsatz wäre diese Ansicht
-          authentifiziert.
+          Öffentliche Demo, in einem produktiven Einsatz wäre diese Ansicht authentifiziert.
+          Einträge werden automatisch nach 14 Tagen gelöscht, es werden keine IP-Adressen
+          gespeichert.
         </div>
         {rows.length === 0 ? (
           <p className="text-sm text-stone-500 dark:text-stone-400">

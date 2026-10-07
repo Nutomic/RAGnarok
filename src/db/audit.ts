@@ -14,6 +14,10 @@ export interface AuditEntry {
   chunkIds: string[] | null;
 }
 
+// Audit rows expire after 14 days; eviction piggybacks on inserts, no job.
+// IP addresses are never persisted (the rate limiter keeps them in memory only).
+const AUDIT_TTL = sql`interval '14 days'`;
+
 export async function insertAuditLog(values: {
   profileId: string | null;
   prompt: string;
@@ -28,6 +32,7 @@ export async function insertAuditLog(values: {
     VALUES (${values.profileId}, ${values.prompt}, ${values.model}, ${sql.param(values.chunkIds)}::uuid[],
             ${values.inputTokens}, ${values.outputTokens}, ${values.cacheHit})
   `);
+  await db.execute(sql`DELETE FROM audit_logs WHERE created_at < now() - ${AUDIT_TTL}`);
 }
 
 export async function countCacheHits(): Promise<number> {
