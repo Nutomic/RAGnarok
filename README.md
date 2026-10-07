@@ -11,11 +11,13 @@ RAGnarok is a reference implementation of the parts that fix that: chunk-level p
 
 Live demo: [rag.nutomic.com](https://rag.nutomic.com). The demo corpus is the German texts of DS-GVO and the EU AI Act. Two demo profiles are seeded: the default profile sees the AI Act only, the "Compliance" profile sees DS-GVO as well. Same question, different citations, enforced in the retrieval SQL and not the UI (this is a demo switch, not authentication). The stats line under each answer and the p95/cost chip in the header are read from Langfuse. Every answer writes a row to `audit_logs`: prompt, model, retrieved chunk ids, profile, timestamps, token count. Audit view renders this with a cost derived from token prices.
 
-<video src="data/profile-switch.webm" controls muted></video>
+<video src="https://github.com/user-attachments/assets/4d7ebfb8-4495-4d47-8624-c297b0ca4a5a" controls muted></video>
+
 
 Deletion propagation: the integration test deletes a Danish DS-GVO extract and proves chunks, embeddings and retrievability are gone.
 
-<video src="data/deletion-propagation.webm" controls muted></video>
+<video src="https://github.com/user-attachments/assets/b3313b5b-9c10-4267-913d-c3545fe5106d" controls muted></video>
+
 
 ## Evaluation
 
