@@ -32,7 +32,7 @@ export interface RetrieveOptions {
 // filter short words that would match half the chunks,
 // remove to_tsquery syntax characters which would throw syntax error,
 // join with " | " for OR.
-function ftsTerms(queryText: string): string {
+export function ftsTerms(queryText: string): string {
   return queryText
     .split(/[^\p{L}\p{N}]+/u)
     .filter((w) => w.length > 2)
