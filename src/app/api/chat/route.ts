@@ -101,10 +101,10 @@ export async function POST(req: Request) {
     ({ embedding } = await embedder.embed(prompt, "query"));
     await putCachedEmbedding(prompt, embedding);
   }
-  const reranker = getReranker();
   let rerankMs: number | undefined;
   let retrieved: RetrievedChunk[];
-  if (reranker) {
+  if (process.env.RERANK_ENABLED === "true") {
+    const reranker = getReranker();
     // Rerank needs a pool larger than the final k to be worth anything.
     const pool = await retrieveHybrid(prompt, embedding, {
       k: RERANK_CANDIDATES,

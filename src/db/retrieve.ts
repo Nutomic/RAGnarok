@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { db } from "../db";
-import { evalReranker } from "../rerank";
+import { getReranker } from "../rerank";
 
 export interface RetrievedChunk {
   id: string;
@@ -225,6 +225,6 @@ export async function retrieveByStrategy(
     k: RERANK_POOL,
     candidates: RERANK_POOL,
   });
-  const reranked = await evalReranker.rerank(queryText, pool);
+  const reranked = await getReranker().rerank(queryText, pool);
   return reranked.slice(0, options.k ?? 5);
 }

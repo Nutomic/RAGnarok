@@ -47,10 +47,10 @@ export class TransformersReranker implements Reranker {
   }
 }
 
-export function getReranker(): TransformersReranker | null {
-  return process.env.RERANK_ENABLED === "true" ? new TransformersReranker() : null;
-}
+// Lazily-initialized process singleton, shared across requests and the eval benchmark.
+let rerankerInstance: TransformersReranker | undefined;
 
-// Shared instance for the retrieval benchmark; keeps the model loaded across
-// queries (getReranker() is per-process for the prod opt-in path).
-export const evalReranker = new TransformersReranker();
+export function getReranker(): TransformersReranker {
+  rerankerInstance ??= new TransformersReranker();
+  return rerankerInstance;
+}
