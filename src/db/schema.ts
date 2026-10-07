@@ -110,12 +110,15 @@ export const embeddingCache = pgTable("embedding_cache", {
 
 // Replays the generated answer for an identical generation input. The key pins
 // model, system prompt (which contains the retrieved chunk content), history
-// and profile visibility, so a corpus change produces a new key.
+// and profile visibility, so a corpus change produces a new key and a deleted
+// document can never be served from cache again. document_ids additionally
+// lets deletion wipe the stored answer text before the TTL would.
 export const answerCache = pgTable("answer_cache", {
   keyHash: varchar("key_hash", { length: 64 }).primaryKey(),
   answerText: text("answer_text").notNull(),
   model: varchar("model", { length: 255 }).notNull(),
   inputTokens: integer("input_tokens").notNull(),
   outputTokens: integer("output_tokens").notNull(),
+  documentIds: uuid("document_ids").array().notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });

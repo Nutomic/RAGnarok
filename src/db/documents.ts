@@ -94,14 +94,16 @@ export interface DeleteResult {
   title: string;
   chunksDeleted: number;
   embeddingsDeleted: number;
+  answersCacheDeleted: number;
 }
 
 // Hard delete by title (unique): the FK cascade on chunks.document_id removes
-// the chunks and their embeddings with the row. Cache rows hold no document
-// references: the answer_cache key hashes the system prompt, which pins the
-// retrieved chunk content, so deleted chunks can never produce a cache hit
-// again. embedding_cache stays valid (a prompt's embedding does not depend on
-// the corpus); stale rows are evicted by the TTL.
+// the chunks and their embeddings with the row. Answer-cache rows reference
+// the deleted document via document_ids and are wiped explicitly: the cache key
+// would make them unreachable anyway, but deletion propagation should not
+// leave derived content in the database for the TTL to expire. embedding_cache
+// stays valid (a prompt's embedding does not depend on the corpus); stale rows
+// are evicted by the TTL.
 export async function deleteDocumentByTitle(title: string): Promise<DeleteResult | null> {
   const docs = await db.execute<{ id: string; title: string }>(sql`
     SELECT id, title FROM documents WHERE title = ${title}
@@ -117,6 +119,15 @@ export async function deleteDocumentByTitle(title: string): Promise<DeleteResult
   ).rows[0].n;
 
   await deleteDocumentById(doc.id);
+  const answersCacheDeleted = (
+    await db.execute<{ n: number }>(sql`
+      WITH deleted AS (
+        DELETE FROM answer_cache WHERE document_ids && ${sql.param([doc.id])}::uuid[]
+        RETURNING 1
+      )
+      SELECT count(*)::int AS n FROM deleted
+    `)
+  ).rows[0].n;
 
-  return { title: doc.title, chunksDeleted, embeddingsDeleted };
+  return { title: doc.title, chunksDeleted, embeddingsDeleted, answersCacheDeleted };
 }

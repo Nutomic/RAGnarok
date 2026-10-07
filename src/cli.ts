@@ -28,7 +28,8 @@ async function main() {
     }
     console.log(
       `deleted ${result.title}: ${result.chunksDeleted} chunks, ` +
-        `${result.embeddingsDeleted} embeddings removed`,
+        `${result.embeddingsDeleted} embeddings, ` +
+        `${result.answersCacheDeleted} cache answers removed`,
     );
   } else if (command === "check-retrieval") {
     await checkRetrieve();

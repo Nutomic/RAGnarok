@@ -57,6 +57,20 @@
       "when": 1791275849203,
       "tag": "0007_vector_dim_768",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1759800000000,
+      "tag": "0008_fts-gin-index",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791376781336,
+      "tag": "0009_answer-cache-document-ids",
+      "breakpoints": true
     }
   ]
 }

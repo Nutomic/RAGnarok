@@ -43,10 +43,15 @@ export async function getCachedAnswer(keyHash: string): Promise<CachedAnswer | n
   return rows.rows[0] ?? null;
 }
 
-export async function putCachedAnswer(keyHash: string, answer: CachedAnswer): Promise<void> {
+export async function putCachedAnswer(
+  keyHash: string,
+  answer: CachedAnswer & { documentIds: string[] },
+): Promise<void> {
   await db.execute(sql`
-    INSERT INTO answer_cache (key_hash, answer_text, model, input_tokens, output_tokens)
-    VALUES (${keyHash}, ${answer.answerText}, ${answer.model}, ${answer.inputTokens}, ${answer.outputTokens})
+    INSERT INTO answer_cache (key_hash, answer_text, model, input_tokens, output_tokens, document_ids)
+    VALUES (${keyHash}, ${answer.answerText}, ${answer.model},
+            ${answer.inputTokens}, ${answer.outputTokens},
+            ${sql.param(answer.documentIds)}::uuid[])
     ON CONFLICT (key_hash) DO NOTHING
   `);
   await db.execute(sql`DELETE FROM answer_cache WHERE created_at < now() - ${TTL}`);

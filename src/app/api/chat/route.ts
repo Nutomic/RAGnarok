@@ -271,6 +271,7 @@ ${context}`;
             model: modelName,
             inputTokens,
             outputTokens,
+            documentIds: [...new Set(retrieved.map((c) => c.documentId))],
           });
         } else {
           console.error(
