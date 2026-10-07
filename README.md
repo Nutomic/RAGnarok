@@ -111,8 +111,7 @@ The API routes behind the MCP tools are `GET /api/documents` and `GET /api/searc
 ## Limits
 
 - Profile switching is a demo switch, not authentication. Real users, groups and workspaces are post-v0.1 work.
-- No file-upload connector. The corpus is fixed (EUR-Lex), ingestion is CLI.
-- No OCR: HTML corpus, so PDF/DOCX parsing is not implemented yet.
+- Ingestion is limited to fixed corpus (EUR-Lex) in HTML format over CLI. Other file types like PDF/DOCS are not supported yet. If untrusted upload functionality is added later, ingested text must be sanitized to avoid prompt injection.
 - The generation judge runs locally on demand, not in CI.
 - Rerank is off by default: 5s per query is too slow for demo experience.
 - Mobile chat auto-scroll doesn't work reliably.

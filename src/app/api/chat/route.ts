@@ -20,6 +20,7 @@ import { hasChunks } from "../../../db/has-chunks";
 import { findProfileById } from "../../../db/profiles";
 import type { RetrievedChunk } from "../../../db/retrieve";
 import { retrieveHybrid } from "../../../db/retrieve";
+import { systemPrompt as sharedSystemPrompt } from "../../../generate";
 import { embedder } from "../../../ingest/embed";
 import { getLangfuse } from "../../../langfuse";
 import { costFor } from "../../../prices";
@@ -144,29 +145,14 @@ export async function POST(req: Request) {
     rerankMs !== undefined ? chunkCitation(c, i + 1) : chunkCitation(c),
   );
 
-  const context = retrieved
-    .map((c, i) => `[${i + 1}] ${c.sectionTitle}: ${c.content}`)
-    .join("\n\n");
-
   // Only the last few exchanges go to the model: each question retrieves its own
   // chunks, history is only needed to resolve follow-ups.
   const HISTORY_MESSAGES = 6;
 
-  // Standard profile: make the missing DS-GVO permission visible in the answer
-  // instead of silently answering from the remaining corpus.
-  const permissionNote =
-    visibility === "public"
-      ? "Das aktive Profil sieht nur die KI-Verordnung. Bezieht sich eine Frage eindeutig auf die DS-GVO, weise darauf hin, dass diese Dokumente für das Profil nicht freigegeben sind, und nenne, dass sich das Profil über den Schalter oben rechts auf Compliance umstellen lässt."
-      : "";
-
   const modelName = process.env.MISTRAL_MODEL ?? "mistral-small-latest";
-  const systemPrompt = `Sie sind ein Assistent für EU-Recht (DS-GVO, KI-Verordnung). Antworten Sie auf Deutsch, mit förmlicher Anrede (Sie/Ihre).
-Beantworten Sie die Frage nur mit den unten angegebenen Quelltexten und zitieren Sie jede Aussage mit [n], wobei n die Nummer der Quelle ist.
-Wenn die Quellen die Frage nicht beantworten können, sagen Sie das ohne jede Erfindung.
-${permissionNote}
-
-Quellen:
-${context}`;
+  // Shared with the eval harness (generate.ts) so the eval measures the shipped
+  // prompt: <quelle> delimiters + injection instruction, see there.
+  const systemPrompt = sharedSystemPrompt(retrieved, visibility);
   const historyMessages = await convertToModelMessages(messages.slice(-HISTORY_MESSAGES));
 
   // The system prompt carries the full retrieved chunk content and the

@@ -36,6 +36,10 @@ const REGULATIONS = [
 ];
 
 export async function ingest() {
+  // TODO: sanitize untrusted content before it is stored. The system prompt
+  // quotes chunks inside <quelle> tags (see src/generate.ts); a document
+  // containing the literal string "</quelle>" could close the delimiter early
+  // and inject instructions. EUR-Lex is trusted, user uploads are not.
   const embedder = new TransformersEmbedder();
 
   for (const reg of REGULATIONS) {
