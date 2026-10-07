@@ -28,8 +28,16 @@ export async function limitReads(req: Request): Promise<Response | null> {
 }
 
 async function limit(limiter: RateLimiterMemory, req: Request): Promise<Response | null> {
+  let ip: string;
   try {
-    await limiter.consume(clientIp(req));
+    ip = clientIp(req);
+  } catch (err) {
+    // Missing/empty header is a proxy misconfiguration
+    console.error(err);
+    return Response.json({ error: err }, { status: 500 });
+  }
+  try {
+    await limiter.consume(ip);
     return null;
   } catch (rejection) {
     const retryAfter = Math.ceil((rejection as { msBeforeNext: number }).msBeforeNext / 1000);

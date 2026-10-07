@@ -1,4 +1,3 @@
-import { createMistral } from "@ai-sdk/mistral";
 import {
   convertToModelMessages,
   createUIMessageStream,
@@ -20,7 +19,7 @@ import { hasChunks } from "../../../db/has-chunks";
 import { findProfileById } from "../../../db/profiles";
 import type { RetrievedChunk } from "../../../db/retrieve";
 import { retrieveHybrid } from "../../../db/retrieve";
-import { systemPrompt as sharedSystemPrompt } from "../../../generate";
+import { mistral, systemPrompt as sharedSystemPrompt } from "../../../generate";
 import { embedder } from "../../../ingest/embed";
 import { getLangfuse } from "../../../langfuse";
 import { costFor } from "../../../prices";
@@ -33,10 +32,6 @@ export const MAX_PROMPT_CHARS = 200;
 
 // Candidate pool size for the opt-in cross-encoder reranker.
 const RERANK_CANDIDATES = 20;
-
-const mistral = createMistral({
-  apiKey: process.env.MISTRAL_API_KEY || undefined,
-});
 
 function userPrompt(messages: UIMessage[]): string {
   const last = messages.findLast((m) => m.role === "user");
