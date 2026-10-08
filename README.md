@@ -14,7 +14,7 @@ Live demo: [rag.nutomic.com](https://rag.nutomic.com). The demo corpus is the Ge
 <video src="https://github.com/user-attachments/assets/4d7ebfb8-4495-4d47-8624-c297b0ca4a5a" controls muted></video>
 
 
-Deletion propagation: the integration test deletes a Danish DS-GVO extract and proves chunks, embeddings and retrievability are gone. Answer-cache rows reference their source documents (`document_ids`), so answers derived from a deleted document are wiped immediately.
+Deletion propagation: the [integration test](./scripts/integration-test.sh) deletes a Danish DS-GVO extract and proves chunks, embeddings and retrievability are gone. Answer-cache rows reference their source documents (`document_ids`), so answers derived from a deleted document are wiped immediately.
 
 <video src="https://github.com/user-attachments/assets/b3313b5b-9c10-4267-913d-c3545fe5106d" controls muted></video>
 

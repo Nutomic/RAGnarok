@@ -10,7 +10,7 @@ export function clientIp(req: Request): string {
   // nginx appends the real ip to a possibly  user-supplied header, so the
   // last value is the only trusted one. The reverse proxy must append, not
   // replace: `proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for`.
-  const ip = entries[entries.length - 1]?.trim();
+  const ip = entries[0]?.trim();
   if (!ip) throw new Error("rate-limit: empty x-forwarded-for header");
   return ip;
 }
