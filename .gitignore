@@ -1,11 +1,11 @@
 # dependencies
-/node_modules
+app/node_modules
 
 # next.js
-/.next/
+app/.next/
 
 # build artifacts
-/dist/
+app/dist/
 
 # typescript
 *.tsbuildinfo

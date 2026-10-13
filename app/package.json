@@ -8,7 +8,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check . --error-on-warnings",
     "format": "biome format --write .",
-    "prepare": "if [ -d .git ]; then git config core.hooksPath scripts/hooks; fi",
+    "prepare": "if [ -d ../.git ]; then git config core.hooksPath scripts/hooks; fi",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

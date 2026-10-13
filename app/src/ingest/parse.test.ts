@@ -1,10 +1,16 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseEurlex } from "./parse";
 
-const dsgvo = readFileSync(join(process.cwd(), "data/eurlex/dsgvo.html"), "utf8");
-const aiAct = readFileSync(join(process.cwd(), "data/eurlex/ai-act.html"), "utf8");
+// Corpus lives at the repo root; tests run with app/ as cwd, the container with /app.
+const readCorpus = (file: string) => {
+  const p = join(process.cwd(), "data/eurlex", file);
+  return readFileSync(existsSync(p) ? p : join(process.cwd(), "..", "data/eurlex", file), "utf8");
+};
+
+const dsgvo = readCorpus("dsgvo.html");
+const aiAct = readCorpus("ai-act.html");
 
 describe("parseEurlex", () => {
   it("parses the DS-GVO file into 173 recitals and 99 articles", () => {

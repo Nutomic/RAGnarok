@@ -2,7 +2,7 @@
 
 FROM node:26-slim AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY app/package.json app/package-lock.json ./
 # onnxruntime-web is the browser backend, we only need onnxruntime-node
 RUN npm ci && rm -rf node_modules/onnxruntime-web
 
@@ -11,7 +11,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY app/ ./
+COPY data/ ./data/
 RUN npm run build && npm run build:cli
 RUN npm prune --omit=dev
 EXPOSE 3000
