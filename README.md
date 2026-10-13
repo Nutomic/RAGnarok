@@ -146,7 +146,7 @@ Ingest is idempotent, re-running skips already-ingested documents. The same CLI 
 # generation test with AI judge, needs JUDGE_ variables populated in .env
 ./scripts/judge-generation.sh
 # render table + svg for readme
-docker compose run --rm -v "$(pwd)/data/eval:/app/data/eval" app npm run cli -- eval-report
+docker compose run --rm -v "$(pwd)/data/eval:/data/eval" app npm run cli -- eval-report
 ```
 
 ## License

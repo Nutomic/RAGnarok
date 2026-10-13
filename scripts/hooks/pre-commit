@@ -1,15 +1,19 @@
 #!/usr/bin/env sh
 # Runs before every commit via core.hooksPath (set by npm run prepare).
+top=$(git rev-parse --show-toplevel)
 staged=$(git diff --cached --name-only --diff-filter=ACM)
 [ -z "$staged" ] && exit 0
+
+# Biome project root is app/ (where biome.json lives).
+cd "$top/app" || exit 1
 
 npx biome format --write . >/dev/null
 
 for f in $staged; do
-  [ -f "$f" ] && git add -- "$f"
+  [ -f "$top/$f" ] && git add -- "$top/$f"
 done
 
 npx biome check . --error-on-warnings || {
-  echo "commit rejected: biome check failed (npx biome check --write to fix)"
+  echo "commit rejected: biome check failed (cd app && npx biome check --write to fix)"
   exit 1
 }

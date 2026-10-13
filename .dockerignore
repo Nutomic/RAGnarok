@@ -1,19 +1,23 @@
 # deps
 node_modules
 .next
-.git
 
-# docker
+# build artifacts
+dist
+*.tsbuildinfo
+next-env.d.ts
+
+# not needed in the image
 Dockerfile
 .dockerignore
 docker-compose.yml
+biome.json
+.gitignore
+scripts
 
 # env
 .env
 .env.local
 
-# misc
+# docs
 *.md
-.gitignore
-biome.json
-dist

@@ -1,10 +1,16 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { chunkSections } from "./chunk";
 import { parseEurlex } from "./parse";
 
-const dsgvo = readFileSync(join(process.cwd(), "data/eurlex/dsgvo.html"), "utf8");
+// Corpus lives at the repo root; tests run with app/ as cwd, the container with /app.
+const readCorpus = (file: string) => {
+  const p = join(process.cwd(), "data/eurlex", file);
+  return readFileSync(existsSync(p) ? p : join(process.cwd(), "..", "data/eurlex", file), "utf8");
+};
+
+const dsgvo = readCorpus("dsgvo.html");
 
 describe("chunkSections", () => {
   it("produces at least one chunk per section", () => {
