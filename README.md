@@ -3,11 +3,13 @@
 [![CI](https://github.com/Nutomic/RAGnarok/actions/workflows/ci.yml/badge.svg)](https://github.com/Nutomic/RAGnarok/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
-DSGVO-first, permission-aware RAG assistant over a company's internal documents, on a single PostgreSQL (pgvector + German full-text search).
+RAGnarok is a DSGVO-first, permission-aware RAG assistant over a company's internal documents, on a single PostgreSQL (pgvector + German full-text search).
 
-Companies want an internal assistant over their documents. Then the same four problems show up. Retrieval pulls in documents the asking user has no permission for. Answers invent content. Nobody can trace where a wrong answer came from. Nothing is measured.
+Companies want an internal assistant over their documents. Then the same four problems show up: Retrieval pulls in documents the user has no permission for; answers invent content; nobody can trace where a wrong answer came from; and nothing is measured.
 
 RAGnarok is a reference implementation of the parts that fix that: chunk-level permission filtering in the retrieval SQL, citations you can click, refusal when the sources don't cover the question, an audit trail a Datenschutzbeauftragte can read, deletion propagation, and eval numbers that run in CI on every push.
+
+For companies that cannot send document content to an external API, generation also runs on a self-hosted llama.cpp server: a 9B model quantized to GGUF streams answers at ~50 tokens/s on a consumer GPU (RX 6700 XT), with measured quality matching the hosted API: 100% faithfulness vs 89% for Mistral, equal relevancy (see [local vs Mistral eval](#local-vs-mistral-inference-hybrid)). In this mode nothing leaves the server and token cost is zero. Model selection comes from a benchmark matrix run on the actual card (see [local inference benchmark](./data/eval/local-benchmark.md)).
 
 Live demo: [rag.nutomic.com](https://rag.nutomic.com). The demo corpus is the German texts of DS-GVO and the EU AI Act. Two demo profiles are seeded: the default profile sees the AI Act only, the "Compliance" profile sees DS-GVO as well. Same question, different citations, enforced in the retrieval SQL and not the UI (this is a demo switch, not authentication). The stats line under each answer and the p95/cost chip in the header are read from Langfuse. Every answer writes a row to `audit_logs`: prompt, model, retrieved chunk ids, profile, timestamps, token count. Audit view renders this with a cost derived from token prices.
 
@@ -54,6 +56,21 @@ How it works: 30 German questions drafted from EUR-Lex metadata (15 single-artic
 
 Note that n=30 means wide confidence intervals. These numbers are a smoke signal and a regression gate, not a benchmark.
 
+### Local vs Mistral inference (hybrid)
+
+Same golden set, same prompt, same judge. Generation either comes from the Mistral API, or from a local llama.cpp server (Qwen3.5-9B, quantized GGUF on an AMD Radeon RX 6700 XT). Hybrid retrieval only. In local mode nothing leaves the server and it costs nothing.
+
+![Local vs Mistral generation quality (hybrid)](data/eval/generation-comparison.svg)
+
+| model | faithfulness | relevancy | refusal rate |
+|---|---|---|---|
+| Mistral ministral-14b (API) | 89% | 85% | 100% |
+| Qwen3.5-9B Q8 (local llama.cpp) | 100% | 84% | 100% |
+
+On faithfulness the local model scores better: 100% of its claims are grounded in the retrieved chunks, while the Mistral model invents some. Part of the explanation is model quality: Qwen3.5-9B scores 11 on the [Artificial Analysis Intelligence Index](https://artificialanalysis.ai/models/qwen3-5-9b), median for its class is 8. [Ministral 3 14B](https://docs.mistral.ai/models/ministral-3-14b-25-12) is from December 2025, so almost the same generation, but there is no public intelligence index score to compare it against.
+
+Two caveats: the judge metrics are noisy at n=30, and these numbers reflect one quant on one GPU. Treat this as a feasibility check for self-hosting, not a model ranking. In terms of speed, the local GPU streams answers at 50 tokens per second, and the ~10k token prompt takes a few seconds to process. The Mistral API is faster in both. For data-sensitive deployments the tradeoff is different: local inference has zero data egress and zero marginal token cost.
+
 ## Architecture
 
 ```mermaid
@@ -61,7 +78,7 @@ flowchart LR
     UI["Chat UI (Next.js 16)"] --> API["API routes"]
     API --> PG[("PostgreSQL 18 + pgvector<br/>documents, chunks, caches, audit_logs")]
     API --> EMB["transformers.js<br/>multilingual-e5-base, 768-dim, CPU"]
-    API --> LLM["Mistral API<br/>(EU-hosted)"]
+    API --> LLM["Mistral API (EU-hosted)<br/>or local llama.cpp server"]
     API --> LF["Langfuse v2<br/>traces, p95, cost"]
     CLI["CLI: ingest, evals, delete"] --> PG
     CLI --> EMB
@@ -137,6 +154,17 @@ docker compose run --rm app npm run cli -- ingest
 ```
 
 Ingest is idempotent, re-running skips already-ingested documents. The same CLI runs the evals (`evaluate-retrieval`, `judge-generation`, `eval-report`) and document deletion.
+
+### Local inference
+
+Generation can run on a self-hosted llama.cpp server instead of the Mistral API. Switch the provider and start the stack:
+
+```bash
+sed -i 's/^GENERATION_PROVIDER=mistral/GENERATION_PROVIDER=local/' .env
+docker compose --profile local up -d   # first start downloads the model GGUF
+```
+
+All model and GPU values live in `.env` (`INFERENCE_*`, `GPU_*`). `scripts/benchmark-local.sh` finds the best quant and args for your card. A benchmark matrix across models, quants and KV cache settings is in [data/eval/local-benchmark.md](./data/eval/local-benchmark.md); on an RX 6700 XT a dense 9B decodes at ~51 t/s (bandwidth-bound), while a small MoE reaches 111 t/s. That benchmark data picked the default model.
 
 ### Evals locally
 

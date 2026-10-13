@@ -41,7 +41,15 @@ docker compose run --rm app npm run cli -- delete "DS-GVO (dansk udgave, uddrag)
 
 echo "==> running generation eval (tier 2)"
 # Bind mount: the run container is ephemeral, results land directly in the repo.
-for strategy in fts vector hybrid rerank; do
+# Local provider benchmarks hybrid only (compared against the mistral hybrid
+# numbers); mistral covers all strategies. Results go to mistral-/local-
+# generation.json depending on GENERATION_PROVIDER in .env.
+if grep -q '^GENERATION_PROVIDER=local' .env; then
+  strategies="hybrid"
+else
+  strategies="fts vector hybrid rerank"
+fi
+for strategy in $strategies; do
   docker compose run --rm -v "$(pwd)/data/eval:/app/data/eval" app npm run cli -- judge-generation "$strategy" | tee "/tmp/eval-output-$strategy.log"
 done
 # refresh the README table + graph from results.json (retrieval metrics merge

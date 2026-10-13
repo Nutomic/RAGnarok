@@ -20,7 +20,7 @@ import { hasChunks } from "../../../db/has-chunks";
 import { findProfileById } from "../../../db/profiles";
 import type { RetrievedChunk } from "../../../db/retrieve";
 import { retrieveHybrid } from "../../../db/retrieve";
-import { mistral, systemPrompt as sharedSystemPrompt } from "../../../generate";
+import { chatModel, chatModelName, systemPrompt as sharedSystemPrompt } from "../../../generate";
 import { embedder } from "../../../ingest/embed";
 import { getLangfuse } from "../../../langfuse";
 import { costFor } from "../../../prices";
@@ -211,7 +211,7 @@ export async function POST(req: Request) {
   // chunks, history is only needed to resolve follow-ups.
   const HISTORY_MESSAGES = 6;
 
-  const modelName = process.env.MISTRAL_MODEL ?? "mistral-small-latest";
+  const modelName = chatModelName();
   // Shared with the eval harness (generate.ts) so the eval measures the shipped
   // prompt: <quelle> delimiters + injection instruction, see there.
   const systemPrompt = sharedSystemPrompt(retrieved, visibility);
@@ -230,7 +230,7 @@ export async function POST(req: Request) {
   const result = cachedAnswer
     ? null
     : streamText({
-        model: mistral.languageModel(modelName),
+        model: chatModel(),
         system: systemPrompt,
         messages: historyMessages,
         abortSignal: upstreamAbort.signal,

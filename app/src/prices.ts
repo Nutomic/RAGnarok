@@ -8,6 +8,7 @@ export const MISTRAL_PRICES_PER_M: Record<string, { input: number; output: numbe
 
 // Throws on unknown models: a missing price must not silently produce 0 cost.
 export function costFor(model: string, inputTokens: number, outputTokens: number): number {
+  if (model === process.env.LOCAL_MODEL) return 0;
   const p = MISTRAL_PRICES_PER_M[model];
   if (!p) throw new Error(`No Mistral price configured for model: ${model}`);
   return (p.input * inputTokens + p.output * outputTokens) / 1e6;

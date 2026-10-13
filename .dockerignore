@@ -1,23 +1,26 @@
 # deps
-node_modules
-.next
+app/node_modules
+
+# next build output (created by local dev runs)
+app/.next
 
 # build artifacts
-dist
-*.tsbuildinfo
-next-env.d.ts
+app/dist
+app/*.tsbuildinfo
+app/next-env.d.ts
 
-# not needed in the image
-Dockerfile
-.dockerignore
-docker-compose.yml
-biome.json
+# not needed in the build context
+docker
+.git
 .gitignore
+AGENTS.md
+README.md
+mcp-server.mjs
 scripts
 
 # env
 .env
-.env.local
+.env.example
 
-# docs
-*.md
+# local ai models
+data/models

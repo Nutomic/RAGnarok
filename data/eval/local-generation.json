@@ -1,0 +1,189 @@
+{
+  "timestamp": "2026-10-13T13:52:18.009Z",
+  "sha": "unknown",
+  "model": "qwen3.5-9b-q8",
+  "judge": "zai-org/GLM-5.3-Flash",
+  "generation": {
+    "hybrid": {
+      "faithfulness": 0.9956521739130434,
+      "relevancy": 0.8434782608695651,
+      "refusal_rate": 1
+    }
+  },
+  "questions": {
+    "hybrid": [
+      {
+        "question": "Wie lange dürfen personenbezogene Daten gespeichert werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Rechtsgrundlagen erlaubt die DSGVO für die Verarbeitung personenbezogener Daten?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.3
+      },
+      {
+        "question": "Wie schnell muss ein Datenschutzvorfall gemeldet werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann ist die Bestellung eines Datenschutzbeauftragten erforderlich?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten für die Übermittlung personenbezogener Daten in ein Drittland?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.7
+      },
+      {
+        "question": "Wann können betroffene Personen die Löschung ihrer personenbezogenen Daten verlangen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Maßnahmen verlangt die DSGVO zur Sicherheit der Verarbeitung?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Geldbußen drohen bei Verstößen gegen die DSGVO?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Wann gilt ein KI-System als Hochrisiko-KI-System?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Anwendungen von künstlicher Intelligenz sind in der EU untersagt?",
+        "faithfulness": 0.9,
+        "unsupportedClaims": [
+          "Die pauschale Aussage 'Die anderen Texte befassen sich mit Zuständigkeiten und Aufsichtsstrukturen' trifft auf Artikel 110 nicht zu: Artikel 110 regelt die Aufnahme der KI-Verordnung in Anhang I der Richtlinie (EU) 2020/1828 (Verbandsklagen), nicht Zuständigkeiten oder Aufsichtsstrukturen. Die übrigen Aussagen (Erwägungsgrund 179 zu den Verboten ab dem 2. Februar 2025, Erwägungsgrund 161 zu den Verantwortlichkeiten auf Unionsebene und nationaler Ebene, Erwägungsgrund 148 zur Errichtung des Büros für Künstliche Intelligenz, Erwägungsgrund 162 zur Aufsicht der Kommission für KI-Modelle mit allgemeinem Verwendungszweck sowie die Feststellung, dass keine konkreten untersagten Anwendungsfälle genannt werden) sind durch die Quelltexte belegt."
+        ],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Pflichten haben Betreiber von Hochrisiko-KI-Systemen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Muss ein Mensch eingreifen können, wenn ein risikoreiches KI-System falsch entscheidet?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Welche Transparenzpflichten gelten, wenn Menschen mit KI-Systemen interagieren?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wie gut müssen die Trainingsdaten sein, mit denen ein risikoreiches KI-Modell lernt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.5
+      },
+      {
+        "question": "Welche KI-Kompetenz müssen Anbieter und Betreiber von KI-Systemen sicherstellen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Regeln gelten beim Umgang mit Daten von Kindern?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wann muss vorab geprüft werden, ob ein Vorhaben ein hohes Datenschutzrisiko birgt?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 1
+      },
+      {
+        "question": "Welche Pflichten gelten für Auftragsverarbeiter personenbezogener Daten?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Kundendaten sind abhandengekommen – was muss eine Firma jetzt unternehmen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0
+      },
+      {
+        "question": "Welche Anforderungen stellt die KI-Verordnung über den Lebenszyklus eines Hochrisiko-KI-Systems?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Was muss der Hersteller eines risikoreichen KI-Systems von der Entwicklung bis zur Markteinführung sicherstellen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      },
+      {
+        "question": "Wie müssen Hochrisiko-KI-Systeme gekennzeichnet und erklärt werden?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.85
+      },
+      {
+        "question": "Was müssen Firmen tun, die ein allgemeines KI-Basismodell herausbringen?",
+        "faithfulness": 1,
+        "unsupportedClaims": [],
+        "relevancy": 0.9
+      }
+    ]
+  },
+  "refusals": {
+    "hybrid": [
+      {
+        "question": "Wie beantrage ich einen Reisepass beim Bürgeramt?",
+        "refused": true
+      },
+      {
+        "question": "Bis wann muss ich meine Steuererklärung abgeben?",
+        "refused": true
+      },
+      {
+        "question": "Wie viel Urlaub steht mir gesetzlich zu?",
+        "refused": true
+      },
+      {
+        "question": "Wer hat gestern die Bundesliga Spiele gewonnen?",
+        "refused": true
+      },
+      {
+        "question": "Muss ich meinen Hund beim Amt anmelden?",
+        "refused": true
+      },
+      {
+        "question": "Gibt es noch eine Förderung für Elektroautos?",
+        "refused": true
+      },
+      {
+        "question": "Bekomme ich einen Zuschuss für Kinderbetreuung?",
+        "refused": true
+      }
+    ]
+  }
+}

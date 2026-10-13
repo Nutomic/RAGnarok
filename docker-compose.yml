@@ -64,5 +64,25 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
 
+  # Local generation backend, opt-in via `docker compose --profile local up -d`
+  # together with GENERATION_PROVIDER=local in .env.
+  inference:
+    image: ${INFERENCE_IMAGE}
+    profiles: ["local"]
+    restart: unless-stopped
+    devices:
+      - ${GPU_DEVICE_1}
+      - ${GPU_DEVICE_2}
+    group_add:
+      - ${GPU_GROUP_1}
+      - ${GPU_GROUP_2}
+    environment:
+      HSA_OVERRIDE_GFX_VERSION: ${HSA_OVERRIDE_GFX_VERSION}
+      # Model downloads go here and persist across restarts (first start slow).
+      LLAMA_CACHE: /models
+    volumes:
+      - ${INFERENCE_MODELS_DIR}:/models
+    command: ${INFERENCE_ARGS}
+
 volumes:
   db-data:

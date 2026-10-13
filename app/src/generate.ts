@@ -6,8 +6,26 @@ export const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY || undefined,
 });
 
+// GENERATION_PROVIDER=local serves chat from the self-hosted llama.cpp server
+export function isLocalProvider() {
+  return process.env.GENERATION_PROVIDER === "local";
+}
+
+export function chatModelName() {
+  return isLocalProvider()
+    ? (process.env.LOCAL_MODEL ?? "local")
+    : (process.env.MISTRAL_MODEL ?? "mistral-small-latest");
+}
+
 export function chatModel() {
-  return mistral.languageModel(process.env.MISTRAL_MODEL ?? "mistral-small-latest");
+  if (isLocalProvider()) {
+    const local = createOpenAICompatible({
+      name: "local",
+      baseURL: process.env.LOCAL_BASE_URL ?? "http://inference:8080/v1",
+    });
+    return local.chatModel(chatModelName());
+  }
+  return mistral.languageModel(chatModelName());
 }
 
 // Judge runs on a separate OpenAI-compatible endpoint (e.g. together.ai), so
