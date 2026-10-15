@@ -53,6 +53,8 @@ services:
         condition: service_healthy
       langfuse:
         condition: service_started
+      agent:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/ragnarok
       LANGFUSE_DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/langfuse
@@ -63,6 +65,26 @@ services:
       LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
     ports:
       - "127.0.0.1:3000:3000"
+
+  agent:
+    build:
+      context: .
+      dockerfile: docker/agent.Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/ragnarok
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   # Local generation backend, opt-in via `docker compose --profile local up -d`
   # together with GENERATION_PROVIDER=local in .env.

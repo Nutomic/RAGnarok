@@ -1,5 +1,7 @@
 # AGENTS.md
 
+Do not commit any changes without manual user approval.
+
 ## Layout
 
 The Node app lives in `app/` (`src`, `drizzle`, configs). The repo root holds deployment/meta files: `docker-compose.yml`, `docker/` (Dockerfile + init SQL), `scripts/` (integration + eval + benchmark scripts, git hooks), `data/` (corpus + eval artifacts + local model cache), `.env(.example)`, `mcp-server.mjs`, CI workflow, README, LICENSE, AGENTS.md. Run all npm commands from `app/`.
