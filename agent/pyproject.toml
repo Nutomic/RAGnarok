@@ -5,6 +5,8 @@ description = "Python agent service for RAGnarok v0.2 (agentic retrieval)"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.118",
+    "psycopg[binary,pool]>=3.3.6",
+    "pydantic-settings>=2.16.0",
     "uvicorn>=0.38",
 ]
 
@@ -12,6 +14,7 @@ dependencies = [
 dev = [
     "mypy>=1.18",
     "pytest>=8.4",
+    "pytest-asyncio>=1.4.0",
     "ruff>=0.14",
 ]
 
@@ -30,7 +33,7 @@ line-length = 100
 target-version = "py313"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM", "S", "C4", "PT", "RUF"]
+select = ["E", "F", "I", "UP", "B", "SIM", "S", "C4", "PT", "RUF", "ANN"]
 
 [tool.ruff.lint.per-file-ignores]
 # pytest asserts are the point of tests
@@ -38,3 +41,4 @@ select = ["E", "F", "I", "UP", "B", "SIM", "S", "C4", "PT", "RUF"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "auto"

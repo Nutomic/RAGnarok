@@ -17,3 +17,24 @@ npx biome check . --error-on-warnings || {
   echo "commit rejected: biome check failed (cd app && npx biome check --write to fix)"
   exit 1
 }
+
+# Python checks, only when something under agent/ is staged.
+if git diff --cached --name-only --diff-filter=ACM | grep -q '^agent/'; then
+  cd "$top/agent" || exit 1
+  command -v uv >/dev/null 2>&1 || {
+    echo "commit rejected: uv not found (needed for agent/ checks)"
+    exit 1
+  }
+  uv run ruff check . || {
+    echo "commit rejected: ruff failed (cd agent && uv run ruff check --fix to fix)"
+    exit 1
+  }
+  uv run mypy src tests || {
+    echo "commit rejected: mypy failed"
+    exit 1
+  }
+  uv run pytest -q || {
+    echo "commit rejected: pytest failed"
+    exit 1
+  }
+fi
