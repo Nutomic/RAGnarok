@@ -22,6 +22,22 @@ jobs:
       - run: npm run typecheck
       - run: npm run test
 
+  agent-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          cache-dependency-glob: agent/uv.lock
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run mypy src tests
+      - run: uv run pytest -q
+
   integration:
     runs-on: ubuntu-latest
     environment: ci
