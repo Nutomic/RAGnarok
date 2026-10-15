@@ -15,7 +15,10 @@ WORKDIR /app
 # curl for the compose healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd --system agent && useradd --system --gid agent agent
+    && groupadd --system agent && useradd --system --create-home --gid agent agent
+# cache dir pre-created owned by agent: an empty named volume mounted here
+# inherits image ownership instead of initializing as root
+RUN mkdir -p /home/agent/.cache/huggingface && chown agent:agent /home/agent/.cache/huggingface
 COPY --from=builder /build/.venv ./.venv
 USER agent
 EXPOSE 8000

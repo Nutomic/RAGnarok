@@ -79,6 +79,8 @@ services:
       DATABASE_URL: postgresql://ragnarok:${POSTGRES_PASSWORD}@db:5432/ragnarok
     ports:
       - "127.0.0.1:8000:8000"
+    volumes:
+      - agent-model-cache:/home/agent/.cache/huggingface
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
       interval: 10s
@@ -108,3 +110,4 @@ services:
 
 volumes:
   db-data:
+  agent-model-cache:
